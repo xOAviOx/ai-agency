@@ -14,17 +14,18 @@ import { ConcentricCircles } from '@/components/ui/concentric-circles';
 /* ── Animated headline word split ───────────────────────────── */
 function AnimatedHeadline({ text }: { text: string }) {
   const words = text.split(' ');
+  const reducedMotion = useReducedMotion();
   return (
     <span aria-label={text} className="inline-block">
       {words.map((word, wi) => (
         <span key={wi} className="inline-block overflow-hidden mr-[0.25em]">
           <motion.span
             className="inline-block"
-            initial={{ y: '100%', opacity: 0, filter: 'blur(8px)' }}
-            animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+            initial={reducedMotion ? { opacity: 0 } : { y: '100%', opacity: 0, filter: 'blur(8px)' }}
+            animate={reducedMotion ? { opacity: 1 } : { y: 0, opacity: 1, filter: 'blur(0px)' }}
             transition={{
-              duration: 0.7,
-              delay: 0.3 + wi * 0.06,
+              duration: reducedMotion ? 0.3 : 0.7,
+              delay: reducedMotion ? 0.1 : 0.3 + wi * 0.06,
               ease: [0.16, 1, 0.3, 1],
             }}
           >
@@ -46,21 +47,26 @@ interface FloatingCursorProps {
 }
 
 function FloatingCursor({ name, color, x, y, delay }: FloatingCursorProps) {
+  const reducedMotion = useReducedMotion();
   return (
     <motion.div
       className="absolute hidden lg:flex items-center gap-1.5 pointer-events-none select-none"
       style={{ left: x, top: y }}
       initial={{ opacity: 0 }}
-      animate={{
-        opacity: [0, 1, 1, 0.8],
-        x: [0, 8, -4, 6, 0],
-        y: [0, -6, 8, -3, 0],
-      }}
-      transition={{
-        opacity: { delay, duration: 1 },
-        x: { delay, duration: 8, repeat: Infinity, ease: 'easeInOut' },
-        y: { delay, duration: 7, repeat: Infinity, ease: 'easeInOut' },
-      }}
+      animate={
+        reducedMotion
+          ? { opacity: 0.7 }
+          : { opacity: [0, 1, 1, 0.8], x: [0, 8, -4, 6, 0], y: [0, -6, 8, -3, 0] }
+      }
+      transition={
+        reducedMotion
+          ? { delay, duration: 0.4 }
+          : {
+              opacity: { delay, duration: 1 },
+              x: { delay, duration: 8, repeat: Infinity, ease: 'easeInOut' },
+              y: { delay, duration: 7, repeat: Infinity, ease: 'easeInOut' },
+            }
+      }
     >
       {/* Cursor SVG */}
       <svg width="16" height="20" viewBox="0 0 16 20" fill="none">
