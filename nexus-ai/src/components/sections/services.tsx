@@ -18,7 +18,7 @@ const SERVICES = [
     id: 2,
     title: 'Process Automation',
     description:
-      'n8n, Make, and bespoke pipelines that eliminate manual work, cut error rates, and free up your team's headspace.',
+      "n8n, Make, and bespoke pipelines that eliminate manual work, cut error rates, and free up your team's headspace.",
     tag: 'Automation',
     gradient: 'from-blue-900/40 to-blue-950/20',
   },
