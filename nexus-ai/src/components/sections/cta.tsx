@@ -21,12 +21,13 @@ function TrustMarquee() {
 }
 
 export function CTA() {
+  const reducedMotion = useReducedMotion();
   return (
     <section className="relative py-40 overflow-hidden" style={{ background: 'var(--bg-elevated)' }}>
       {/* Circle motif */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
         <motion.div
-          animate={{ rotate: 360 }}
+          animate={reducedMotion ? {} : { rotate: 360 }}
           transition={{ duration: 100, repeat: Infinity, ease: 'linear' }}
         >
           <ConcentricCircles size={900} opacity={0.5} />
