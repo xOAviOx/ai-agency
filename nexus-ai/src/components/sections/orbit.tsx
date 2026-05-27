@@ -5,6 +5,7 @@ import {
   motion,
   useScroll,
   useTransform,
+  useReducedMotion,
   MotionValue,
 } from 'framer-motion';
 import { ArrowRight, Zap, Clock, Users, Star, Shield, Rocket } from 'lucide-react';
@@ -77,14 +78,15 @@ function OrbitPhrase({
 /* ── Orbit Section ──────────────────────────────────────────── */
 export function Orbit() {
   const sectionRef = useRef<HTMLElement>(null);
+  const reducedMotion = useReducedMotion();
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start end', 'end start'],
   });
 
-  // Map scroll 0→1 to orbit rotation 0→90 degrees
-  const orbitRotation = useTransform(scrollYProgress, [0, 1], [0, 90]);
+  // Map scroll 0→1 to orbit rotation 0→90 degrees (frozen at 0 for reduced motion)
+  const orbitRotation = useTransform(scrollYProgress, [0, 1], reducedMotion ? [0, 0] : [0, 90]);
 
   return (
     <section
