@@ -15,19 +15,19 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
       touchMultiplier: 2,
     });
 
-    // Wire Lenis to GSAP ScrollTrigger
+    // Bridge Lenis virtual scroll to GSAP ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update);
 
-    gsap.ticker.add((time) => {
+    // Named ticker function so we can remove it cleanly on unmount
+    const lenisRaf = (time: number) => {
       lenis.raf(time * 1000);
-    });
+    };
+    gsap.ticker.add(lenisRaf);
     gsap.ticker.lagSmoothing(0);
 
     return () => {
       lenis.destroy();
-      gsap.ticker.remove((time) => {
-        lenis.raf(time * 1000);
-      });
+      gsap.ticker.remove(lenisRaf);
     };
   }, []);
 
