@@ -1,10 +1,11 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { ConcentricCircles } from '@/components/ui/concentric-circles';
 
 export function Agencies() {
+  const reducedMotion = useReducedMotion();
   return (
     <section
       className="relative py-32 overflow-hidden"
@@ -96,7 +97,7 @@ export function Agencies() {
             {/* Background circle */}
             <div className="absolute -right-32 top-1/2 -translate-y-1/2 opacity-30 pointer-events-none">
               <motion.div
-                animate={{ rotate: -360 }}
+                animate={reducedMotion ? {} : { rotate: -360 }}
                 transition={{ duration: 70, repeat: Infinity, ease: 'linear' }}
               >
                 <ConcentricCircles size={400} />
