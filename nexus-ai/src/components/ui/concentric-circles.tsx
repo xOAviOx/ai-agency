@@ -112,7 +112,8 @@ export function ConcentricCircles({
       viewBox={`0 0 ${size} ${size}`}
       className={className}
       style={{
-        rotate: rotation as number,
+        // Framer Motion accepts both number and MotionValue<number> for rotate
+        rotate: rotation,
         opacity,
         willChange: 'transform',
       }}

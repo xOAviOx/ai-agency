@@ -6,6 +6,7 @@ import {
   useScroll,
   useTransform,
   useSpring,
+  useReducedMotion,
 } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { ConcentricCircles } from '@/components/ui/concentric-circles';
@@ -99,6 +100,7 @@ function TrustMarquee() {
 /* ── Hero ───────────────────────────────────────────────────── */
 export function Hero() {
   const heroRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = useReducedMotion();
 
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -106,7 +108,7 @@ export function Hero() {
   });
 
   // Circle: scale from full viewport coverage to ~30% as user scrolls out
-  const circleScale = useTransform(scrollYProgress, [0, 1], [1, 0.22]);
+  const circleScale = useTransform(scrollYProgress, [0, 1], reducedMotion ? [1, 1] : [1, 0.22]);
   const circleScaleSpring = useSpring(circleScale, { stiffness: 80, damping: 25 });
 
   // Circle slow infinite rotation happens via CSS animation
@@ -134,7 +136,7 @@ export function Hero() {
           style={{ scale: circleScaleSpring, opacity: circleOpacity }}
         >
           <motion.div
-            animate={{ rotate: 360 }}
+            animate={reducedMotion ? {} : { rotate: 360 }}
             transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
           >
             <ConcentricCircles size={CIRCLE_BASE} />
