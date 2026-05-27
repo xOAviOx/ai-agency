@@ -191,8 +191,11 @@ function ProjectCard({
 export function Showcase() {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
+    if (reducedMotion) return; // skip parallax for reduced-motion users
+
     const container = containerRef.current;
     const track = trackRef.current;
     if (!container || !track) return;
