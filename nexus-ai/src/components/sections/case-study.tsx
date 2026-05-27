@@ -51,12 +51,13 @@ function FakeDashboard() {
 }
 
 export function CaseStudy() {
+  const reducedMotion = useReducedMotion();
   return (
     <section className="relative py-32 overflow-hidden" style={{ background: 'var(--bg)' }}>
       {/* Background circle motif */}
       <div className="absolute -right-64 top-1/2 -translate-y-1/2 opacity-40 pointer-events-none">
         <motion.div
-          animate={{ rotate: 360 }}
+          animate={reducedMotion ? {} : { rotate: 360 }}
           transition={{ duration: 80, repeat: Infinity, ease: 'linear' }}
         >
           <ConcentricCircles size={700} />
