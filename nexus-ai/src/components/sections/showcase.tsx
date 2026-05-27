@@ -106,13 +106,14 @@ function ProjectCard({
   index: number;
 }) {
   const verticalOffset = [0, 40, -20, 20][index % 4];
+  const reducedMotion = useReducedMotion();
 
   return (
     <motion.div
       className="flex-shrink-0 w-[320px] md:w-[400px] flex flex-col gap-4"
       style={{ marginTop: verticalOffset }}
-      initial={{ rotate: project.rotation }}
-      whileHover={{ rotate: 0, y: -8, transition: { duration: 0.3 } }}
+      initial={reducedMotion ? {} : { rotate: project.rotation }}
+      whileHover={reducedMotion ? {} : { rotate: 0, y: -8, transition: { duration: 0.3 } }}
     >
       {/* Mockup frame */}
       <div
