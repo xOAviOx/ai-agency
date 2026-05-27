@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { ConcentricCircles } from '@/components/ui/concentric-circles';
 
 const DELIVERED_FOR = ['Ratio', 'Helix Labs', 'Beacon Co.', 'Atlas Works'];
