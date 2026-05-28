@@ -146,22 +146,34 @@ export function Hero() {
   const heroRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
 
+  /* Measure viewport height once on mount so the circle travels
+     exactly one viewport-height — keeping it pinned at the
+     apparent viewport centre while the hero section scrolls away.
+     This makes it visually land at the services section intersection. */
+  const [vh, setVh] = useState(900);
+  useEffect(() => {
+    setVh(window.innerHeight);
+  }, []);
+
   /* Scroll-linked transforms */
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
   });
-  // Shrinks to ~10% as it travels down
-  const circleScale  = useTransform(scrollYProgress, [0, 1], reducedMotion ? [1, 1] : [1, 0.10]);
+  // Shrinks to ~12% at bottom — close to the 110px intersection circle
+  const circleScale  = useTransform(scrollYProgress, [0, 1], reducedMotion ? [1, 1] : [1, 0.12]);
   const circleScaleS = useSpring(circleScale,  { stiffness: 70, damping: 22 });
-  // Travels DOWN — exits through the hero section's bottom edge
-  const circleDown   = useTransform(scrollYProgress, [0, 1], reducedMotion ? [0, 0] : [0, 620]);
-  const circleDownS  = useSpring(circleDown,   { stiffness: 55, damping: 20 });
+  // Travels exactly 1 viewport height DOWN — this cancels out the
+  // section scrolling so the circle stays at the viewport center
+  // while the hero content moves away, then "arrives" at the
+  // services intersection which is also near the viewport center.
+  const circleDown   = useTransform(scrollYProgress, [0, 1], reducedMotion ? [0, 0] : [0, vh]);
+  const circleDownS  = useSpring(circleDown,   { stiffness: 65, damping: 22 });
   // Spin while descending
-  const circleRot    = useTransform(scrollYProgress, [0, 1], reducedMotion ? [0, 0] : [0, 220]);
-  const circleRotS   = useSpring(circleRot,    { stiffness: 50, damping: 20 });
-  // Fade out as it nears the bottom
-  const circleOpacity = useTransform(scrollYProgress, [0.55, 0.88], [1, 0]);
+  const circleRot    = useTransform(scrollYProgress, [0, 1], reducedMotion ? [0, 0] : [0, 240]);
+  const circleRotS   = useSpring(circleRot,    { stiffness: 55, damping: 22 });
+  // Fade out right at the end — stays visible through the journey
+  const circleOpacity = useTransform(scrollYProgress, [0.75, 0.97], [1, 0]);
 
   /* Cursor parallax */
   const mouseX  = useMotionValue(0);
