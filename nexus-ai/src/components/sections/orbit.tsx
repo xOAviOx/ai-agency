@@ -282,16 +282,26 @@ export function OrbitJourney() {
     const { showcaseTop, agenciesTop, orbitTop, orbitBottom, vh } = m.current;
     if (!orbitBottom) return;
 
-    const t0 = showcaseTop - vh * 0.4;   // circle starts appearing
-    const t1 = agenciesTop;              // travelling, still small
-    const t3 = orbitTop;                 // full-size, Why NEXUS centered
-    const tActiveEnd = orbitBottom - vh; // end of the pinned Why NEXUS moment
-    const tExitEnd = tActiveEnd + vh * 0.6;
+    /* Scroll keypoints (document space):
+       appearStart  small circle fades in (around Case Study, before parallax)
+       preHide      fades back out as the parallax takes over
+       [preHide → reappear]  HIDDEN over the whole Showcase parallax
+       reappear     fades in small as For Agencies arrives
+       growStart→growEnd   transitions small → big across the Agencies→stage seam
+       activeEnd    end of the held Why NEXUS moment
+       exitEnd      fully gone into the CTA                                       */
+    const appearStart = showcaseTop - vh * 1.1;
+    const preHide     = showcaseTop - vh * 0.25;
+    const reappear    = agenciesTop;
+    const growStart   = orbitTop - vh * 0.4;
+    const growEnd     = orbitTop + vh * 0.6;
+    const activeEnd   = orbitBottom - vh;
+    const exitEnd     = activeEnd + vh * 0.6;
 
     if (reducedMotion) {
-      // Static: only reveal at full size while inside the Why NEXUS region.
-      const inRegion = sv >= t1 && sv <= tExitEnd;
-      scale.set(1);
+      // Static: reveal at full size only inside the Why NEXUS region.
+      const inRegion = sv >= growStart && sv <= exitEnd;
+      scale.set(inRegion ? 1 : SMALL_SCALE);
       opacity.set(inRegion ? 1 : 0);
       driftY.set(0);
       centerOp.set(inRegion ? 1 : 0);
@@ -300,50 +310,69 @@ export function OrbitJourney() {
       return;
     }
 
-    if (sv < t0 || sv > tExitEnd) {
+    /* Hidden: before the journey, over the parallax, and after the exit. */
+    if (sv < appearStart || (sv >= preHide && sv < reappear) || sv > exitEnd) {
       opacity.set(0);
-      orbitPhaseRaw.set(sv > tExitEnd ? 1 : 0);
+      // keep small unless we're already past the big moment
+      if (sv < reappear) {
+        scale.set(SMALL_SCALE);
+        orbitPhaseRaw.set(0);
+      } else if (sv > exitEnd) {
+        orbitPhaseRaw.set(1);
+      }
       return;
     }
 
-    /* Phase 1 — travel in (Showcase → For Agencies): small + faint */
-    if (sv < t1) {
-      const p = clamp((sv - t0) / (t1 - t0));
-      scale.set(lerp(0.16, 0.26, p));
-      opacity.set(lerp(0, 0.32, clamp(p * 1.6)));
-      driftY.set(lerp(-vh * 0.06, -vh * 0.03, p));
+    /* Phase A — small travelling circle BEFORE the parallax (Case Study).
+       Fades in, drifts down, fades out before the parallax dominates. */
+    if (sv < preHide) {
+      const p = clamp((sv - appearStart) / (preHide - appearStart));
+      const fade = Math.min(clamp(p / 0.3), clamp((1 - p) / 0.3));
+      scale.set(SMALL_SCALE);
+      opacity.set(fade * 0.7);
+      driftY.set(lerp(-vh * 0.12, vh * 0.12, p));
       centerOp.set(0);
-      sweep.set(lerp(0, PRE_SWEEP_DEG, p));
+      sweep.set(0);
       orbitPhaseRaw.set(0);
 
-    /* Phase 2 — grow after For Agencies, into the Why NEXUS stage */
-    } else if (sv < t3) {
-      const p = clamp((sv - t1) / (t3 - t1));
-      scale.set(lerp(0.26, 1, p));
-      opacity.set(lerp(0.32, 0.95, p));
-      driftY.set(lerp(-vh * 0.03, 0, p));
-      centerOp.set(clamp((p - 0.55) / 0.45)); // "Why NEXUS." fades in late
-      sweep.set(PRE_SWEEP_DEG);
+    /* Phase B — small travelling circle THROUGH For Agencies. */
+    } else if (sv < growStart) {
+      const p = clamp((sv - reappear) / (growStart - reappear));
+      scale.set(SMALL_SCALE);
+      opacity.set(clamp(p / 0.25) * 0.75);
+      driftY.set(lerp(-vh * 0.1, 0, p));
+      centerOp.set(0);
+      sweep.set(0);
       orbitPhaseRaw.set(0);
 
-    /* Phase 3 — active: labels sweep L→R, ring rotates with them */
-    } else if (sv < tActiveEnd) {
-      const p = clamp((sv - t3) / (tActiveEnd - t3));
+    /* Phase C — transition small → BIG as you scroll past For Agencies. */
+    } else if (sv < growEnd) {
+      const p = smooth(clamp((sv - growStart) / (growEnd - growStart)));
+      scale.set(lerp(SMALL_SCALE, 1, p));
+      opacity.set(lerp(0.75, 0.95, p));
+      driftY.set(0);
+      centerOp.set(clamp((p - 0.5) / 0.5)); // "Why NEXUS." fades in late
+      sweep.set(0);
+      orbitPhaseRaw.set(0);
+
+    /* Phase D — active: labels sweep right→left, ring rotates with them. */
+    } else if (sv < activeEnd) {
+      const p = clamp((sv - growEnd) / (activeEnd - growEnd));
       scale.set(1);
       opacity.set(0.95);
       driftY.set(0);
       centerOp.set(1);
-      sweep.set(PRE_SWEEP_DEG + p * ORBIT_SWEEP_DEG);
+      sweep.set(-p * ORBIT_SWEEP_DEG); // negative = counter-clockwise = R→L
       orbitPhaseRaw.set(p);
 
-    /* Phase 4 — exit: shrink + fade into the next section */
+    /* Phase E — exit: shrink + fade into the next section. */
     } else {
-      const p = clamp((sv - tActiveEnd) / (tExitEnd - tActiveEnd));
+      const p = clamp((sv - activeEnd) / (exitEnd - activeEnd));
       scale.set(lerp(1, 0.86, p));
       opacity.set(lerp(0.95, 0, p));
       driftY.set(lerp(0, -vh * 0.08, p));
       centerOp.set(lerp(1, 0, clamp(p * 1.4)));
-      sweep.set(PRE_SWEEP_DEG + ORBIT_SWEEP_DEG);
+      sweep.set(-ORBIT_SWEEP_DEG);
       orbitPhaseRaw.set(1);
     }
   });
