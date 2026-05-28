@@ -138,26 +138,49 @@ export function Services() {
             ))}
           </div>
 
-          {/* Desktop: 2×2 grid */}
-          <div className="hidden md:grid grid-cols-2">
-            {/* Top-left */}
-            <div className="border-r border-b border-dashed border-white/[0.08] relative">
-              <Quadrant service={SERVICES[0]} position="tl" gridRotation={0} />
+          {/* Desktop: 2×2 grid — borders replaced by explicit line segments
+              so they terminate cleanly at the intersection circle edge */}
+          <div className="hidden md:block relative">
+            <div className="grid grid-cols-2">
+              <div><Quadrant service={SERVICES[0]} position="tl" gridRotation={0} /></div>
+              <div><Quadrant service={SERVICES[1]} position="tr" gridRotation={0} /></div>
+              <div><Quadrant service={SERVICES[2]} position="bl" gridRotation={0} /></div>
+              <div><Quadrant service={SERVICES[3]} position="br" gridRotation={0} /></div>
             </div>
 
-            {/* Top-right */}
-            <div className="border-b border-dashed border-white/[0.08] relative">
-              <Quadrant service={SERVICES[1]} position="tr" gridRotation={0} />
-            </div>
+            {/* Cross dividers — 4 dashed segments, each ending CIRCLE_R px from center */}
+            <div className="absolute inset-0 pointer-events-none">
+              {/* Vertical — top half */}
+              <div
+                className="absolute left-1/2 top-0 -translate-x-px"
+                style={{ height: `calc(50% - ${CIRCLE_R}px)`, borderLeft: '1px dashed rgba(255,255,255,0.08)' }}
+              />
+              {/* Vertical — bottom half */}
+              <div
+                className="absolute left-1/2 bottom-0 -translate-x-px"
+                style={{ height: `calc(50% - ${CIRCLE_R}px)`, borderLeft: '1px dashed rgba(255,255,255,0.08)' }}
+              />
+              {/* Horizontal — left half */}
+              <div
+                className="absolute top-1/2 left-0 -translate-y-px"
+                style={{ width: `calc(50% - ${CIRCLE_R}px)`, borderTop: '1px dashed rgba(255,255,255,0.08)' }}
+              />
+              {/* Horizontal — right half */}
+              <div
+                className="absolute top-1/2 right-0 -translate-y-px"
+                style={{ width: `calc(50% - ${CIRCLE_R}px)`, borderTop: '1px dashed rgba(255,255,255,0.08)' }}
+              />
 
-            {/* Bottom-left */}
-            <div className="border-r border-dashed border-white/[0.08] relative">
-              <Quadrant service={SERVICES[2]} position="bl" gridRotation={0} />
-            </div>
-
-            {/* Bottom-right */}
-            <div className="relative">
-              <Quadrant service={SERVICES[3]} position="br" gridRotation={0} />
+              {/* Permanent circle at the crosshair — fades in when section enters viewport */}
+              <motion.div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
+                initial={{ opacity: 0, scale: 0.5 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <HeroCircle size={CIRCLE_SIZE} />
+              </motion.div>
             </div>
           </div>
         </div>
