@@ -3,11 +3,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
-import { HeroCircle } from '@/components/ui/hero-circle';
-
-/* Radius of the small intersection circle — divider lines terminate here */
-const CIRCLE_SIZE = 64;
-const CIRCLE_R    = CIRCLE_SIZE / 2; // 32px
+/* Gap each dashed arm leaves for the traveling circle (matches its 64px final visual size) */
+const CIRCLE_R = 32;
 
 const SERVICES = [
   {
@@ -171,16 +168,12 @@ export function Services() {
                 style={{ width: `calc(50% - ${CIRCLE_R}px)`, borderTop: '1px dashed rgba(255,255,255,0.08)' }}
               />
 
-              {/* Permanent circle at the crosshair — fades in when section enters viewport */}
-              <motion.div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
-                initial={{ opacity: 0, scale: 0.5 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <HeroCircle size={CIRCLE_SIZE} />
-              </motion.div>
+              {/* Zero-size marker — TravelingCircle measures this to know the intersection doc position */}
+              <div
+                data-intersection="services"
+                className="absolute top-1/2 left-1/2 w-0 h-0"
+                aria-hidden="true"
+              />
             </div>
           </div>
         </div>
