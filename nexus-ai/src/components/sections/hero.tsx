@@ -153,7 +153,8 @@ export function Hero() {
   });
   const circleScale   = useTransform(scrollYProgress, [0, 1], reducedMotion ? [1, 1] : [1, 0.22]);
   const circleScaleS  = useSpring(circleScale, { stiffness: 80, damping: 25 });
-  const circleOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+  // Keep circle visible longer so it overlaps with the services circle entry
+  const circleOpacity = useTransform(scrollYProgress, [0.5, 0.96], [1, 0]);
 
   /* Cursor parallax */
   const mouseX  = useMotionValue(0);
