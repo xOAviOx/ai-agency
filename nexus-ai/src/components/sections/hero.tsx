@@ -172,8 +172,8 @@ export function Hero() {
   // Spin while descending
   const circleRot    = useTransform(scrollYProgress, [0, 1], reducedMotion ? [0, 0] : [0, 240]);
   const circleRotS   = useSpring(circleRot,    { stiffness: 55, damping: 22 });
-  // Fade out right at the end — stays visible through the journey
-  const circleOpacity = useTransform(scrollYProgress, [0.75, 0.97], [1, 0]);
+  // Fade out only in the last 5% — circle stays visible as it lands at the intersection
+  const circleOpacity = useTransform(scrollYProgress, [0.95, 1.0], [1, 0]);
 
   /* Cursor parallax */
   const mouseX  = useMotionValue(0);
