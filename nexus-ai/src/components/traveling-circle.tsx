@@ -81,23 +81,22 @@ export function TravelingCircle() {
       op.set(1);
 
     } else {
-      // Phase 2 — frozen: circle sits at the intersection regardless of
-      // further scrolling. The dashed cross lines scroll with the page
-      // while the circle holds its viewport position.
-      y.set(intersectionAtEnd);
+      // Phase 2 — pinned to the grid intersection in DOCUMENT space.
+      // The circle stays glued to the crosshair: as the user scrolls
+      // further, the circle scrolls up with the page (never drifts
+      // below the intersection).
+      const vpY = intersectionY - sv;     // intersection's current viewport Y
+      y.set(vpY - vh / 2);
       sc.set(FINAL_SCALE);
       ro.set(FINAL_ROT);
 
-      // Fade out gradually as the user scrolls the services section away
-      const svBeyond = sv - heroH;   // extra scroll past the hero
-      const fadeIn   = 160;          // px of services scroll before fade begins
-      const fadeOut  = 520;          // px of services scroll when fully faded
-      if (svBeyond < fadeIn) {
+      // Fade out only once the intersection has scrolled off the top
+      // of the viewport (circle naturally leaves with the grid).
+      if (vpY >= 0) {
         op.set(1);
-      } else if (svBeyond < fadeOut) {
-        op.set(1 - (svBeyond - fadeIn) / (fadeOut - fadeIn));
       } else {
-        op.set(0);
+        // 120px of negative viewport position → fully faded
+        op.set(Math.max(0, 1 + vpY / 120));
       }
     }
   });
