@@ -1,9 +1,8 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
-import { HeroCircle } from '@/components/ui/hero-circle';
 
 const SERVICES = [
   {
@@ -109,21 +108,9 @@ function Quadrant({ service, position, gridRotation }: QuadrantProps) {
 
 export function Services() {
   const gridRef = useRef<HTMLDivElement>(null);
-  const mouseX = useMotionValue(0.5);
-  const mouseY = useMotionValue(0.5);
-
-  // Central circle rotates subtly with mouse position
-  const circleRotate = useTransform(mouseX, [0, 1], [-15, 15]);
-
-  function handleMouseMove(e: React.MouseEvent) {
-    if (!gridRef.current) return;
-    const rect = gridRef.current.getBoundingClientRect();
-    mouseX.set((e.clientX - rect.left) / rect.width);
-    mouseY.set((e.clientY - rect.top) / rect.height);
-  }
 
   return (
-    <section className="relative z-10 py-24 overflow-hidden" style={{ background: 'var(--bg-elevated)' }}>
+    <section className="relative z-10 py-24 overflow-hidden" style={{ background: 'var(--bg)' }}>
       <div className="mx-auto max-w-[1280px] px-6 md:px-12">
         {/* Section label */}
         <motion.div
