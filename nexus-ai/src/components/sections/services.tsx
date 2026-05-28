@@ -143,14 +143,6 @@ export function Services() {
           className="relative"
           onMouseMove={handleMouseMove}
         >
-          {/* Background HeroCircle — transitions in from hero's final scale, rotates on scroll */}
-          <motion.div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0"
-            style={{ scale: bgScale, opacity: bgOpacity, rotate: bgRotate }}
-          >
-            <HeroCircle size={700} />
-          </motion.div>
-
           {/* Mobile: single column stack */}
           <div className="md:hidden flex flex-col gap-px bg-white/[0.06]">
             {SERVICES.map((s) => (
