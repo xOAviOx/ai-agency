@@ -124,6 +124,32 @@ html.lenis, html.lenis body {
   }
 }
 
+/* ── Brand strip ───────────────────────────────────────────── */
+.brand-item {
+  color: rgba(255, 255, 255, 0.38);
+  transition: color 0.35s ease, filter 0.35s ease;
+}
+
+.brand-icon {
+  color: rgba(255, 255, 255, 0.55);
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.12));
+  transition: color 0.35s ease, filter 0.35s ease;
+}
+
+.brand-name {
+  letter-spacing: 0.16em;
+}
+
+.brand-item:hover {
+  color: rgba(255, 255, 255, 0.85);
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+}
+
+.brand-item:hover .brand-icon {
+  color: rgba(255, 255, 255, 0.95);
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+}
+
 /* ── Button primary — glow + shimmer ──────────────────────── */
 .btn-primary {
   box-shadow: 0 0 28px rgba(124, 58, 237, 0.45);
