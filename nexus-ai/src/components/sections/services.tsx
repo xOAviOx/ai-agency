@@ -1,9 +1,8 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform, useScroll, useSpring } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
-import { ConcentricCircles } from '@/components/ui/concentric-circles';
 import { HeroCircle } from '@/components/ui/hero-circle';
 
 const SERVICES = [
