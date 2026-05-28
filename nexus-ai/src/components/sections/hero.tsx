@@ -146,15 +146,22 @@ export function Hero() {
   const heroRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
 
-  /* Scroll-linked scale + fade */
+  /* Scroll-linked transforms */
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
   });
-  const circleScale   = useTransform(scrollYProgress, [0, 1], reducedMotion ? [1, 1] : [1, 0.22]);
-  const circleScaleS  = useSpring(circleScale, { stiffness: 80, damping: 25 });
-  // Keep circle visible longer so it overlaps with the services circle entry
-  const circleOpacity = useTransform(scrollYProgress, [0.5, 0.96], [1, 0]);
+  // Shrinks to ~10% as it travels down
+  const circleScale  = useTransform(scrollYProgress, [0, 1], reducedMotion ? [1, 1] : [1, 0.10]);
+  const circleScaleS = useSpring(circleScale,  { stiffness: 70, damping: 22 });
+  // Travels DOWN — exits through the hero section's bottom edge
+  const circleDown   = useTransform(scrollYProgress, [0, 1], reducedMotion ? [0, 0] : [0, 620]);
+  const circleDownS  = useSpring(circleDown,   { stiffness: 55, damping: 20 });
+  // Spin while descending
+  const circleRot    = useTransform(scrollYProgress, [0, 1], reducedMotion ? [0, 0] : [0, 220]);
+  const circleRotS   = useSpring(circleRot,    { stiffness: 50, damping: 20 });
+  // Fade out as it nears the bottom
+  const circleOpacity = useTransform(scrollYProgress, [0.55, 0.88], [1, 0]);
 
   /* Cursor parallax */
   const mouseX  = useMotionValue(0);
