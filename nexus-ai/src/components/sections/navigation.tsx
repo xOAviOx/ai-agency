@@ -1,16 +1,138 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { motion, AnimatePresence, useMotionValue, useSpring, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const NAV_LINKS = ['Work', 'Services', 'About', 'Blog'];
 
+/* ── Animated nav link — underline expands from center ──────── */
+function NavLink({ label }: { label: string }) {
+  return (
+    <motion.a
+      href="#"
+      className="relative text-sm text-white/55 hover:text-white transition-colors duration-200 py-1"
+      whileHover="hover"
+      initial="rest"
+    >
+      {label}
+      {/* Underline: collapses to zero at center, expands to full width on hover */}
+      <motion.span
+        className="absolute bottom-0 left-0 right-0 h-px bg-white/70"
+        style={{ originX: '50%' }}
+        variants={{
+          rest: { scaleX: 0, opacity: 0 },
+          hover: { scaleX: 1, opacity: 1 },
+        }}
+        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+      />
+    </motion.a>
+  );
+}
+
+/* ── Ghost button — magnetic + border-glow ──────────────────── */
+function GhostBtn({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLButtonElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const sx = useSpring(x, { stiffness: 200, damping: 16 });
+  const sy = useSpring(y, { stiffness: 200, damping: 16 });
+  const reduced = useReducedMotion();
+
+  const move = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    if (reduced) return;
+    const r = ref.current?.getBoundingClientRect();
+    if (!r) return;
+    x.set((e.clientX - (r.left + r.width  / 2)) * 0.28);
+    y.set((e.clientY - (r.top  + r.height / 2)) * 0.28);
+  }, [x, y, reduced]);
+
+  const leave = useCallback(() => { x.set(0); y.set(0); }, [x, y]);
+
+  return (
+    <motion.button
+      ref={ref}
+      style={{ x: sx, y: sy }}
+      variants={{
+        rest: {
+          scale: 1,
+          boxShadow: '0 0 0 1px rgba(255,255,255,0.09), 0 0 0px rgba(255,255,255,0)',
+        },
+        hover: {
+          scale: 1.04,
+          boxShadow: '0 0 0 1px rgba(255,255,255,0.30), 0 0 16px rgba(255,255,255,0.06)',
+        },
+        tap: { scale: 0.97 },
+      }}
+      initial="rest"
+      whileHover="hover"
+      whileTap="tap"
+      transition={{ type: 'spring', stiffness: 300, damping: 22 }}
+      onMouseMove={move}
+      onMouseLeave={leave}
+      className="px-4 py-2 text-sm text-white/65 hover:text-white rounded-md transition-colors duration-200 bg-transparent"
+    >
+      {children}
+    </motion.button>
+  );
+}
+
+/* ── Primary nav button — magnetic + shimmer + arrow spring ─── */
+function PrimaryNavBtn({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLButtonElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const sx = useSpring(x, { stiffness: 220, damping: 16 });
+  const sy = useSpring(y, { stiffness: 220, damping: 16 });
+  const reduced = useReducedMotion();
+
+  const move = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    if (reduced) return;
+    const r = ref.current?.getBoundingClientRect();
+    if (!r) return;
+    x.set((e.clientX - (r.left + r.width  / 2)) * 0.28);
+    y.set((e.clientY - (r.top  + r.height / 2)) * 0.28);
+  }, [x, y, reduced]);
+
+  const leave = useCallback(() => { x.set(0); y.set(0); }, [x, y]);
+
+  return (
+    <motion.button
+      ref={ref}
+      style={{ x: sx, y: sy }}
+      variants={{
+        rest:  { scale: 1 },
+        hover: { scale: 1.05 },
+        tap:   { scale: 0.96 },
+      }}
+      initial="rest"
+      whileHover="hover"
+      whileTap="tap"
+      transition={{ type: 'spring', stiffness: 320, damping: 22 }}
+      onMouseMove={move}
+      onMouseLeave={leave}
+      className="btn-primary relative overflow-hidden flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-b from-violet-600 to-violet-700 rounded-md group"
+    >
+      <span className="btn-shimmer-line" aria-hidden />
+      <span className="relative z-10 flex items-center gap-2">
+        {children}
+        <motion.span
+          variants={{ rest: { x: 0 }, hover: { x: 4 } }}
+          transition={{ type: 'spring', stiffness: 380, damping: 20 }}
+        >
+          <ArrowRight className="w-3.5 h-3.5" />
+        </motion.span>
+      </span>
+    </motion.button>
+  );
+}
+
+/* ── Navigation ─────────────────────────────────────────────── */
 export function Navigation() {
-  const [scrolled, setScrolled] = useState(false);
-  const [visible, setVisible] = useState(true);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled,    setScrolled]    = useState(false);
+  const [visible,     setVisible]     = useState(true);
+  const [mobileOpen,  setMobileOpen]  = useState(false);
   const lastScrollY = useRef(0);
 
   useEffect(() => {
@@ -51,31 +173,20 @@ export function Navigation() {
             </span>
           </div>
 
-          {/* Desktop Nav */}
+          {/* Desktop nav links */}
           <nav className="hidden md:flex items-center gap-8">
             {NAV_LINKS.map((link) => (
-              <a
-                key={link}
-                href="#"
-                className="text-sm text-white/60 hover:text-white transition-colors duration-200"
-              >
-                {link}
-              </a>
+              <NavLink key={link} label={link} />
             ))}
           </nav>
 
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-3">
-            <button className="px-4 py-2 text-sm text-white/70 border border-white/10 rounded-md hover:bg-white/[0.04] hover:text-white transition-all duration-200">
-              For agencies
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-b from-violet-600 to-violet-700 rounded-md shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:shadow-[0_0_28px_rgba(124,58,237,0.5)] transition-all duration-200 group">
-              Book a call
-              <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" />
-            </button>
+            <GhostBtn>For agencies</GhostBtn>
+            <PrimaryNavBtn>Book a call</PrimaryNavBtn>
           </div>
 
-          {/* Mobile menu toggle */}
+          {/* Mobile toggle */}
           <button
             className="md:hidden text-white/70 hover:text-white"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -86,7 +197,7 @@ export function Navigation() {
         </div>
       </motion.header>
 
-      {/* Mobile Menu */}
+      {/* Mobile menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -100,14 +211,14 @@ export function Navigation() {
               <a
                 key={link}
                 href="#"
-                className="block text-white/70 hover:text-white text-lg"
+                className="block text-white/70 hover:text-white text-lg transition-colors duration-200"
                 onClick={() => setMobileOpen(false)}
               >
                 {link}
               </a>
             ))}
             <div className="pt-4 flex flex-col gap-3">
-              <button className="w-full px-4 py-3 text-sm text-white/70 border border-white/10 rounded-md">
+              <button className="w-full px-4 py-3 text-sm text-white/70 border border-white/10 rounded-md hover:bg-white/5 transition-colors duration-200">
                 For agencies
               </button>
               <button className="w-full px-4 py-3 text-sm font-medium text-white bg-gradient-to-b from-violet-600 to-violet-700 rounded-md">
