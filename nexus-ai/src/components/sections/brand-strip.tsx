@@ -24,18 +24,18 @@ const BRANDS = [
 export function BrandStrip() {
   return (
     <div className="w-full overflow-hidden py-10 marquee-track">
-      <div className="flex items-center animate-marquee" style={{ width: 'max-content' }}>
+      <div className="flex items-center gap-6 animate-marquee" style={{ width: 'max-content' }}>
         {[...BRANDS, ...BRANDS].map(({ name, Mark }, i) => (
           <div
             key={i}
-            className="mx-14 flex items-center gap-3 whitespace-nowrap select-none brand-item"
+            className="brand-chip flex items-center gap-2.5 whitespace-nowrap select-none px-5 py-2.5 rounded-full"
           >
             {/* Icon with subtle glow */}
             <span className="brand-icon flex items-center">
               <Mark />
             </span>
             {/* Name */}
-            <span className="brand-name font-semibold tracking-widest uppercase" style={{ fontSize: '0.82rem' }}>
+            <span className="brand-name font-semibold tracking-widest uppercase" style={{ fontSize: '0.78rem' }}>
               {name}
             </span>
           </div>
