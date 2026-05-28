@@ -392,6 +392,9 @@ export function OrbitJourney() {
   const spin = useTransform([drift, sweepS] as MotionValue[], ([d, s]: number[]) => d + s);
   const counter = useTransform(spin, (s) => -s * 0.5);
 
+  // All hooks above run unconditionally; only the output is gated.
+  if (!mounted) return null;
+
   return (
     <motion.div
       className="pointer-events-none fixed inset-0 z-[5] hidden items-center justify-center md:flex"
