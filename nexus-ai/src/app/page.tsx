@@ -15,8 +15,7 @@ export default function Home() {
       <Navigation />
       <main>
         <Hero />
-        {/* Brand strip lives outside any section — z-index floats it above section boundaries */}
-        <div className="relative z-20">
+        <div className="relative z-10">
           <BrandStrip />
         </div>
         <Services />
