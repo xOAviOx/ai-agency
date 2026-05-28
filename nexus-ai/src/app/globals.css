@@ -124,30 +124,37 @@ html.lenis, html.lenis body {
   }
 }
 
-/* ── Brand strip ───────────────────────────────────────────── */
-.brand-item {
-  color: rgba(255, 255, 255, 0.38);
-  transition: color 0.35s ease, filter 0.35s ease;
+/* ── Brand strip — independent translucent chips ───────────── */
+.brand-chip {
+  color: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: color 0.3s ease, background 0.3s ease, border-color 0.3s ease,
+              box-shadow 0.3s ease;
 }
 
 .brand-icon {
-  color: rgba(255, 255, 255, 0.55);
-  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.12));
-  transition: color 0.35s ease, filter 0.35s ease;
+  color: rgba(255, 255, 255, 0.7);
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.1));
+  transition: color 0.3s ease, filter 0.3s ease;
 }
 
 .brand-name {
   letter-spacing: 0.16em;
 }
 
-.brand-item:hover {
-  color: rgba(255, 255, 255, 0.85);
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+.brand-chip:hover {
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(124, 58, 237, 0.25);
+  box-shadow: 0 0 18px rgba(124, 58, 237, 0.12);
 }
 
-.brand-item:hover .brand-icon {
-  color: rgba(255, 255, 255, 0.95);
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+.brand-chip:hover .brand-icon {
+  color: rgba(255, 255, 255, 1);
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.25));
 }
 
 /* ── Button primary — glow + shimmer ──────────────────────── */
