@@ -195,27 +195,29 @@ export function Hero() {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Floating cursor decorations */}
-      <FloatingCursor name="Alex"  color="#7C3AED" x="8%"  y="30%" delay={1.2} />
-      <FloatingCursor name="Sara"  color="#2563EB" x="85%" y="25%" delay={1.8} />
-      <FloatingCursor name="Devon" color="#059669" x="78%" y="65%" delay={2.4} />
-      <FloatingCursor name="Mia"   color="#D97706" x="12%" y="70%" delay={3}   />
+      {/* Floating cursor decorations — contained so they don't bleed outside */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <FloatingCursor name="Alex"  color="#7C3AED" x="8%"  y="30%" delay={1.2} />
+        <FloatingCursor name="Sara"  color="#2563EB" x="85%" y="25%" delay={1.8} />
+        <FloatingCursor name="Devon" color="#059669" x="78%" y="65%" delay={2.4} />
+        <FloatingCursor name="Mia"   color="#D97706" x="12%" y="70%" delay={3}   />
+      </div>
 
       {/* Centered content */}
       <div className="flex-1 flex flex-col items-center justify-center text-center px-6 relative z-10 pt-24 pb-16">
 
-        {/* Circle: scroll scale → cursor parallax → slow rotation */}
+        {/* Circle: travels DOWN + shrinks + spins on scroll; cursor parallax on top */}
         <motion.div
           className="absolute inset-0 flex items-center justify-center pointer-events-none"
-          style={{ scale: circleScaleS, opacity: circleOpacity }}
+          style={{
+            scale:   circleScaleS,
+            opacity: circleOpacity,
+            y:       circleDownS,
+            rotate:  circleRotS,
+          }}
         >
           <motion.div style={{ x: circleX, y: circleY }}>
-            <motion.div
-              animate={reducedMotion ? {} : { rotate: 360 }}
-              transition={{ duration: 80, repeat: Infinity, ease: 'linear' }}
-            >
-              <HeroCircle size={CIRCLE_BASE} />
-            </motion.div>
+            <HeroCircle size={CIRCLE_BASE} />
           </motion.div>
         </motion.div>
 
