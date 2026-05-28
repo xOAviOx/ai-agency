@@ -175,7 +175,7 @@ export function Services() {
           </div>
 
           {/* Desktop: 2×2 grid */}
-          <div className="hidden md:grid grid-cols-2">
+          <div className="hidden md:grid grid-cols-2 relative z-10">
             {/* Top-left */}
             <div className="border-r border-b border-dashed border-white/[0.08] relative">
               <Quadrant service={SERVICES[0]} position="tl" gridRotation={0} />
