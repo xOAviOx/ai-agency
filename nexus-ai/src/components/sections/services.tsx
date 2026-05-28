@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 
@@ -107,8 +107,6 @@ function Quadrant({ service, position, gridRotation }: QuadrantProps) {
 }
 
 export function Services() {
-  const gridRef = useRef<HTMLDivElement>(null);
-
   return (
     <section className="relative z-10 py-24 overflow-hidden" style={{ background: 'var(--bg)' }}>
       <div className="mx-auto max-w-[1280px] px-6 md:px-12">
@@ -125,11 +123,7 @@ export function Services() {
         </motion.div>
 
         {/* 2×2 grid with cross dividers */}
-        <div
-          ref={gridRef}
-          className="relative"
-          onMouseMove={handleMouseMove}
-        >
+        <div className="relative">
           {/* Mobile: single column stack */}
           <div className="md:hidden flex flex-col gap-px bg-white/[0.06]">
             {SERVICES.map((s) => (
@@ -144,46 +138,21 @@ export function Services() {
             {/* Top-left */}
             <div className="border-r border-b border-dashed border-white/[0.08] relative">
               <Quadrant service={SERVICES[0]} position="tl" gridRotation={0} />
-              {/* dimension label */}
-              <span className="absolute bottom-2 right-4 mono-caption text-white/15">1199 × 300</span>
             </div>
 
             {/* Top-right */}
             <div className="border-b border-dashed border-white/[0.08] relative">
               <Quadrant service={SERVICES[1]} position="tr" gridRotation={0} />
-              <span className="absolute bottom-2 left-4 mono-caption text-white/15">600 × 300</span>
             </div>
 
             {/* Bottom-left */}
             <div className="border-r border-dashed border-white/[0.08] relative">
               <Quadrant service={SERVICES[2]} position="bl" gridRotation={0} />
-              <span className="absolute top-2 right-4 mono-caption text-white/15">1199 × 300</span>
             </div>
 
             {/* Bottom-right */}
             <div className="relative">
               <Quadrant service={SERVICES[3]} position="br" gridRotation={0} />
-              <span className="absolute top-2 left-4 mono-caption text-white/15">600 × 300</span>
-            </div>
-
-            {/* Center intersection — HeroCircle matching the hero's design */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-30">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.4 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                style={{ rotate: circleRotate }}
-              >
-                <HeroCircle size={110} />
-              </motion.div>
-              {/* Dimension annotations on the dividers */}
-              <span className="absolute top-1/2 left-full ml-4 -translate-y-1/2 mono-caption text-blue-400/60 whitespace-nowrap bg-blue-500/10 px-2 py-0.5 rounded">
-                364 px
-              </span>
-              <span className="absolute left-1/2 top-full mt-3 -translate-x-1/2 mono-caption text-blue-400/60 whitespace-nowrap bg-blue-500/10 px-2 py-0.5 rounded">
-                300 px
-              </span>
             </div>
           </div>
         </div>
