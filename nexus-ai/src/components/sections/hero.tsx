@@ -143,11 +143,11 @@ export function Hero() {
   return (
     <section
       data-section="hero"
-      className="relative z-30 min-h-screen flex flex-col"
+      className="relative min-h-screen flex flex-col"
       style={{ background: 'var(--bg)' }}
     >
-      {/* Floating cursor decorations */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {/* Floating cursor decorations — z-[5]: above circle (z-[2]) but below text (z-[10]) */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-[5]">
         <FloatingCursor name="Alex"  color="#7C3AED" x="8%"  y="30%" delay={1.2} />
         <FloatingCursor name="Sara"  color="#2563EB" x="85%" y="25%" delay={1.8} />
         <FloatingCursor name="Devon" color="#059669" x="78%" y="65%" delay={2.4} />
