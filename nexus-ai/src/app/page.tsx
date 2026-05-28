@@ -17,7 +17,7 @@ export default function Home() {
       <Navigation />
       <main>
         <Hero />
-        <div className="relative z-10" style={{ background: 'var(--bg)' }}>
+        <div className="relative z-[20]" style={{ background: 'var(--bg)' }}>
           <BrandStrip />
         </div>
         <Services />

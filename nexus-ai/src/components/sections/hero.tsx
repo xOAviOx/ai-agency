@@ -155,7 +155,7 @@ export function Hero() {
       </div>
 
       {/* Centered content */}
-      <div className="flex-1 flex flex-col items-center justify-center text-center px-6 relative z-10 pt-24 pb-16">
+      <div className="flex-1 flex flex-col items-center justify-center text-center px-6 relative z-[20] pt-24 pb-16">
 
         {/* Eyebrow */}
         <motion.div
