@@ -380,7 +380,7 @@ export function OrbitJourney() {
   /* ── Continuous "alive" drift + scroll sweep → shared spin ── */
   const time = useTime();
   const drift = useTransform(time, (t) =>
-    reducedMotion ? 0 : (t / DRIFT_REV_MS) * 360
+    reducedMotion ? 0 : -(t / DRIFT_REV_MS) * 360 // negative = same R→L direction
   );
   const spin = useTransform([drift, sweepS] as MotionValue[], ([d, s]: number[]) => d + s);
   const counter = useTransform(spin, (s) => -s * 0.5);
