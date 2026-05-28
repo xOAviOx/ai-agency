@@ -109,12 +109,25 @@ function Quadrant({ service, position, gridRotation }: QuadrantProps) {
 }
 
 export function Services() {
+  const sectionRef = useRef<HTMLElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
 
   // Central circle rotates subtly with mouse position
   const circleRotate = useTransform(mouseX, [0, 1], [-15, 15]);
+
+  // Scroll-linked background circle: enters small (matching hero's final scale), grows + rotates
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+  const bgScaleRaw   = useTransform(scrollYProgress, [0, 0.28, 1],         [0.22, 1,    1   ]);
+  const bgOpacityRaw = useTransform(scrollYProgress, [0, 0.1, 0.6, 1],     [0,    0.5,  0.5, 0]);
+  const bgRotateRaw  = useTransform(scrollYProgress, [0, 1],                [0,    130  ]);
+  const bgScale      = useSpring(bgScaleRaw,   { stiffness: 55, damping: 22 });
+  const bgOpacity    = useSpring(bgOpacityRaw, { stiffness: 70, damping: 25 });
+  const bgRotate     = useSpring(bgRotateRaw,  { stiffness: 55, damping: 25 });
 
   function handleMouseMove(e: React.MouseEvent) {
     if (!gridRef.current) return;
@@ -124,7 +137,7 @@ export function Services() {
   }
 
   return (
-    <section className="relative py-24 overflow-hidden" style={{ background: 'var(--bg-elevated)' }}>
+    <section ref={sectionRef} className="relative py-24 overflow-hidden" style={{ background: 'var(--bg-elevated)' }}>
       <div className="mx-auto max-w-[1280px] px-6 md:px-12">
         {/* Section label */}
         <motion.div
