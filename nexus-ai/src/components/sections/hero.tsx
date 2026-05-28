@@ -1,16 +1,13 @@
 'use client';
 
-import { useRef, useCallback, useState, useEffect } from 'react';
+import { useRef, useCallback } from 'react';
 import {
   motion,
-  useScroll,
-  useTransform,
   useSpring,
   useMotionValue,
   useReducedMotion,
 } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
-import { HeroCircle } from '@/components/ui/hero-circle';
 
 /* ── Animated headline word split ───────────────────────────── */
 function AnimatedHeadline({ text }: { text: string }) {
