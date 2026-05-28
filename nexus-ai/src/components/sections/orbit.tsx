@@ -212,6 +212,7 @@ function OrbitItem({
 /* small helpers */
 const clamp = (v: number, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, v));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const smooth = (t: number) => t * t * (3 - 2 * t); // smoothstep easing
 
 /* ──────────────────────────────────────────────────────────────
    OrbitJourney — the fixed, travelling circle.
@@ -265,7 +266,7 @@ export function OrbitJourney() {
   /* ── Scroll-driven motion values (imperatively set, then spring-smoothed) ── */
   const { scrollY } = useScroll();
 
-  const scale = useMotionValue(0.16);
+  const scale = useMotionValue(SMALL_SCALE);
   const opacity = useMotionValue(0);
   const driftY = useMotionValue(0);
   const centerOp = useMotionValue(0);
