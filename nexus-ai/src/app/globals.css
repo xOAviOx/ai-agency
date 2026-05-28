@@ -124,6 +124,42 @@ html.lenis, html.lenis body {
   }
 }
 
+/* ── Button primary — glow + shimmer ──────────────────────── */
+.btn-primary {
+  box-shadow: 0 0 28px rgba(124, 58, 237, 0.45);
+  transition: box-shadow 0.35s ease;
+}
+
+.btn-primary:hover {
+  box-shadow:
+    0 0 48px rgba(124, 58, 237, 0.75),
+    0 0 90px rgba(124, 58, 237, 0.28);
+}
+
+/* Shimmer line that sweeps left→right on hover */
+@keyframes btn-shimmer {
+  0%   { transform: translateX(-130%) skewX(-18deg); }
+  100% { transform: translateX(230%)  skewX(-18deg); }
+}
+
+.btn-shimmer-line {
+  position: absolute;
+  inset: 0;
+  width: 55%;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.16) 50%,
+    transparent 70%
+  );
+  pointer-events: none;
+  transform: translateX(-130%) skewX(-18deg);
+}
+
+.btn-primary:hover .btn-shimmer-line {
+  animation: btn-shimmer 0.65s ease-in-out forwards;
+}
+
 /* ── Scrollbar ─────────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 4px;

@@ -1,5 +1,6 @@
 import { Navigation } from '@/components/sections/navigation';
 import { Hero } from '@/components/sections/hero';
+import { BrandStrip } from '@/components/sections/brand-strip';
 import { Services } from '@/components/sections/services';
 import { CaseStudy } from '@/components/sections/case-study';
 import { Showcase } from '@/components/sections/showcase';
@@ -14,6 +15,10 @@ export default function Home() {
       <Navigation />
       <main>
         <Hero />
+        {/* Brand strip lives outside any section — z-index floats it above section boundaries */}
+        <div className="relative z-20">
+          <BrandStrip />
+        </div>
         <Services />
         <CaseStudy />
         <Showcase />

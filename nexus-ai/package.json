@@ -6,7 +6,9 @@
     "dev": "node --max-old-space-size=4096 node_modules/.bin/next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+        "lint": "eslint",
+    "watch": "powershell -ExecutionPolicy Bypass -File ../watch-git.ps1"
+  
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
