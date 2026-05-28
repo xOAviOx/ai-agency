@@ -3,6 +3,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
+import { HeroCircle } from '@/components/ui/hero-circle';
+
+/* Radius of the small intersection circle — divider lines terminate here */
+const CIRCLE_SIZE = 64;
+const CIRCLE_R    = CIRCLE_SIZE / 2; // 32px
 
 const SERVICES = [
   {
