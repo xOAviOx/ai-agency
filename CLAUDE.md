@@ -27,22 +27,23 @@ src/
   app/
     layout.tsx          — Root layout: Lenis provider, font vars, metadata
     globals.css         — CSS tokens, Tailwind v4 @theme, typography utils, marquee animation
-    page.tsx            — Composes all sections in order
+    page.tsx            — Composes sections; renders <TravelingCircle/> + <OrbitJourney/> at root (fixed, above sections)
   providers/
     lenis-provider.tsx  — Lenis instance + GSAP ticker bridge
   lib/
     utils.ts            — cn(), degToRad(), polarToCartesian()
   components/
+    traveling-circle.tsx— Fixed hero→services circle (HeroCircle), scrollY-driven travel/shrink (z-15)
     ui/
       concentric-circles.tsx  — Reusable SVG rings with notched segments + tick marks
     sections/
-      navigation.tsx    — Sticky nav, scroll-direction hide/show, mobile drawer
+      navigation.tsx    — Sticky nav, scroll-direction hide/show, mobile drawer (z-50)
       hero.tsx          — Scroll-linked circle scale, word-split headline, floating cursors, marquee
       services.tsx      — 2×2 quadrant grid, hover-reveal cards, mouse-driven circle rotation
       case-study.tsx    — Left headline + right testimonial + browser mockup w/ fake dashboard
-      showcase.tsx      — GSAP horizontal parallax (desktop), vertical stack (mobile)
-      agencies.tsx      — Image/copy split, blueprint border frame, circle behind copy
-      orbit.tsx         — 6 phrases orbiting circle via scroll progress, mobile stacked list
+      showcase.tsx      — GSAP horizontal parallax (desktop), vertical stack (mobile); 8 PROJECTS; root has data-section="showcase"
+      agencies.tsx      — Image/copy split, blueprint border frame, circle behind copy; root has data-section="agencies"
+      orbit.tsx         — "Why NEXUS" traveling circle. Exports <OrbitJourney/> (fixed circle) + <Orbit/> (300vh stage)
       cta.tsx           — Final CTA with giant circle + trust marquee
       footer.tsx        — Giant wordmark with hover letter-spacing/color animation
 ```
