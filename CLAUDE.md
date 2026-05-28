@@ -66,6 +66,29 @@ src/
 - `.body-l` — 1.125rem, weight 400, line-height 1.6
 - `.mono-caption` — 0.75rem, uppercase, tracking 0.15em, Geist Mono
 
+## "Why NEXUS" Traveling Orbit Circle (orbit.tsx)
+A single fixed circle (`<OrbitJourney/>`, rendered at page root, `z-[5]`, `hidden md:flex`) that
+travels across sections, driven by global `scrollY` + measured section offsets. `<Orbit/>` itself is
+just a 300vh transparent "stage" (`data-orbit-stage`) that supplies scroll distance + the centered
+Why NEXUS moment; on mobile the travel scene is skipped for a stacked list.
+
+Scroll journey (phases in the `useMotionValueEvent(scrollY,...)` handler):
+- **A — small travel** (Case Study, before parallax): small circle (`SMALL_SCALE=0.14`) fades in/out, drifts.
+- **HIDDEN over Showcase parallax** — opacity forced 0 across `preHide → reappear` (never overlays parallax).
+- **B — small travel** through For Agencies.
+- **C — grow** small→full as you scroll PAST For Agencies (smoothstep); "Why NEXUS." fades in.
+- **D — active**: labels sweep **right→left** (`sweep = -p*ORBIT_SWEEP_DEG`); ring uses same `spin` so it rotates the SAME direction.
+- **E — exit**: shrink + fade into CTA.
+
+Implementation notes / gotchas:
+- Markers: needs `data-section="showcase"`, `data-section="agencies"` on section roots + `data-orbit-stage` on the stage. Re-measures on resize + a 500ms timeout (lets GSAP pin spacers settle).
+- Rings + center text + labels share ONE scale wrapper (grow as one object). Label radius = `size*0.46`.
+- `vectorEffect="non-scaling-stroke"` on all rings → thin strokes stay crisp at 0.14 scale.
+- Direction: sweep + continuous `drift` are BOTH negative (counter-clockwise = R→L). Flip both signs to reverse.
+- Scroll values are spring-smoothed (matches TravelingCircle pattern); continuous "alive" drift via `useTime` (rAF), independent of scroll.
+- Tunables at top of file: `DRIFT_REV_MS`, `ORBIT_SWEEP_DEG`, `SMALL_SCALE`.
+- Reusable parts in orbit.tsx: `RingSystem`, `Ring`, `OrbitItem`.
+
 ## Build Status
 All 10 build steps complete. Polish pass done (reduced-motion CSS, TypeScript type fix).
 
