@@ -286,6 +286,7 @@ export function Showcase() {
   return (
     <section
       ref={sectionRef}
+      data-section="showcase"
       className="relative h-screen"
       style={{ background: 'var(--bg)' }}
     >
