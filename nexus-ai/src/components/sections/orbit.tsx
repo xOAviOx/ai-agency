@@ -91,6 +91,7 @@ function Ring({
       strokeOpacity={opacity}
       strokeDasharray={dash}
       strokeLinecap="round"
+      vectorEffect="non-scaling-stroke"
       transform={rotate ? `rotate(${rotate} ${C} ${C})` : undefined}
     />
   );
