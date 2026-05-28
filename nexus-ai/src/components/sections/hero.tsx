@@ -202,7 +202,7 @@ export function Hero() {
   return (
     <section
       ref={heroRef}
-      className="relative min-h-screen flex flex-col overflow-hidden"
+      className="relative z-20 min-h-screen flex flex-col"
       style={{ background: 'var(--bg)' }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
