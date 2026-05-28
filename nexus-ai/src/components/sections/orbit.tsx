@@ -227,6 +227,13 @@ export function OrbitJourney() {
   const [size, setSize] = useState(640);
   const radius = size * 0.46;
 
+  // Render client-side only. This is a decorative, rAF/spring-animated fixed
+  // overlay, so its initial motion-value styles can differ between the SSR
+  // snapshot and the client's first paint → hydration mismatch. Mounting it
+  // after hydration sidesteps that entirely (no content/SEO cost; aria-hidden).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   // Measurements kept in refs so the scroll callback never reads stale state.
   const m = useRef({
     showcaseTop: 0,
