@@ -1,5 +1,6 @@
 import { Navigation } from '@/components/sections/navigation';
 import { Hero } from '@/components/sections/hero';
+import { TravelingCircle } from '@/components/traveling-circle';
 import { BrandStrip } from '@/components/sections/brand-strip';
 import { Services } from '@/components/sections/services';
 import { CaseStudy } from '@/components/sections/case-study';
@@ -12,6 +13,7 @@ import { Footer } from '@/components/sections/footer';
 export default function Home() {
   return (
     <>
+      <TravelingCircle />
       <Navigation />
       <main>
         <Hero />
