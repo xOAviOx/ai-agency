@@ -47,8 +47,7 @@ export function BrandStrip() {
               ease: 'easeInOut',
               delay,
             }}
-            whileHover={{ scale: 1.12, opacity: 0.65 }}
-            transition2={{ duration: 0.2 }}
+            whileHover={{ scale: 1.12, opacity: 0.65, transition: { duration: 0.2 } }}
             className="flex items-center gap-2 text-white/22 cursor-default select-none"
             style={{ color: 'rgba(255,255,255,0.22)' }}
           >
