@@ -53,9 +53,9 @@ const PHRASES: {
 ];
 
 /* Tunables — retune the whole journey here. */
-const DRIFT_REV_MS = 120_000; // ms for one slow "alive" revolution (no scroll)
-const PRE_SWEEP_DEG = 40;     // gentle pre-spin while the circle travels in
-const ORBIT_SWEEP_DEG = 180;  // left→right sweep across the Why NEXUS region
+const DRIFT_REV_MS = 140_000; // ms for one slow "alive" revolution (no scroll)
+const ORBIT_SWEEP_DEG = 180;  // right→left sweep across the Why NEXUS region
+const SMALL_SCALE = 0.14;     // size of the travelling circle before it grows
 
 /* ──────────────────────────────────────────────────────────────
    RingSystem — the oversized circle graphic.
