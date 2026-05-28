@@ -140,71 +140,13 @@ function MagneticButton() {
 
 /* ── Hero ───────────────────────────────────────────────────── */
 export function Hero() {
-  const heroRef = useRef<HTMLDivElement>(null);
-  const reducedMotion = useReducedMotion();
-
-  /* Measure viewport height once on mount so the circle travels
-     exactly one viewport-height — keeping it pinned at the
-     apparent viewport centre while the hero section scrolls away.
-     This makes it visually land at the services section intersection. */
-  const [vh, setVh] = useState(900);
-  useEffect(() => {
-    setVh(window.innerHeight);
-  }, []);
-
-  /* Scroll-linked transforms */
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ['start start', 'end start'],
-  });
-  // Shrinks to ~12% at bottom — close to the 110px intersection circle
-  const circleScale  = useTransform(scrollYProgress, [0, 1], reducedMotion ? [1, 1] : [1, 0.12]);
-  const circleScaleS = useSpring(circleScale,  { stiffness: 70, damping: 22 });
-  // Travels exactly 1 viewport height DOWN — this cancels out the
-  // section scrolling so the circle stays at the viewport center
-  // while the hero content moves away, then "arrives" at the
-  // services intersection which is also near the viewport center.
-  const circleDown   = useTransform(scrollYProgress, [0, 1], reducedMotion ? [0, 0] : [0, vh]);
-  const circleDownS  = useSpring(circleDown,   { stiffness: 65, damping: 22 });
-  // Spin while descending
-  const circleRot    = useTransform(scrollYProgress, [0, 1], reducedMotion ? [0, 0] : [0, 240]);
-  const circleRotS   = useSpring(circleRot,    { stiffness: 55, damping: 22 });
-  // Fade out only in the last 5% — circle stays visible as it lands at the intersection
-  const circleOpacity = useTransform(scrollYProgress, [0.95, 1.0], [1, 0]);
-
-  /* Cursor parallax */
-  const mouseX  = useMotionValue(0);
-  const mouseY  = useMotionValue(0);
-  const circleX = useSpring(mouseX, { stiffness: 40, damping: 20, mass: 0.8 });
-  const circleY = useSpring(mouseY, { stiffness: 40, damping: 20, mass: 0.8 });
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (reducedMotion) return;
-      const rect = heroRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      mouseX.set(((e.clientX - rect.left) / rect.width  - 0.5) * 60);
-      mouseY.set(((e.clientY - rect.top)  / rect.height - 0.5) * 60);
-    },
-    [mouseX, mouseY, reducedMotion],
-  );
-
-  const handleMouseLeave = useCallback(() => {
-    mouseX.set(0);
-    mouseY.set(0);
-  }, [mouseX, mouseY]);
-
-  const CIRCLE_BASE = 900;
-
   return (
     <section
-      ref={heroRef}
+      data-section="hero"
       className="relative z-30 min-h-screen flex flex-col"
       style={{ background: 'var(--bg)' }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
     >
-      {/* Floating cursor decorations — contained so they don't bleed outside */}
+      {/* Floating cursor decorations */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <FloatingCursor name="Alex"  color="#7C3AED" x="8%"  y="30%" delay={1.2} />
         <FloatingCursor name="Sara"  color="#2563EB" x="85%" y="25%" delay={1.8} />
@@ -214,21 +156,6 @@ export function Hero() {
 
       {/* Centered content */}
       <div className="flex-1 flex flex-col items-center justify-center text-center px-6 relative z-10 pt-24 pb-16">
-
-        {/* Circle: travels DOWN + shrinks + spins on scroll; cursor parallax on top */}
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center pointer-events-none"
-          style={{
-            scale:   circleScaleS,
-            opacity: circleOpacity,
-            y:       circleDownS,
-            rotate:  circleRotS,
-          }}
-        >
-          <motion.div style={{ x: circleX, y: circleY }}>
-            <HeroCircle size={CIRCLE_BASE} />
-          </motion.div>
-        </motion.div>
 
         {/* Eyebrow */}
         <motion.div
