@@ -9,7 +9,7 @@ export function Agencies() {
   return (
     <section
       className="relative py-32 overflow-hidden"
-      style={{ background: 'var(--bg-elevated)' }}
+      style={{ background: 'var(--bg)' }}
     >
       <div className="mx-auto max-w-[1280px] px-6 md:px-12">
         <div className="grid md:grid-cols-[3fr_2fr] gap-12 lg:gap-20 items-center">

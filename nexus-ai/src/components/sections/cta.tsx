@@ -23,7 +23,7 @@ function TrustMarquee() {
 export function CTA() {
   const reducedMotion = useReducedMotion();
   return (
-    <section className="relative py-40 overflow-hidden" style={{ background: 'var(--bg-elevated)' }}>
+    <section className="relative py-40 overflow-hidden" style={{ background: 'var(--bg)' }}>
       {/* Circle motif */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
         <motion.div
