@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, type CSSProperties } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { gsap } from 'gsap';
@@ -57,7 +57,7 @@ const PROJECTS = [
 ];
 
 /* ── Fake screen content for each mockup ───────────────────── */
-function MockupScreen({ type, gradientFrom, gradientTo }: {
+function MockupScreen({ gradientFrom, gradientTo }: {
   type: string;
   gradientFrom: string;
   gradientTo: string;
@@ -68,13 +68,11 @@ function MockupScreen({ type, gradientFrom, gradientTo }: {
       className="w-full h-full rounded flex flex-col gap-2 p-3"
       style={{ background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})` }}
     >
-      {/* Header row */}
       <div className="flex items-center gap-2 mb-1">
         <div className="w-2 h-2 rounded-full bg-violet-500" />
         <div className="h-1.5 w-20 rounded bg-white/10" />
         <div className="ml-auto h-1.5 w-10 rounded bg-white/5" />
       </div>
-      {/* Chart area */}
       <div className="flex-1 flex items-end gap-1">
         {bars.map((h, i) => (
           <div
@@ -87,7 +85,6 @@ function MockupScreen({ type, gradientFrom, gradientTo }: {
           />
         ))}
       </div>
-      {/* Footer row */}
       <div className="flex gap-1">
         <div className="h-1 flex-1 rounded bg-white/[0.06]" />
         <div className="h-1 flex-1 rounded bg-white/[0.04]" />
@@ -115,14 +112,12 @@ function ProjectCard({
       initial={reducedMotion ? {} : { rotate: project.rotation }}
       whileHover={reducedMotion ? {} : { rotate: 0, y: -8, transition: { duration: 0.3 } }}
     >
-      {/* Mockup frame */}
       <div
         className="relative rounded-xl overflow-hidden border border-white/[0.08]"
         style={{ rotate: `${project.rotation}deg` }}
       >
         {project.type === 'browser' && (
           <div>
-            {/* Browser chrome */}
             <div className="flex items-center gap-2 px-3 py-2 border-b border-white/[0.06] bg-white/[0.03]">
               <div className="flex gap-1">
                 <div className="w-2 h-2 rounded-full bg-red-500/50" />
@@ -134,45 +129,29 @@ function ProjectCard({
               </div>
             </div>
             <div className="h-44">
-              <MockupScreen
-                type="browser"
-                gradientFrom={project.gradientFrom}
-                gradientTo={project.gradientTo}
-              />
+              <MockupScreen type="browser" gradientFrom={project.gradientFrom} gradientTo={project.gradientTo} />
             </div>
           </div>
         )}
         {project.type === 'phone' && (
           <div className="flex justify-center bg-[#080808] py-4">
             <div className="w-36 h-52 rounded-2xl border border-white/[0.12] overflow-hidden">
-              <MockupScreen
-                type="phone"
-                gradientFrom={project.gradientFrom}
-                gradientTo={project.gradientTo}
-              />
+              <MockupScreen type="phone" gradientFrom={project.gradientFrom} gradientTo={project.gradientTo} />
             </div>
           </div>
         )}
         {project.type === 'tablet' && (
           <div className="flex justify-center bg-[#080808] py-4">
             <div className="w-56 h-40 rounded-xl border border-white/[0.12] overflow-hidden">
-              <MockupScreen
-                type="tablet"
-                gradientFrom={project.gradientFrom}
-                gradientTo={project.gradientTo}
-              />
+              <MockupScreen type="tablet" gradientFrom={project.gradientFrom} gradientTo={project.gradientTo} />
             </div>
           </div>
         )}
       </div>
 
-      {/* Info card */}
       <div className="rounded-xl border border-white/[0.08] bg-bg-elevated p-5">
         <div className="flex items-center gap-2 mb-3">
-          <span
-            className="w-1.5 h-1.5 rounded-full"
-            style={{ background: project.tagColor }}
-          />
+          <span className="w-1.5 h-1.5 rounded-full" style={{ background: project.tagColor }} />
           <span className="mono-caption" style={{ color: project.tagColor }}>
             {project.tag}
           </span>
@@ -190,39 +169,65 @@ function ProjectCard({
 
 /* ── Showcase Section ───────────────────────────────────────── */
 export function Showcase() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const frameRef   = useRef<HTMLDivElement>(null);
+  const scaleRef   = useRef<HTMLDivElement>(null);
+  const trackRef   = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    if (reducedMotion) return; // skip parallax for reduced-motion users
+    if (reducedMotion) return;
 
-    const container = containerRef.current;
-    const track = trackRef.current;
-    if (!container || !track) return;
+    const section = sectionRef.current;
+    const frame   = frameRef.current;
+    const scale   = scaleRef.current;
+    const track   = trackRef.current;
+    if (!section || !frame || !scale || !track) return;
 
-    // Only run on desktop
     const mm = gsap.matchMedia();
 
     mm.add('(min-width: 768px)', () => {
-      const totalScrollWidth = track.scrollWidth - container.offsetWidth;
+      /* Measure at natural (final) scale so the parallax distance is correct */
+      const totalScrollWidth = track.scrollWidth - window.innerWidth;
+      const expandDistance   = window.innerHeight * 1.1;
+      const scrollDistance   = totalScrollWidth;
 
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: container,
+          trigger: section,
           start: 'top top',
-          end: `+=${totalScrollWidth + 200}`,
-          scrub: 1.2,
+          end: `+=${expandDistance + scrollDistance + 200}`,
+          scrub: 1.1,
           pin: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
         },
       });
 
+      /* Phase 1a — frame expands from contained card → full viewport */
+      tl.to(frame, {
+        '--inset-x':      '0vw',
+        '--inset-y':      '0vh',
+        '--frame-radius': '0px',
+        '--frame-border': 'rgba(168,85,247,0)',
+        '--frame-glow':   '0 40px 120px -30px rgba(0,0,0,0.9)',
+        ease: 'power2.inOut',
+        duration: expandDistance,
+      }, 0);
+
+      /* Phase 1b — content scales up in sync with the frame */
+      tl.fromTo(scale,
+        { scale: 0.72 },
+        { scale: 1, ease: 'power2.inOut', duration: expandDistance },
+        0
+      );
+
+      /* Phase 2 — horizontal parallax track (only after expansion completes) */
       tl.to(track, {
         x: -totalScrollWidth,
         ease: 'none',
-      });
+        duration: scrollDistance,
+      }, expandDistance);
 
       return () => {
         tl.kill();
@@ -232,94 +237,149 @@ export function Showcase() {
     return () => {
       mm.revert();
     };
-  }, []);
+  }, [reducedMotion]);
 
   return (
     <section
-      ref={containerRef}
-      className="relative overflow-hidden"
-      style={{ height: '100vh', background: 'var(--bg)' }}
+      ref={sectionRef}
+      className="relative h-screen"
+      style={{ background: 'var(--bg)' }}
     >
+      {/* Backdrop pattern visible when frame is contained */}
       <div
-        ref={trackRef}
-        className="flex h-full items-center gap-8 px-12"
-        style={{ width: 'max-content' }}
+        className="absolute inset-0 pointer-events-none opacity-[0.18]"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.25) 1px, transparent 0)',
+          backgroundSize: '24px 24px',
+          maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 80%)',
+          WebkitMaskImage: 'radial-gradient(ellipse at center, black 30%, transparent 80%)',
+        }}
+      />
+
+      {/* Section label sitting above the contained frame */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.5 }}
+        className="absolute top-8 left-0 right-0 z-10 flex items-center justify-center gap-4 px-12"
       >
-        {/* Intro panel */}
-        <div className="flex-shrink-0 w-[320px] md:w-[420px] flex flex-col justify-center h-full pr-8 border-r border-white/[0.06]">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <p className="mono-caption text-white/35 mb-4">What we do</p>
-            <h2
-              className="text-white font-bold leading-none"
-              style={{
-                fontSize: 'clamp(5rem, 10vw, 9rem)',
-                letterSpacing: '-0.03em',
-                fontFamily: 'var(--font-geist-sans)',
-              }}
+        <span className="mono-caption text-white/40">Selected work</span>
+        <span className="mono-caption text-white/20">— scroll to expand</span>
+      </motion.div>
+
+      {/* Animated frame — starts contained, expands to full viewport */}
+      <div
+        ref={frameRef}
+        className="absolute overflow-hidden bg-bg"
+        style={
+          {
+            '--inset-x':      '6vw',
+            '--inset-y':      '12vh',
+            '--frame-radius': '28px',
+            '--frame-border': 'rgba(168,85,247,0.45)',
+            '--frame-glow':
+              '0 0 0 1px rgba(168,85,247,0.10), 0 30px 80px -20px rgba(124,58,237,0.30), 0 50px 120px -30px rgba(0,0,0,0.85)',
+            top:    'var(--inset-y)',
+            bottom: 'var(--inset-y)',
+            left:   'var(--inset-x)',
+            right:  'var(--inset-x)',
+            borderRadius: 'var(--frame-radius)',
+            border: '1.5px solid var(--frame-border)',
+            boxShadow: 'var(--frame-glow)',
+          } as CSSProperties
+        }
+      >
+        {/* Corner brackets — purely decorative blueprint corners */}
+        <div className="absolute top-3 left-3 w-4 h-4 border-l-2 border-t-2 border-violet-400/50 rounded-tl-md pointer-events-none" />
+        <div className="absolute top-3 right-3 w-4 h-4 border-r-2 border-t-2 border-violet-400/50 rounded-tr-md pointer-events-none" />
+        <div className="absolute bottom-3 left-3 w-4 h-4 border-l-2 border-b-2 border-violet-400/50 rounded-bl-md pointer-events-none" />
+        <div className="absolute bottom-3 right-3 w-4 h-4 border-r-2 border-b-2 border-violet-400/50 rounded-br-md pointer-events-none" />
+
+        {/* Scale wrapper — content grows in sync with the frame */}
+        <div
+          ref={scaleRef}
+          className="absolute inset-0 flex items-center"
+          style={{ transformOrigin: 'left center', transform: 'scale(0.72)' }}
+        >
+        {/* Horizontal parallax track (desktop) */}
+        <div
+          ref={trackRef}
+          className="hidden md:flex h-full items-center gap-8 px-12"
+          style={{ width: 'max-content' }}
+        >
+          {/* Intro panel */}
+          <div className="flex-shrink-0 w-[320px] md:w-[420px] flex flex-col justify-center h-full pr-8 border-r border-white/[0.06]">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
             >
-              Show
-              <br />
-              case
-            </h2>
-            {/* Dimension annotation */}
-            <div className="mt-4 inline-flex items-center gap-2 px-2.5 py-1 rounded bg-blue-500/10 border border-blue-500/20">
-              <span className="mono-caption text-blue-400">310 × 87</span>
-            </div>
-          </motion.div>
-        </div>
+              <p className="mono-caption text-white/35 mb-4">What we do</p>
+              <h2
+                className="text-white font-bold leading-none"
+                style={{
+                  fontSize: 'clamp(5rem, 10vw, 9rem)',
+                  letterSpacing: '-0.03em',
+                  fontFamily: 'var(--font-geist-sans)',
+                }}
+              >
+                Show
+                <br />
+                case
+              </h2>
+              <div className="mt-4 inline-flex items-center gap-2 px-2.5 py-1 rounded bg-blue-500/10 border border-blue-500/20">
+                <span className="mono-caption text-blue-400">310 × 87</span>
+              </div>
+            </motion.div>
+          </div>
 
-        {/* Project cards */}
-        {PROJECTS.map((project, i) => (
-          <ProjectCard key={project.id} project={project} index={i} />
-        ))}
+          {PROJECTS.map((project, i) => (
+            <ProjectCard key={project.id} project={project} index={i} />
+          ))}
 
-        {/* Final CTA card */}
-        <div className="flex-shrink-0 w-64 flex flex-col items-center justify-center h-full pl-4">
-          <div className="rounded-2xl border border-white/[0.08] bg-bg-elevated p-8 flex flex-col items-center text-center gap-4">
-            <div className="w-12 h-12 rounded-full border border-violet-500/30 flex items-center justify-center">
-              <ArrowRight className="w-5 h-5 text-violet-400" />
+          {/* Final CTA card */}
+          <div className="flex-shrink-0 w-64 flex flex-col items-center justify-center h-full pl-4">
+            <div className="rounded-2xl border border-white/[0.08] bg-bg-elevated p-8 flex flex-col items-center text-center gap-4">
+              <div className="w-12 h-12 rounded-full border border-violet-500/30 flex items-center justify-center">
+                <ArrowRight className="w-5 h-5 text-violet-400" />
+              </div>
+              <h3 className="text-white font-medium">View all work</h3>
+              <p className="text-sm text-white/40">See every project we&apos;ve shipped.</p>
+              <button className="w-full py-2 text-sm font-medium text-white border border-white/10 rounded-md hover:bg-white/[0.04] transition-colors">
+                View all →
+              </button>
             </div>
-            <h3 className="text-white font-medium">View all work</h3>
-            <p className="text-sm text-white/40">See every project we&apos;ve shipped.</p>
-            <button className="w-full py-2 text-sm font-medium text-white border border-white/10 rounded-md hover:bg-white/[0.04] transition-colors">
-              View all →
-            </button>
           </div>
         </div>
-      </div>
+        </div>
 
-      {/* Mobile fallback: vertical stack */}
-      <div className="md:hidden absolute inset-0 overflow-y-auto py-24 px-6">
-        <div className="max-w-md mx-auto">
-          <p className="mono-caption text-white/35 mb-2">What we do</p>
-          <h2 className="text-6xl font-bold text-white mb-10" style={{ letterSpacing: '-0.03em' }}>
-            Showcase
-          </h2>
-          <div className="flex flex-col gap-12">
-            {PROJECTS.map((project, i) => (
-              <div key={project.id} className="flex flex-col gap-4">
-                <div className="rounded-xl overflow-hidden border border-white/[0.08] h-44">
-                  <MockupScreen
-                    type={project.type}
-                    gradientFrom={project.gradientFrom}
-                    gradientTo={project.gradientTo}
-                  />
-                </div>
-                <div className="rounded-xl border border-white/[0.08] bg-bg-elevated p-5">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: project.tagColor }} />
-                    <span className="mono-caption" style={{ color: project.tagColor }}>{project.tag}</span>
+        {/* Mobile fallback: vertical stack inside the frame */}
+        <div className="md:hidden h-full overflow-y-auto py-12 px-6">
+          <div className="max-w-md mx-auto">
+            <p className="mono-caption text-white/35 mb-2">What we do</p>
+            <h2 className="text-6xl font-bold text-white mb-10" style={{ letterSpacing: '-0.03em' }}>
+              Showcase
+            </h2>
+            <div className="flex flex-col gap-12">
+              {PROJECTS.map((project) => (
+                <div key={project.id} className="flex flex-col gap-4">
+                  <div className="rounded-xl overflow-hidden border border-white/[0.08] h-44">
+                    <MockupScreen type={project.type} gradientFrom={project.gradientFrom} gradientTo={project.gradientTo} />
                   </div>
-                  <h3 className="text-white font-medium leading-snug mb-2">{project.title}</h3>
-                  <p className="text-sm text-white/50 leading-relaxed">{project.summary}</p>
+                  <div className="rounded-xl border border-white/[0.08] bg-bg-elevated p-5">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: project.tagColor }} />
+                      <span className="mono-caption" style={{ color: project.tagColor }}>{project.tag}</span>
+                    </div>
+                    <h3 className="text-white font-medium leading-snug mb-2">{project.title}</h3>
+                    <p className="text-sm text-white/50 leading-relaxed">{project.summary}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>

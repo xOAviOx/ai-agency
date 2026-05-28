@@ -15,6 +15,7 @@ const CIRCLE_BASE = 900;
 const FINAL_SIZE  = 64;
 const FINAL_SCALE = FINAL_SIZE / CIRCLE_BASE;
 const FINAL_ROT   = 240;
+const OPACITY_BASE = 0.7;
 
 export function TravelingCircle() {
   const reducedMotion = useReducedMotion();
@@ -53,9 +54,12 @@ export function TravelingCircle() {
   const ro = useMotionValue(0);
   const op = useMotionValue(1);
 
-  const yS  = useSpring(y,  { stiffness: 65, damping: 22 });
-  const scS = useSpring(sc, { stiffness: 70, damping: 22 });
-  const roS = useSpring(ro, { stiffness: 55, damping: 22 });
+  // Stiff + critically damped springs — Lenis already smooths the scroll
+  // input, so the spring only needs to remove sub-frame jitter. Soft springs
+  // here caused visible overshoot/wobble at the Phase 1 → Phase 2 boundary.
+  const yS  = useSpring(y,  { stiffness: 400, damping: 40 });
+  const scS = useSpring(sc, { stiffness: 400, damping: 40 });
+  const roS = useSpring(ro, { stiffness: 300, damping: 35 });
 
   useMotionValueEvent(scrollY, 'change', (sv) => {
     if (reducedMotion) return;
@@ -70,7 +74,7 @@ export function TravelingCircle() {
 
     if (sv <= 0) {
       // Resting at hero center
-      y.set(0); sc.set(1); ro.set(0); op.set(1);
+      y.set(0); sc.set(1); ro.set(0); op.set(OPACITY_BASE);
 
     } else if (sv <= heroH) {
       // Phase 1 — travel: lerp from hero center → intersection position
@@ -78,25 +82,25 @@ export function TravelingCircle() {
       y.set(p * intersectionAtEnd);
       sc.set(1 + p * (FINAL_SCALE - 1));
       ro.set(p * FINAL_ROT);
-      op.set(1);
+      op.set(OPACITY_BASE);
 
     } else {
       // Phase 2 — pinned to the grid intersection in DOCUMENT space.
-      // The circle stays glued to the crosshair: as the user scrolls
-      // further, the circle scrolls up with the page (never drifts
-      // below the intersection).
+      // Clamp to intersectionAtEnd so the circle never visually overshoots
+      // below the intersection point while the page continues scrolling.
       const vpY = intersectionY - sv;     // intersection's current viewport Y
-      y.set(vpY - vh / 2);
+      const targetY = Math.min(intersectionAtEnd, vpY - vh / 2);
+      y.set(targetY);
       sc.set(FINAL_SCALE);
       ro.set(FINAL_ROT);
 
       // Fade out only once the intersection has scrolled off the top
       // of the viewport (circle naturally leaves with the grid).
       if (vpY >= 0) {
-        op.set(1);
+        op.set(OPACITY_BASE);
       } else {
         // 120px of negative viewport position → fully faded
-        op.set(Math.max(0, 1 + vpY / 120));
+        op.set(Math.max(0, OPACITY_BASE * (1 + vpY / 120)));
       }
     }
   });
