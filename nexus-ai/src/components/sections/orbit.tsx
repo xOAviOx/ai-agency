@@ -6,6 +6,9 @@ import {
   useScroll,
   useTransform,
   useTime,
+  useMotionValue,
+  useSpring,
+  useMotionValueEvent,
   useReducedMotion,
   MotionValue,
 } from 'framer-motion';
@@ -14,21 +17,23 @@ import type { LucideIcon } from 'lucide-react';
 import { degToRad } from '@/lib/utils';
 
 /* ──────────────────────────────────────────────────────────────
-   "Why NEXUS" — cinematic orbiting scene.
+   "Why NEXUS" — a single circle that TRAVELS across sections.
 
-   Architecture
-   ────────────
-   <Orbit>            tall section (300vh) that drives a scroll timeline
-     <ScrollScene>    sticky, full-viewport stage that stays pinned while
-                      the timeline plays out (enter → active → exit)
-       <RingSystem>   oversized concentric rings, main + counter rotation
-       <OrbitItem>    a single label travelling around the circle
+   The circle is one fixed, full-viewport object (<OrbitJourney/>,
+   rendered at the page root). Driven by global scrollY it:
 
-   Motion sources
-   ──────────────
-   - useTime()        a rAF-driven clock → smooth, continuous rotation that
-                      never depends on scroll position (so it keeps "alive")
-   - scrollYProgress  layered on top for parallax + enter/exit transforms
+     Showcase (parallax) ── appears small, faint, drifting
+            │
+            ▼  grows after "For Agencies"
+     Why NEXUS stage ───── full-size ring; labels sweep L→R;
+                           the ring rotates the SAME direction
+            │
+            ▼  fades + shrinks into the CTA
+
+   <Orbit/> itself is just a tall transparent "stage" in normal
+   flow that provides the scroll distance + a measurement marker
+   for the pinned Why NEXUS moment. On mobile the whole travelling
+   scene is skipped for a clean stacked list.
    ────────────────────────────────────────────────────────────── */
 
 /* ── Orbit content ──────────────────────────────────────────── */
@@ -47,14 +52,14 @@ const PHRASES: {
   { angle: 300, headline: 'Direct access',   sub: 'No account managers.',   cta: 'Say hello',    icon: Users  },
 ];
 
-/* Tunables — change these to retune the whole scene at a glance. */
-const SPIN_DURATION_MS = 70_000; // ms for one full continuous revolution
-const SCROLL_SPIN_DEG = 55;      // extra degrees driven by scroll (parallax)
+/* Tunables — retune the whole journey here. */
+const DRIFT_REV_MS = 120_000; // ms for one slow "alive" revolution (no scroll)
+const PRE_SWEEP_DEG = 40;     // gentle pre-spin while the circle travels in
+const ORBIT_SWEEP_DEG = 180;  // left→right sweep across the Why NEXUS region
 
 /* ──────────────────────────────────────────────────────────────
    RingSystem — the oversized circle graphic.
-   Two stacked square SVGs so each layer can rotate independently
-   without fighting over a shared transform-origin.
+   Two stacked square SVGs so each layer rotates independently.
    ────────────────────────────────────────────────────────────── */
 const VB = 600;          // viewBox size
 const C = VB / 2;        // center
@@ -101,16 +106,14 @@ function RingSystem({
   const accentR = 286;
   return (
     <div className="relative h-full w-full">
-      {/* Main layer — rotates forward */}
+      {/* Main layer — rotates with the sweep (same direction as labels) */}
       <motion.svg
         viewBox={`0 0 ${VB} ${VB}`}
         className="absolute inset-0 h-full w-full transform-gpu will-change-transform"
         style={{ rotate: rotation }}
         aria-hidden="true"
       >
-        {/* outermost broken ring */}
         <Ring r={290} opacity={0.1} width={1} dash="46 22" />
-        {/* violet accent arc (~20% of the circumference) */}
         <Ring
           r={accentR}
           opacity={0.55}
@@ -119,24 +122,20 @@ function RingSystem({
           dash={`${circ(accentR) * 0.2} ${circ(accentR)}`}
           rotate={-30}
         />
-        {/* dotted mid ring */}
         <Ring r={208} opacity={0.14} width={1} dash="2 12" />
-        {/* faint tight ring */}
         <Ring r={120} opacity={0.1} width={1} />
       </motion.svg>
 
-      {/* Counter layer — rotates the other way for depth */}
+      {/* Counter layer — slower opposite spin for depth */}
       <motion.svg
         viewBox={`0 0 ${VB} ${VB}`}
         className="absolute inset-0 h-full w-full transform-gpu will-change-transform"
         style={{ rotate: counter }}
         aria-hidden="true"
       >
-        {/* notched ring (single gap on the right) */}
         <Ring r={252} opacity={0.16} width={1} dash={`${circ(252) * 0.88} ${circ(252)}`} />
         <Ring r={170} opacity={0.12} width={1} />
         <Ring r={300} opacity={0.06} width={1} />
-        {/* short violet tick segment */}
         <Ring
           r={170}
           opacity={0.5}
@@ -152,29 +151,25 @@ function RingSystem({
 
 /* ──────────────────────────────────────────────────────────────
    OrbitItem — one label travelling around the ring.
-   Position is pure translation (no rotation on the node) so the
-   text always stays upright and readable, regardless of spin.
+   Position is pure translation so text stays upright + readable.
    ────────────────────────────────────────────────────────────── */
 function OrbitItem({
   phrase,
   index,
   radius,
   spin,
-  progress,
+  orbitPhase,
 }: {
   phrase: (typeof PHRASES)[number];
   index: number;
   radius: number;
-  spin: MotionValue<number>;       // total rotation in degrees (continuous + scroll)
-  progress: MotionValue<number>;   // section scroll progress 0→1
+  spin: MotionValue<number>;       // total rotation (drift + scroll sweep)
+  orbitPhase: MotionValue<number>; // 0→1 across the Why NEXUS region
 }) {
   const Icon = phrase.icon;
   const time = useTime();
 
-  // Live angle for this item = its base position + the shared spin.
   const angle = useTransform(spin, (s) => phrase.angle + s);
-
-  // Polar → cartesian. (-90 so 0° sits at the top of the circle.)
   const x = useTransform(angle, (a) => Math.cos(degToRad(a - 90)) * radius);
   const yOrbit = useTransform(angle, (a) => Math.sin(degToRad(a - 90)) * radius);
 
@@ -182,11 +177,12 @@ function OrbitItem({
   const float = useTransform(time, (t) => Math.sin(t / 1600 + phrase.angle) * 6);
   const y = useTransform([yOrbit, float] as MotionValue[], ([o, f]: number[]) => o + f);
 
-  // Individual fade-in (staggered) + collective fade-out on exit.
-  const inStart = 0.06 + index * 0.025;
+  // Individual staggered fade-in, collective fade-out — keyed to the
+  // Why NEXUS phase so labels only exist while the circle is big.
+  const inStart = index * 0.04;
   const opacity = useTransform(
-    progress,
-    [inStart, inStart + 0.14, 0.78, 0.92],
+    orbitPhase,
+    [inStart, inStart + 0.16, 0.82, 0.96],
     [0, 1, 1, 0]
   );
 
@@ -195,7 +191,6 @@ function OrbitItem({
       className="absolute left-1/2 top-1/2 transform-gpu will-change-transform"
       style={{ x, y, opacity }}
     >
-      {/* Inner wrapper centers the card on the orbit point */}
       <div className="group w-48 -translate-x-1/2 -translate-y-1/2 lg:w-56">
         <div className="mb-2.5 flex h-9 w-9 items-center justify-center rounded-full border border-violet-500/25 bg-violet-500/10 shadow-[0_0_24px_-6px_rgba(124,58,237,0.6)]">
           <Icon className="h-4 w-4 text-violet-300" />
@@ -213,122 +208,232 @@ function OrbitItem({
   );
 }
 
+/* small helpers */
+const clamp = (v: number, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, v));
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
 /* ──────────────────────────────────────────────────────────────
-   Orbit — section wrapper + scroll timeline.
+   OrbitJourney — the fixed, travelling circle.
+   Rendered once at the page root; reads global scrollY and the
+   measured positions of Showcase / For Agencies / the Why NEXUS
+   stage to drive scale, opacity, drift, and the L→R sweep.
    ────────────────────────────────────────────────────────────── */
-export function Orbit() {
-  const sceneRef = useRef<HTMLDivElement>(null);
+export function OrbitJourney() {
   const reducedMotion = useReducedMotion();
-  const [labelRadius, setLabelRadius] = useState(330);
 
-  // Keep the orbit radius proportional to the circle's responsive size.
-  useEffect(() => {
-    const update = () => {
-      const diameter = Math.min(window.innerWidth * 0.78, 760);
-      setLabelRadius(diameter * 0.46);
-    };
-    update();
-    window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
-  }, []);
+  // Base render size of the circle (full-size). Label radius tracks it.
+  const [size, setSize] = useState(640);
+  const radius = size * 0.46;
 
-  // Progress 0→1 across the full pinned region of the tall wrapper.
-  const { scrollYProgress } = useScroll({
-    target: sceneRef,
-    offset: ['start start', 'end end'],
+  // Measurements kept in refs so the scroll callback never reads stale state.
+  const m = useRef({
+    showcaseTop: 0,
+    agenciesTop: 0,
+    orbitTop: 0,
+    orbitBottom: 0,
+    vh: 900,
   });
 
-  /* ── Continuous, scroll-independent rotation (the "alive" feel) ── */
+  useEffect(() => {
+    function measure() {
+      const vh = window.innerHeight;
+      setSize(Math.min(window.innerWidth * 0.78, 760));
+
+      const top = (sel: string) => {
+        const el = document.querySelector(sel) as HTMLElement | null;
+        return el ? el.getBoundingClientRect().top + window.scrollY : 0;
+      };
+      const showcaseTop = top('[data-section="showcase"]');
+      const agenciesTop = top('[data-section="agencies"]');
+      const stage = document.querySelector('[data-orbit-stage]') as HTMLElement | null;
+      const orbitTop = stage ? stage.getBoundingClientRect().top + window.scrollY : 0;
+      const orbitBottom = stage ? orbitTop + stage.offsetHeight : 0;
+
+      m.current = { showcaseTop, agenciesTop, orbitTop, orbitBottom, vh };
+    }
+    measure();
+    window.addEventListener('resize', measure);
+    // Re-measure after layout settles (fonts / images / GSAP pin spacers).
+    const t = setTimeout(measure, 500);
+    return () => {
+      window.removeEventListener('resize', measure);
+      clearTimeout(t);
+    };
+  }, []);
+
+  /* ── Scroll-driven motion values (imperatively set, then spring-smoothed) ── */
+  const { scrollY } = useScroll();
+
+  const scale = useMotionValue(0.16);
+  const opacity = useMotionValue(0);
+  const driftY = useMotionValue(0);
+  const centerOp = useMotionValue(0);
+  const sweep = useMotionValue(0);          // scroll contribution to rotation
+  const orbitPhaseRaw = useMotionValue(0);  // 0→1 across the Why NEXUS region
+
+  const scaleS = useSpring(scale, { stiffness: 220, damping: 38 });
+  const driftS = useSpring(driftY, { stiffness: 220, damping: 38 });
+  const sweepS = useSpring(sweep, { stiffness: 160, damping: 40 });
+  const orbitPhase = useSpring(orbitPhaseRaw, { stiffness: 200, damping: 40 });
+
+  useMotionValueEvent(scrollY, 'change', (sv) => {
+    const { showcaseTop, agenciesTop, orbitTop, orbitBottom, vh } = m.current;
+    if (!orbitBottom) return;
+
+    const t0 = showcaseTop - vh * 0.4;   // circle starts appearing
+    const t1 = agenciesTop;              // travelling, still small
+    const t3 = orbitTop;                 // full-size, Why NEXUS centered
+    const tActiveEnd = orbitBottom - vh; // end of the pinned Why NEXUS moment
+    const tExitEnd = tActiveEnd + vh * 0.6;
+
+    if (reducedMotion) {
+      // Static: only reveal at full size while inside the Why NEXUS region.
+      const inRegion = sv >= t1 && sv <= tExitEnd;
+      scale.set(1);
+      opacity.set(inRegion ? 1 : 0);
+      driftY.set(0);
+      centerOp.set(inRegion ? 1 : 0);
+      sweep.set(0);
+      orbitPhaseRaw.set(inRegion ? 0.4 : 0);
+      return;
+    }
+
+    if (sv < t0 || sv > tExitEnd) {
+      opacity.set(0);
+      orbitPhaseRaw.set(sv > tExitEnd ? 1 : 0);
+      return;
+    }
+
+    /* Phase 1 — travel in (Showcase → For Agencies): small + faint */
+    if (sv < t1) {
+      const p = clamp((sv - t0) / (t1 - t0));
+      scale.set(lerp(0.16, 0.26, p));
+      opacity.set(lerp(0, 0.32, clamp(p * 1.6)));
+      driftY.set(lerp(-vh * 0.06, -vh * 0.03, p));
+      centerOp.set(0);
+      sweep.set(lerp(0, PRE_SWEEP_DEG, p));
+      orbitPhaseRaw.set(0);
+
+    /* Phase 2 — grow after For Agencies, into the Why NEXUS stage */
+    } else if (sv < t3) {
+      const p = clamp((sv - t1) / (t3 - t1));
+      scale.set(lerp(0.26, 1, p));
+      opacity.set(lerp(0.32, 0.95, p));
+      driftY.set(lerp(-vh * 0.03, 0, p));
+      centerOp.set(clamp((p - 0.55) / 0.45)); // "Why NEXUS." fades in late
+      sweep.set(PRE_SWEEP_DEG);
+      orbitPhaseRaw.set(0);
+
+    /* Phase 3 — active: labels sweep L→R, ring rotates with them */
+    } else if (sv < tActiveEnd) {
+      const p = clamp((sv - t3) / (tActiveEnd - t3));
+      scale.set(1);
+      opacity.set(0.95);
+      driftY.set(0);
+      centerOp.set(1);
+      sweep.set(PRE_SWEEP_DEG + p * ORBIT_SWEEP_DEG);
+      orbitPhaseRaw.set(p);
+
+    /* Phase 4 — exit: shrink + fade into the next section */
+    } else {
+      const p = clamp((sv - tActiveEnd) / (tExitEnd - tActiveEnd));
+      scale.set(lerp(1, 0.86, p));
+      opacity.set(lerp(0.95, 0, p));
+      driftY.set(lerp(0, -vh * 0.08, p));
+      centerOp.set(lerp(1, 0, clamp(p * 1.4)));
+      sweep.set(PRE_SWEEP_DEG + ORBIT_SWEEP_DEG);
+      orbitPhaseRaw.set(1);
+    }
+  });
+
+  /* ── Continuous "alive" drift + scroll sweep → shared spin ── */
   const time = useTime();
-  const baseSpin = useTransform(time, (t) =>
-    reducedMotion ? 0 : (t / SPIN_DURATION_MS) * 360
+  const drift = useTransform(time, (t) =>
+    reducedMotion ? 0 : (t / DRIFT_REV_MS) * 360
   );
-  // Scroll adds a little extra rotation for parallax on top of the base.
-  const scrollSpin = useTransform(scrollYProgress, [0, 1], [0, reducedMotion ? 0 : SCROLL_SPIN_DEG]);
-  const spin = useTransform([baseSpin, scrollSpin] as MotionValue[], ([b, s]: number[]) => b + s);
-
-  // Ring layers: forward + counter (slower) for depth.
-  const ringRotation = spin;
-  const counterRotation = useTransform(spin, (s) => -s * 0.55);
-
-  /* ── Enter / Active / Exit transforms ── */
-  // Phase 1 (enter): fade + scale up.  Phase 3 (exit): fade + scale + lift.
-  const sceneOpacity = useTransform(scrollYProgress, [0, 0.12, 0.85, 1], [0, 1, 1, 0]);
-  const sceneY = useTransform(scrollYProgress, [0.85, 1], [0, -90]);
-  const circleScale = useTransform(scrollYProgress, [0, 0.18, 0.82, 1], [0.6, 1, 1, 0.88]);
-  const centerOpacity = useTransform(scrollYProgress, [0.02, 0.14, 0.8, 0.95], [0, 1, 1, 0]);
-  const centerScale = useTransform(scrollYProgress, [0, 0.18], [0.85, 1]);
+  const spin = useTransform([drift, sweepS] as MotionValue[], ([d, s]: number[]) => d + s);
+  const counter = useTransform(spin, (s) => -s * 0.5);
 
   return (
+    <motion.div
+      className="pointer-events-none fixed inset-0 z-[5] hidden items-center justify-center md:flex"
+      style={{ opacity }}
+      aria-hidden="true"
+    >
+      <motion.div style={{ y: driftS }} className="relative flex items-center justify-center">
+        {/* Scaling stage — rings + labels scale together as one object */}
+        <motion.div
+          className="relative transform-gpu will-change-transform"
+          style={{ width: size, height: size, scale: scaleS }}
+        >
+          {/* soft violet halo behind the rings */}
+          <div
+            className="pointer-events-none absolute inset-[12%] rounded-full blur-3xl"
+            style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.18), transparent 65%)' }}
+          />
+
+          <RingSystem rotation={spin} counter={counter} />
+
+          {/* Center label */}
+          <motion.div
+            className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center"
+            style={{ opacity: centerOp }}
+          >
+            <p className="mono-caption mb-3 text-white/30">What you get</p>
+            <h2
+              className="font-semibold tracking-tight text-white"
+              style={{
+                fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
+                letterSpacing: '-0.03em',
+                textShadow: '0 0 40px rgba(124,58,237,0.45)',
+              }}
+            >
+              Why NEXUS.
+            </h2>
+          </motion.div>
+
+          {/* Orbiting labels */}
+          {PHRASES.map((phrase, i) => (
+            <OrbitItem
+              key={phrase.headline}
+              phrase={phrase}
+              index={i}
+              radius={radius}
+              spin={spin}
+              orbitPhase={orbitPhase}
+            />
+          ))}
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Orbit — the in-flow "stage".
+   Desktop: a tall, transparent spacer that gives the journey its
+   scroll distance and a measurable Why NEXUS moment.
+   Mobile: a clean stacked list (the travelling scene is skipped).
+   ────────────────────────────────────────────────────────────── */
+export function Orbit() {
+  return (
     <section className="relative" style={{ background: 'var(--bg)' }}>
-      {/* ── Desktop / tablet: pinned cinematic scene ── */}
-      <div ref={sceneRef} className="relative hidden md:block" style={{ height: '300vh' }}>
-        <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
-          {/* Ambient violet glow */}
+      {/* Desktop / tablet stage — visuals come from <OrbitJourney/> */}
+      <div data-orbit-stage className="relative hidden md:block" style={{ height: '300vh' }}>
+        {/* Ambient glow anchored to the centered Why NEXUS moment */}
+        <div className="sticky top-0 h-screen overflow-hidden">
           <div
             className="pointer-events-none absolute inset-0"
             style={{
               background:
-                'radial-gradient(ellipse 55% 55% at 50% 50%, rgba(124,58,237,0.10) 0%, transparent 70%)',
+                'radial-gradient(ellipse 55% 55% at 50% 50%, rgba(124,58,237,0.08) 0%, transparent 70%)',
             }}
           />
-
-          <motion.div
-            className="relative flex h-full w-full items-center justify-center transform-gpu"
-            style={{ opacity: sceneOpacity, y: sceneY }}
-          >
-            {/* Oversized ring system */}
-            <motion.div
-              className="absolute transform-gpu will-change-transform"
-              style={{
-                width: 'min(78vw, 760px)',
-                height: 'min(78vw, 760px)',
-                scale: circleScale,
-              }}
-            >
-              {/* soft glow halo behind the rings */}
-              <div
-                className="pointer-events-none absolute inset-[12%] rounded-full blur-3xl"
-                style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.18), transparent 65%)' }}
-              />
-              <RingSystem rotation={ringRotation} counter={counterRotation} />
-            </motion.div>
-
-            {/* Center label */}
-            <motion.div
-              className="pointer-events-none absolute z-10 text-center"
-              style={{ opacity: centerOpacity, scale: centerScale }}
-            >
-              <p className="mono-caption mb-3 text-white/30">What you get</p>
-              <h2
-                className="font-semibold tracking-tight text-white"
-                style={{
-                  fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
-                  letterSpacing: '-0.03em',
-                  textShadow: '0 0 40px rgba(124,58,237,0.45)',
-                }}
-              >
-                Why NEXUS.
-              </h2>
-            </motion.div>
-
-            {/* Orbiting labels */}
-            {PHRASES.map((phrase, i) => (
-              <OrbitItem
-                key={phrase.headline}
-                phrase={phrase}
-                index={i}
-                radius={labelRadius}
-                spin={spin}
-                progress={scrollYProgress}
-              />
-            ))}
-          </motion.div>
         </div>
       </div>
 
-      {/* ── Mobile: simplified, readable stacked list ── */}
-      <div className="md:hidden px-6 py-24">
+      {/* Mobile — simplified, readable stacked list */}
+      <div className="px-6 py-24 md:hidden">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
