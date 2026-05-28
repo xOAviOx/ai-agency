@@ -123,7 +123,7 @@ export function Services() {
   }
 
   return (
-    <section className="relative py-24 overflow-hidden" style={{ background: 'var(--bg-elevated)' }}>
+    <section className="relative z-10 py-24 overflow-hidden" style={{ background: 'var(--bg-elevated)' }}>
       <div className="mx-auto max-w-[1280px] px-6 md:px-12">
         {/* Section label */}
         <motion.div
