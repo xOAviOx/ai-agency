@@ -236,6 +236,10 @@ export function OrbitJourney() {
   const [size, setSize] = useState(720);
   const radius = size * 0.46;
 
+  const [isMobile, setIsMobile] = useState(false);
+  // Height of the "Why NEXUS." title block under the dial (smaller on phones).
+  const titleBlockH = isMobile ? 200 : 280;
+
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -247,6 +251,9 @@ export function OrbitJourney() {
     ctaTop: 0,
     ctaBottom: 0,
     vh: 900,
+    isMobile: false,
+    dialMt: -240,      // how far the dial is pushed up so its bottom arc sweeps the viewport
+    ctaRecenter: 152,  // px to drop the dial so its CIRCLE (not the column) centers in the CTA
   });
 
   const [activeSlide, setActiveSlide] = useState(0);
