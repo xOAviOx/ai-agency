@@ -564,8 +564,10 @@ export function OrbitJourney() {
           className="w-full max-w-4xl flex flex-col items-center justify-start mt-6 px-6 text-center pointer-events-none"
           style={{ height: titleBlockH }}
         >
+          {/* The big centered "Why NEXUS." title is desktop-only — on phones it
+              would overlap the slide copy that rises from the bottom. */}
           <AnimatePresence>
-            {!showDetail && (
+            {!isMobile && !showDetail && (
               <motion.div
                 key="main-title"
                 initial={{ opacity: 0, scale: 0.95 }}
