@@ -39,7 +39,10 @@ export default function RootLayout({
       lang="en"
       className={`${unbounded.variable} ${spaceGrotesk.variable} ${spaceMono.variable} antialiased`}
     >
-      <body>
+      {/* suppressHydrationWarning: browser extensions (ColorZilla, wallets, etc.)
+          inject attributes like `cz-shortcut-listen` onto <body> before React
+          hydrates, which would otherwise log a hydration-mismatch warning. */}
+      <body suppressHydrationWarning>
         <LenisProvider>{children}</LenisProvider>
       </body>
     </html>
