@@ -57,7 +57,7 @@ export function CTA() {
   const copyY = useTransform(scrollYProgress, [0.06, 0.24], [28, 0]);
 
   return (
-    <section data-section="cta" className="relative" style={{ background: 'var(--bg)' }}>
+    <section id="contact" data-section="cta" className="relative" style={{ background: 'var(--bg)' }}>
       {/* Scroll stage — the circle backdrop is the travelling <OrbitJourney/>
           circle that hands off from "Why NEXUS". Active on mobile too. */}
       <div ref={stageRef} data-cta-stage className="relative" style={{ height: '200vh' }}>
