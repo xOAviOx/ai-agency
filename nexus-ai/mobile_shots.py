@@ -51,21 +51,20 @@ with sync_playwright() as p:
         page.evaluate("(y) => window.scrollTo(0, y)", y)
         page.wait_for_timeout(1300)
 
-    # Hero
-    scroll_to(0); shot(page, "01_hero_top")
-    scroll_to(int(off["heroH"] * 0.45)); shot(page, "02_hero_mid")
-    # Showcase carousel
-    scroll_to(int(off["showcaseTop"] + 80)); shot(page, "03_showcase")
-    # Orbit dial: grown "Why NEXUS"
-    scroll_to(int(orbitTop + vh * 0.25)); shot(page, "04_dial_grown")
+    # Showcase carousel (header in view)
+    scroll_to(int(off["showcaseTop"] - 30)); shot(page, "03_showcase")
+    # Orbit dial: grown "Why NEXUS" moment
+    scroll_to(int(orbitTop + vh * 0.10)); shot(page, "04_dial_why")
+    # active slide 1
+    scroll_to(int(orbitTop + vh * 0.55)); shot(page, "05_dial_s1")
     # stepping slide 2
-    scroll_to(int(orbitTop + vh * 1.05)); shot(page, "05_dial_step2")
-    # near end / slide 3
-    scroll_to(int(orbitTop + vh * 1.8)); shot(page, "06_dial_step3")
+    scroll_to(int(orbitTop + vh * 1.05)); shot(page, "06_dial_s2")
+    # slide 3
+    scroll_to(int(orbitTop + vh * 1.65)); shot(page, "07_dial_s3")
     # handoff
-    scroll_to(int(orbitTop + vh * 2.45)); shot(page, "07_handoff")
+    scroll_to(int(orbitTop + vh * 2.45)); shot(page, "08_handoff")
     # CTA hold
-    scroll_to(int(ctaTop + vh * 0.4)); shot(page, "08_cta")
+    scroll_to(int(ctaTop + vh * 0.4)); shot(page, "09_cta")
 
     print("ERRORS:", errors[:20] if errors else "none")
     browser.close()
