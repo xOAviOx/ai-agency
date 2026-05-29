@@ -196,7 +196,7 @@ function OrbitItem({
       style={{ x, y, opacity }}
     >
       <motion.div
-        className="flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 px-3.5 py-2 rounded-full border bg-black/85 backdrop-blur-md cursor-pointer transition-all duration-350 select-none shadow-[0_6px_20px_rgba(0,0,0,0.6)]"
+        className="flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 px-3.5 py-2 rounded-full border bg-black/85 md:backdrop-blur-md cursor-pointer transition-all duration-350 select-none shadow-[0_6px_20px_rgba(0,0,0,0.6)]"
         animate={{
           borderColor: isActive ? 'rgba(168, 85, 247, 0.55)' : 'rgba(255, 255, 255, 0.08)',
           boxShadow: isActive 
@@ -551,7 +551,10 @@ export function OrbitJourney() {
         </motion.div>
 
         {/* Dynamic Title placeholder when not showing dynamic cards */}
-        <div className="h-[280px] w-full max-w-4xl flex flex-col items-center justify-start mt-6 px-6 text-center pointer-events-none">
+        <div
+          className="w-full max-w-4xl flex flex-col items-center justify-start mt-6 px-6 text-center pointer-events-none"
+          style={{ height: titleBlockH }}
+        >
           <AnimatePresence>
             {!showDetail && (
               <motion.div
