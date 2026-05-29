@@ -666,7 +666,7 @@ export function Orbit() {
                 We don&apos;t just copy-paste prompts. We build custom multi-agent routing engines with self-healing database syncs and dynamic API validation protocols, ensuring our solutions perform flawlessly at scale.
               </p>
               <Link
-                href="/process#standards"
+                href="/process"
                 className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider text-violet-300 border border-violet-500/20 bg-violet-500/5 hover:bg-violet-500/10 hover:text-violet-200 transition-colors cursor-pointer group font-body"
               >
                 Our architecture SLA
