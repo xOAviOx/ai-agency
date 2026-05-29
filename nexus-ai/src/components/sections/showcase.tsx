@@ -308,16 +308,16 @@ export function Showcase() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-80px' }}
         transition={{ duration: 0.5 }}
-        className="absolute top-8 left-0 right-0 z-10 flex items-center justify-center gap-4 px-12"
+        className="hidden md:flex absolute top-8 left-0 right-0 z-10 items-center justify-center gap-4 px-12"
       >
         <span className="mono-caption text-white/40">Selected work</span>
         <span className="mono-caption text-white/20">— scroll to expand</span>
       </motion.div>
 
-      {/* Animated frame — starts contained, expands to full viewport */}
+      {/* Animated frame — starts contained, expands to full viewport (desktop only) */}
       <div
         ref={frameRef}
-        className="absolute overflow-hidden bg-bg"
+        className="hidden md:block absolute overflow-hidden bg-bg"
         style={
           {
             '--inset-x':      '6vw',
