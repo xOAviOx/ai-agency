@@ -27,15 +27,33 @@ src/
   app/
     layout.tsx          — Root layout: Lenis provider, font vars, metadata
     globals.css         — CSS tokens, Tailwind v4 @theme, typography utils, marquee animation
-    page.tsx            — Composes sections; renders <TravelingCircle/> + <OrbitJourney/> at root (fixed, above sections)
+    page.tsx            — Home: composes sections; renders <TravelingCircle/> + <OrbitJourney/> at root
+    about/page.tsx      — /about: hero + stats + Team (id="team")
+    process/page.tsx    — /process: 5 steps + Standards/SLA (id="standards")
+    portfolio/page.tsx  — /portfolio: Websites gallery + AI Voice Agents ("Try it")
+    blog/page.tsx       — /blog: post list (from lib/posts.ts)
+    blog/[slug]/page.tsx— blog post (generateStaticParams + generateMetadata)
+    {privacy,ai-policy,terms}/page.tsx — legal pages (render <LegalContent doc/>)
+    > Every non-home route renders <Navigation/> + content + <Footer/> (nav/footer are NOT in layout).
   providers/
-    lenis-provider.tsx  — Lenis instance + GSAP ticker bridge
+    lenis-provider.tsx  — Lenis instance + GSAP ticker bridge; RESETS scroll on route change (usePathname) — see note below
   lib/
     utils.ts            — cn(), degToRad(), polarToCartesian()
+    smooth-scroll.ts    — Lenis singleton bridge: setLenis(), scrollToHash(), scrollToTop()
+    booking.ts          — CALENDLY_URL + openCalendly() (lazy popup, new-tab fallback)
+    posts.ts            — blog content (PostBlock[]) + getPost(); 4 posts
+    legal.ts            — PRIVACY / AI_POLICY / TERMS docs (LegalSection[])
+    voice-demo.ts       — startVoiceDemo() STUB (wire Vapi/ElevenLabs/Retell here)
   components/
     traveling-circle.tsx— Fixed hero→services circle (HeroCircle), scrollY-driven travel/shrink (z-15). Mobile (`isMobileRef`, <768): docks nowhere (no grid), instead a soft backdrop that sinks/shrinks/fades behind the hero.
+    legal-page.tsx      — <LegalContent doc/>: animated legal layout, sticky TOC + reveal sections
     ui/
       concentric-circles.tsx  — Reusable SVG rings with notched segments + tick marks
+      reveal.tsx              — <Reveal delay y> scroll-reveal (fade+slide, whileInView once, reduced-motion safe)
+      ambient-circle.tsx      — faint slow-rotating ConcentricCircles backdrop for inner-page heroes
+      calendly-button.tsx     — primary "Book a call" button for Server Components
+      partner-form.tsx        — "Partner with us" modal → Web3Forms email
+      voice-agent-card.tsx    — portfolio "Try it" voice demo card (uses voice-demo.ts)
     sections/
       navigation.tsx    — Sticky nav, scroll-direction hide/show, mobile drawer (z-50)
       hero.tsx          — Scroll-linked circle scale, word-split headline, floating cursors, marquee
