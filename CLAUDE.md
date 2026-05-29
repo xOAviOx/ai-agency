@@ -43,8 +43,8 @@ src/
       case-study.tsx    — Left headline + right testimonial + browser mockup w/ fake dashboard
       showcase.tsx      — GSAP horizontal pin-parallax (desktop, `md:` only); MOBILE = native scroll-snap swipe carousel (no GSAP, no pin → smooth on touch). Section is `md:h-screen` (auto height on mobile); frame/label/backdrop are `hidden md:block`. 8 PROJECTS; root has data-section="showcase"
       agencies.tsx      — Image/copy split, blueprint border frame, circle behind copy; root has data-section="agencies"
-      orbit.tsx         — "Why NEXUS" traveling circle. Exports <OrbitJourney/> (fixed circle) + <Orbit/> (300vh stage). Circle now HANDS OFF into the CTA (see below).
-      cta.tsx           — CTA stage: 200vh w/ sticky-centered copy that fades in INSIDE the travelling circle (no own circle anymore); data-section="cta" + data-cta-stage; mobile fallback + trust marquee
+      orbit.tsx         — "Why NEXUS" traveling circle. Exports <OrbitJourney/> (fixed circle) + <Orbit/> (300vh stage). Circle HANDS OFF into the CTA. Now runs on MOBILE too (compact wheel — see below).
+      cta.tsx           — CTA stage: 200vh w/ sticky-centered copy that fades in INSIDE the travelling circle (no own circle anymore); data-section="cta" + data-cta-stage. Now active on mobile too (no separate static fallback) + trust marquee
       footer.tsx        — Giant wordmark with hover letter-spacing/color animation
 ```
 
