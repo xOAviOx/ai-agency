@@ -14,7 +14,11 @@ const SERVICES = [
 
 const USEFUL_LINKS = ['Latest case studies', 'Book a call', 'Contact us'];
 
-const LEGAL_LINKS = ['Privacy Policy', 'AI Policy', 'Terms of Service'];
+const LEGAL_LINKS = [
+  { label: 'Privacy Policy', href: '/privacy' },
+  { label: 'AI Policy', href: '/ai-policy' },
+  { label: 'Terms of Service', href: '/terms' },
+];
 
 const BADGES = [
   { icon: Shield, label: 'SOC 2', sub: 'Type II' },
@@ -161,13 +165,13 @@ export function Footer() {
           <p className="mono-caption text-white/30">© 2026 NEXUS. All rights reserved.</p>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
             {LEGAL_LINKS.map((link) => (
-              <a
-                key={link}
-                href="#"
+              <Link
+                key={link.label}
+                href={link.href}
                 className="mono-caption text-white/25 transition-colors hover:text-white/50"
               >
-                {link}
-              </a>
+                {link.label}
+              </Link>
             ))}
           </div>
         </div>
