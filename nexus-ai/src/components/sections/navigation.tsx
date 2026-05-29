@@ -124,7 +124,7 @@ export function Navigation() {
             {/* Primary button: solid violet capsule with up-right arrow */}
             <button
               type="button"
-              onClick={() => goTo('#contact')}
+              onClick={() => openCalendly()}
               className="px-5.5 py-2.5 text-xs font-bold text-white bg-violet-600 hover:bg-violet-500 rounded-full transition-all duration-200 flex items-center gap-1.5 cursor-pointer font-body shadow-[0_4px_15px_rgba(124,58,237,0.25)] hover:scale-[1.02] active:scale-[0.98]"
             >
               Book a call
@@ -177,7 +177,10 @@ export function Navigation() {
               </button>
               <button
                 type="button"
-                onClick={() => goTo('#contact')}
+                onClick={() => {
+                  setMobileOpen(false);
+                  openCalendly();
+                }}
                 className="w-full py-3 text-xs font-bold text-white bg-violet-600 rounded-full cursor-pointer flex items-center justify-center gap-1.5 shadow-[0_4px_15px_rgba(124,58,237,0.25)] font-body"
               >
                 Book a call
