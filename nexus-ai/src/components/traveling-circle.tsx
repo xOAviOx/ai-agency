@@ -85,6 +85,22 @@ export function TravelingCircle() {
   useMotionValueEvent(scrollY, 'change', (sv) => {
     if (reducedMotion) return;
 
+    // Mobile: no grid to dock into, so keep it as a soft, self-contained
+    // backdrop — it sinks, shrinks and fades out as the hero leaves.
+    if (isMobileRef.current) {
+      const heroH = heroHeightRef.current;
+      const p = Math.min(1, Math.max(0, sv / heroH));
+      y.set(p * heroH * 0.18);
+      sc.set(0.46 + (0.3 - 0.46) * p);
+      ro.set(p * 140);
+      op.set(
+        p < 0.55
+          ? OPACITY_BASE * 0.7
+          : Math.max(0, OPACITY_BASE * 0.7 * (1 - (p - 0.55) / 0.45)),
+      );
+      return;
+    }
+
     const heroH          = heroHeightRef.current;
     const intersectionY  = intersectionDocYRef.current;
     const vh             = vhRef.current;
