@@ -426,7 +426,10 @@ export function OrbitJourney() {
       // bottom arc sweeps the upper-middle of the viewport. On phones the
       // circle is smaller, so the offset shrinks proportionally.
       const rad = sz * 0.46;
-      const dialMt = mobile ? -Math.round(rad * 0.62) : -240;
+      // Push the dial up by roughly its radius + a slice of the viewport so the
+      // upper pills clear off-screen and only the lower arc (with the focused
+      // 6-o'clock pill) sweeps through — mirroring the desktop framing.
+      const dialMt = mobile ? -Math.round(rad + vh * 0.13) : -240;
       const titleH = mobile ? 200 : 280;
       // Drop the dial by half the (title block + its 24px top margin) so the
       // CIRCLE — not the whole flex column — ends up centered in the CTA.
