@@ -284,11 +284,13 @@ export function OrbitJourney() {
   const opacity = useMotionValue(0);
   const driftY = useMotionValue(0);
   const centerOp = useMotionValue(0);
+  const whyX = useMotionValue(0);           // "Why NEXUS." slides right → off-circle
   const sweep = useMotionValue(0);          // scroll contribution to rotation
   const orbitPhaseRaw = useMotionValue(0);  // 0→1 across the Why NEXUS region
 
   const scaleS = useSpring(scale, { stiffness: 220, damping: 38 });
   const driftS = useSpring(driftY, { stiffness: 220, damping: 38 });
+  const whyXS = useSpring(whyX, { stiffness: 170, damping: 32 });
   const sweepS = useSpring(sweep, { stiffness: 160, damping: 40 });
   const orbitPhase = useSpring(orbitPhaseRaw, { stiffness: 200, damping: 40 });
 
