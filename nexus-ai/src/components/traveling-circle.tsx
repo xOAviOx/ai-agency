@@ -32,11 +32,15 @@ export function TravelingCircle() {
   const heroHeightRef       = useRef(900);
   const intersectionDocYRef = useRef(1388);
   const vhRef               = useRef(900);
+  const isMobileRef         = useRef(false);
 
   useEffect(() => {
     function measure() {
       const viewportH = window.innerHeight;
       vhRef.current = viewportH;
+
+      const mobile = window.innerWidth < 768;
+      isMobileRef.current = mobile;
 
       const hero = document.querySelector('[data-section="hero"]') as HTMLElement | null;
       heroHeightRef.current = hero ? hero.offsetHeight : viewportH;
@@ -47,11 +51,21 @@ export function TravelingCircle() {
       } else {
         intersectionDocYRef.current = viewportH + 488;
       }
+
+      // On phones there is no grid intersection to dock into, so the circle is
+      // just a soft backdrop: seed it small + dim so it never flashes huge.
+      if (mobile) {
+        sc.set(0.46);
+        op.set(OPACITY_BASE * 0.7);
+        y.set(0);
+        ro.set(0);
+      }
     }
 
     measure();
     window.addEventListener('resize', measure);
     return () => window.removeEventListener('resize', measure);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { scrollY } = useScroll();
