@@ -20,6 +20,13 @@ const OPACITY_BASE = 0.7;
 export function TravelingCircle() {
   const reducedMotion = useReducedMotion();
 
+  // Client-only render: this is a decorative fixed overlay whose Framer Motion
+  // value styles (transform/opacity) can't be predicted during SSR, so the
+  // server HTML wouldn't match the client's first paint → hydration mismatch.
+  // Mount after hydration to sidestep it (no SEO/content cost; aria-hidden).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   // Refs so the scroll callback always reads the latest measurements
   // without stale closure from useState.
   const heroHeightRef       = useRef(900);
