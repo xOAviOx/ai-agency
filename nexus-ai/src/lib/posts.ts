@@ -18,6 +18,79 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: 'ai-voice-agents-for-business',
+    title: 'Never Miss Another Call: What an AI Voice Agent Does for Your Business',
+    excerpt:
+      'Every missed call is missed revenue. Here’s what an AI voice agent actually does — and why it’s the cheapest full-time hire you’ll ever make.',
+    date: 'May 30, 2026',
+    readTime: '5 min read',
+    tag: 'Voice AI',
+    content: [
+      {
+        type: 'p',
+        text: 'Here’s an uncomfortable number: most small and mid-sized businesses miss between 25% and 50% of their inbound calls. After hours, during lunch, when the front desk is slammed — the phone rings out, the caller hangs up, and more often than not they call a competitor instead. Every one of those is revenue that quietly walked away. An AI voice agent is built to make sure that never happens again.',
+      },
+      { type: 'h2', text: 'What an AI voice agent actually is' },
+      {
+        type: 'p',
+        text: 'Forget the clunky “press 1 for sales” phone trees you hate. A modern AI voice agent is a conversational system that answers the phone, talks in a natural human voice, understands what the caller wants, and actually does something about it — books the appointment, answers the question, takes the message, or hands off to a person. It holds a real back-and-forth conversation, handles interruptions, and works 24/7 without a lunch break or a bad day.',
+      },
+      { type: 'h2', text: 'What it can do for you' },
+      {
+        type: 'p',
+        text: 'The point isn’t novelty — it’s the work it quietly takes off your team’s plate, every hour of every day:',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Answer every call instantly — no hold music, no voicemail, no missed leads.',
+          'Book appointments straight into your calendar while the caller is still on the line.',
+          'Qualify inbound leads and route the hot ones to a human immediately.',
+          'Answer the same FAQs (hours, pricing, location) it gets asked fifty times a day.',
+          'Take detailed messages and follow up on missed calls automatically.',
+        ],
+      },
+      { type: 'h2', text: 'Where it pays off fastest' },
+      {
+        type: 'p',
+        text: 'You don’t need to automate every call to win. The biggest, fastest returns almost always come from a few specific places:',
+      },
+      {
+        type: 'ul',
+        items: [
+          'After-hours and weekend calls you currently miss entirely.',
+          'Reception overload — when one person can’t answer three lines at once.',
+          'Speed-to-lead: calling a new lead back in seconds instead of hours.',
+          'High-volume, repetitive questions that eat your team’s focus.',
+        ],
+      },
+      { type: 'h2', text: '“But won’t it sound like a robot?”' },
+      {
+        type: 'p',
+        text: 'It’s the first thing everyone asks — and a fair one. The honest answer: a badly built one will, and a well-built one won’t. Today’s voice models respond in real time, sound genuinely human, and handle being interrupted mid-sentence. Just as important, you stay in control: you decide exactly what it can say, what it must never do, and the moment it should hand a call to a real person. Done right, most callers don’t realize they weren’t talking to a human.',
+      },
+      { type: 'h2', text: 'How to get started' },
+      {
+        type: 'p',
+        text: 'Start narrow and prove it on one call type before expanding:',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Pick your highest-volume or most-missed call type (e.g. booking, or after-hours).',
+          'Define what the agent should handle — and exactly when to escalate to a human.',
+          'Connect it to your calendar and CRM so it can actually take action.',
+          'Test it on real calls, then expand to more scenarios once it’s earning its keep.',
+        ],
+      },
+      { type: 'h2', text: 'The bottom line' },
+      {
+        type: 'p',
+        text: 'An AI voice agent is the closest thing to a tireless, always-available team member: it answers instantly, never forgets to follow up, and costs a fraction of a full-time hire. For most businesses, the question isn’t whether to use one — it’s which calls to put it on first. At NEXUS we design, build, and deploy these agents end to end — and you can talk to a live one right now on our portfolio page to hear exactly how it sounds.',
+      },
+    ],
+  },
+  {
     slug: 'ai-agents-vs-automation',
     title: 'AI Agents vs. Automation: Which One Does Your Business Actually Need?',
     excerpt:
