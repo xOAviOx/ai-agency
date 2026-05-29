@@ -164,7 +164,7 @@ export function Navigation() {
           <div className="flex items-center gap-3">
             <span
               className="text-white font-bold text-xl tracking-tight"
-              style={{ fontFamily: 'var(--font-geist-sans)' }}
+              style={{ fontFamily: 'var(--font-display)' }}
             >
               NEXUS
             </span>
