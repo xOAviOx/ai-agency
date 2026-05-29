@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { ArrowUpRight, Shield, Lock, BadgeCheck, Sparkles } from 'lucide-react';
+import { openCalendly } from '@/lib/booking';
 
 const SERVICES = [
   'AI Agents & Workflows',

@@ -36,7 +36,11 @@ function CtaCopy() {
         operators, embedded like in-house.
       </p>
       <div className="flex flex-col items-center gap-3">
-        <button className="flex items-center gap-2.5 px-8 py-4 text-base font-medium text-white bg-gradient-to-b from-violet-600 to-violet-700 rounded-md shadow-[0_0_40px_rgba(124,58,237,0.4)] hover:shadow-[0_0_60px_rgba(124,58,237,0.6)] transition-all duration-300 group">
+        <button
+          type="button"
+          onClick={() => openCalendly()}
+          className="flex items-center gap-2.5 px-8 py-4 text-base font-medium text-white bg-gradient-to-b from-violet-600 to-violet-700 rounded-md shadow-[0_0_40px_rgba(124,58,237,0.4)] hover:shadow-[0_0_60px_rgba(124,58,237,0.6)] transition-all duration-300 group cursor-pointer"
+        >
           Start a project
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </button>
