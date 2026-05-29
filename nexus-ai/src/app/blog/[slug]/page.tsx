@@ -5,6 +5,8 @@ import { ArrowLeft } from 'lucide-react';
 import { Navigation } from '@/components/sections/navigation';
 import { Footer } from '@/components/sections/footer';
 import { CalendlyButton } from '@/components/ui/calendly-button';
+import { Reveal } from '@/components/ui/reveal';
+import { AmbientCircle } from '@/components/ui/ambient-circle';
 import { POSTS, getPost, type PostBlock } from '@/lib/posts';
 
 export function generateStaticParams() {
