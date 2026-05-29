@@ -16,6 +16,14 @@ const STATS = [
   { value: '—', label: 'Client retention' },
 ];
 
+/* NOTE: placeholder team — swap initials/names/roles/bios for the real makers. */
+const TEAM = [
+  { initials: 'AJ', name: 'Alex Jordan', role: 'Founder / AI Engineer', color: '#7C3AED' },
+  { initials: 'SR', name: 'Sara Ruiz', role: 'Design Lead', color: '#2563EB' },
+  { initials: 'MP', name: 'Marco Pratt', role: 'Automation Strategist', color: '#059669' },
+  { initials: 'DC', name: 'Dev Chen', role: 'Full-stack Engineer', color: '#D97706' },
+];
+
 export default function AboutPage() {
   return (
     <>
@@ -43,6 +51,45 @@ export default function AboutPage() {
               >
                 <p className="display-l text-white mb-2">{s.value}</p>
                 <p className="mono-caption text-white/40">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Team (anchor target for "Meet the makers") ── */}
+        <section
+          id="team"
+          className="mx-auto max-w-[1280px] px-6 md:px-12 pb-32 scroll-mt-28"
+        >
+          <div className="mb-4 inline-flex items-center gap-2">
+            <div className="h-px w-4 bg-violet-500" />
+            <span className="mono-caption text-violet-400">Meet the makers</span>
+          </div>
+          <h2 className="display-l text-white max-w-2xl mb-4">
+            The people who build your automations.
+          </h2>
+          <p className="body-l text-white/55 max-w-2xl mb-12">
+            {/* TODO: replace with your real team. */}
+            No account managers, no telephone games — you work directly with the
+            senior engineers and designers shipping your project.
+          </p>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {TEAM.map((member) => (
+              <div
+                key={member.name}
+                className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 transition-colors hover:border-violet-500/30"
+              >
+                <div
+                  className="mb-5 flex h-14 w-14 items-center justify-center rounded-full text-lg font-bold text-white"
+                  style={{ background: member.color }}
+                >
+                  {member.initials}
+                </div>
+                <p className="text-white font-medium text-lg leading-tight font-display">
+                  {member.name}
+                </p>
+                <p className="mono-caption text-white/40 mt-2">{member.role}</p>
               </div>
             ))}
           </div>
