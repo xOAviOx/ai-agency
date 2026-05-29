@@ -58,9 +58,9 @@ export function CTA() {
 
   return (
     <section data-section="cta" className="relative" style={{ background: 'var(--bg)' }}>
-      {/* Desktop / tablet stage — the circle backdrop is the travelling
-          <OrbitJourney/> circle that hands off from "Why NEXUS". */}
-      <div ref={stageRef} data-cta-stage className="relative hidden md:block" style={{ height: '200vh' }}>
+      {/* Scroll stage — the circle backdrop is the travelling <OrbitJourney/>
+          circle that hands off from "Why NEXUS". Active on mobile too. */}
+      <div ref={stageRef} data-cta-stage className="relative" style={{ height: '200vh' }}>
         <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden px-6">
           <motion.div
             style={{ opacity: copyOpacity, y: copyY }}
@@ -68,24 +68,6 @@ export function CTA() {
           >
             <CtaCopy />
           </motion.div>
-        </div>
-      </div>
-
-      {/* Mobile — static, self-contained (the travelling scene is desktop-only) */}
-      <div className="md:hidden px-6 py-28">
-        <div className="relative mx-auto max-w-md text-center">
-          {/* simple violet glow stand-in for the circle */}
-          <div
-            aria-hidden="true"
-            className="absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
-            style={{
-              background:
-                'radial-gradient(50% 50% at 50% 50%, rgba(124,58,237,0.16) 0%, transparent 70%)',
-            }}
-          />
-          <div className="relative z-10">
-            <CtaCopy />
-          </div>
         </div>
       </div>
 
