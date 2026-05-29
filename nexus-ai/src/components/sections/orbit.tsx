@@ -487,8 +487,11 @@ export function OrbitJourney() {
 
   /* ── Continuous "alive" drift + scroll sweep → shared spin ── */
   const time = useTime();
+  // Idle drift is desktop-only: on phones it both wastes per-frame work and
+  // de-syncs which pill is "active" from the slide in view. Scroll sweep alone
+  // then drives the dial deterministically (slide 1 ↔ first pill, etc.).
   const drift = useTransform(time, (t) =>
-    reducedMotion ? 0 : -(t / DRIFT_REV_MS) * 360
+    reducedMotion || isMobile ? 0 : -(t / DRIFT_REV_MS) * 360
   );
   const spin = useTransform([drift, sweepS] as MotionValue[], ([d, s]: number[]) => d + s);
   const counter = useTransform(spin, (s) => -s * 0.5);
