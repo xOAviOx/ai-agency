@@ -162,18 +162,21 @@ function OrbitItem({
   spin,
   orbitPhase,
   isActive,
+  nodeExitX,
 }: {
   phrase: (typeof PHRASES)[number];
   radius: number;
   spin: MotionValue<number>;
   orbitPhase: MotionValue<number>;
   isActive: boolean;
+  nodeExitX: MotionValue<number>; // shared slide-off-right on handoff
 }) {
   const Icon = phrase.icon;
   const time = useTime();
 
   const angle = useTransform(spin, (s) => phrase.angle + s);
-  const x = useTransform(angle, (a) => Math.cos(degToRad(a - 90)) * radius);
+  const baseX = useTransform(angle, (a) => Math.cos(degToRad(a - 90)) * radius);
+  const x = useTransform([baseX, nodeExitX] as MotionValue[], ([bx, nx]: number[]) => bx + nx);
   const yOrbit = useTransform(angle, (a) => Math.sin(degToRad(a - 90)) * radius);
 
   // Subtle float
