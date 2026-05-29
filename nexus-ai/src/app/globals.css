@@ -23,7 +23,7 @@
   --color-accent: var(--accent);
   --color-accent-glow: var(--accent-glow);
 
-  --font-display: var(--font-geist-sans);
+  --font-display: var(--font-space-grotesk);
   --font-body: var(--font-inter);
   --font-mono: var(--font-geist-mono);
 }
