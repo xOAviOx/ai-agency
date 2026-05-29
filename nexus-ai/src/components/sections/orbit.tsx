@@ -300,7 +300,7 @@ export function OrbitJourney() {
       opacity.set(inRegion ? (inCta ? 0.6 : 1) : 0);
       driftY.set(inCta ? CTA_RECENTER : 0);
       centerOp.set(inRegion && !inCta ? 1 : 0);
-      mt.set(inCta ? 0 : -240);
+      mt.set(inCta ? 0 : dialMt);
       sweep.set(inCta ? 60 : 180);
       orbitPhaseRaw.set(inRegion ? (inCta ? 1 : 0.4) : 0);
       return;
@@ -313,7 +313,7 @@ export function OrbitJourney() {
         scale.set(SMALL_SCALE);
         orbitPhaseRaw.set(0);
         sweep.set(180);
-        mt.set(-240);
+        mt.set(dialMt);
       } else if (sv > finalEnd) {
         orbitPhaseRaw.set(1);
         sweep.set(60); // Matches Slide 2 (120deg active node) sweep
