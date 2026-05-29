@@ -78,7 +78,11 @@ Scroll journey (phases in the `useMotionValueEvent(scrollY,...)` handler):
 - **B — small travel** through For Agencies.
 - **C — grow** small→full as you scroll PAST For Agencies (smoothstep); "Why NEXUS." fades in.
 - **D — active**: labels sweep **right→left** (`sweep = -p*ORBIT_SWEEP_DEG`); ring uses same `spin` so it rotates the SAME direction.
-- **E — exit**: shrink + fade into CTA.
+- **E — handoff**: labels gone; **"Why NEXUS." slides off to the RIGHT** (`whyX` → `size*0.95`) + fades while the SAME circle continues down toward the CTA (gentle `driftY`).
+- **F — CTA hold**: circle settles centered (`scale 0.92`, `opacity 0.6`) as the **CTA backdrop**; cta.tsx's copy fades in inside it (driven by the CTA stage's own `scrollYProgress`).
+- **G — final exit**: shrink + fade out into the trust marquee.
+
+Handoff requires `data-cta-stage` on the CTA's 200vh stage (measured as `ctaTop`/`ctaBottom`). `whyX` is a spring-smoothed MotionValue applied as `x` on the center-text wrapper. The CTA button stays interactive because it lives in cta.tsx (the fixed OrbitJourney overlay is `pointer-events-none`).
 
 Implementation notes / gotchas:
 - Markers: needs `data-section="showcase"`, `data-section="agencies"` on section roots + `data-orbit-stage` on the stage. Re-measures on resize + a 500ms timeout (lets GSAP pin spacers settle).
