@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { scrollToHash, scrollToTop } from '@/lib/smooth-scroll';
+import { openCalendly } from '@/lib/booking';
 
 /* Hash targets (e.g. "#work") smooth-scroll on the home page; route targets
    (e.g. "/about") navigate to a real page. */
