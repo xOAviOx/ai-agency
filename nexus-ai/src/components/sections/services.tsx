@@ -374,8 +374,10 @@ function Quadrant({ service, position }: QuadrantProps) {
         )}
       </AnimatePresence>
 
-      {/* Heading */}
-      <h3 className="display-l text-white relative z-10 max-w-[280px] leading-[1.1]">
+      {/* Heading — width in `ch` scales with the (wide) display font so long
+          single words like "Automation"/"Integration" always fit on a line;
+          break-words is a safety net so nothing can ever run off-screen. */}
+      <h3 className="display-l text-white relative z-10 max-w-[15ch] leading-[1.1] break-words hyphens-none">
         {service.title}
       </h3>
 
