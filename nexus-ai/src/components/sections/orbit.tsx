@@ -382,7 +382,7 @@ export function OrbitJourney() {
       opacity.set(lerp(0.95, 0.6, p));
       driftY.set(lerp(0, CTA_RECENTER, p));
       centerOp.set(0);
-      mt.set(lerp(-240, 0, p));
+      mt.set(lerp(dialMt, 0, p));
       sweep.set(60);
       orbitPhaseRaw.set(1);
 
