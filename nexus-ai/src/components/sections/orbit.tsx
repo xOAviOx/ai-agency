@@ -278,7 +278,7 @@ export function OrbitJourney() {
 
   // Scroll updater: Maps the 300vh normal-flow scroll range cleanly to the dial states
   const updateScroll = (sv: number) => {
-    const { showcaseTop, agenciesTop, orbitTop, orbitBottom, ctaBottom, vh } = m.current;
+    const { showcaseTop, agenciesTop, orbitTop, orbitBottom, ctaBottom, vh, isMobile, dialMt } = m.current;
     if (!orbitBottom) return;
 
     // Fast, responsive 300vh scroll keypoints inside a normal-flow container
