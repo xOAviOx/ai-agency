@@ -1,11 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { ConcentricCircles } from '@/components/ui/concentric-circles';
+import { PartnerForm } from '@/components/ui/partner-form';
 
 export function Agencies() {
   const reducedMotion = useReducedMotion();
+  const [partnerOpen, setPartnerOpen] = useState(false);
   return (
     <section
       id="agencies"
