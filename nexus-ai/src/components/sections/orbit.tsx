@@ -415,7 +415,12 @@ export function OrbitJourney() {
       const orbitTop = stage ? stage.getBoundingClientRect().top + window.scrollY : 0;
       const orbitBottom = stage ? orbitTop + stage.offsetHeight : 0;
 
-      m.current = { showcaseTop, agenciesTop, orbitTop, orbitBottom, vh };
+      // CTA stage — the dial circle carries on into here as the CTA backdrop.
+      const ctaStage = document.querySelector('[data-cta-stage]') as HTMLElement | null;
+      const ctaTop = ctaStage ? ctaStage.getBoundingClientRect().top + window.scrollY : 0;
+      const ctaBottom = ctaStage ? ctaTop + ctaStage.offsetHeight : 0;
+
+      m.current = { showcaseTop, agenciesTop, orbitTop, orbitBottom, ctaTop, ctaBottom, vh };
       updateScroll(window.scrollY);
     }
     measure();
