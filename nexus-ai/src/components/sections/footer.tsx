@@ -33,22 +33,46 @@ const wmLetter = {
   hover: { y: '-8%', color: 'rgba(168,85,247,1)', textShadow: '0 0 55px rgba(124,58,237,0.5)' },
 };
 
-function LinkColumn({ heading, links }: { heading: string; links: string[] }) {
+function LinkColumn({
+  heading,
+  links,
+  actions,
+}: {
+  heading: string;
+  links: string[];
+  actions?: Record<string, () => void>;
+}) {
+  const itemClass =
+    'group inline-flex items-center gap-1.5 text-[15px] text-white/60 transition-colors hover:text-white';
+  const arrow = (
+    <ArrowUpRight className="h-3.5 w-3.5 text-white/0 transition-all duration-200 group-hover:text-violet-300 group-hover:translate-x-0.5" />
+  );
   return (
     <div>
       <p className="mono-caption text-violet-400/70 mb-6">{heading}</p>
       <ul className="flex flex-col gap-4">
-        {links.map((link) => (
-          <li key={link}>
-            <a
-              href="#"
-              className="group inline-flex items-center gap-1.5 text-[15px] text-white/60 transition-colors hover:text-white"
-            >
-              {link}
-              <ArrowUpRight className="h-3.5 w-3.5 text-white/0 transition-all duration-200 group-hover:text-violet-300 group-hover:translate-x-0.5" />
-            </a>
-          </li>
-        ))}
+        {links.map((link) => {
+          const action = actions?.[link];
+          return (
+            <li key={link}>
+              {action ? (
+                <button
+                  type="button"
+                  onClick={action}
+                  className={`${itemClass} cursor-pointer border-0 bg-transparent p-0`}
+                >
+                  {link}
+                  {arrow}
+                </button>
+              ) : (
+                <a href="#" className={itemClass}>
+                  {link}
+                  {arrow}
+                </a>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
@@ -103,7 +127,11 @@ export function Footer() {
         {/* ── Row 2: link columns + badges ── */}
         <div className="grid grid-cols-1 gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1fr_1fr_auto]">
           <LinkColumn heading="Our services" links={SERVICES} />
-          <LinkColumn heading="Useful links" links={USEFUL_LINKS} />
+          <LinkColumn
+            heading="Useful links"
+            links={USEFUL_LINKS}
+            actions={{ 'Book a call': openCalendly }}
+          />
 
           {/* affiliation / trust badges */}
           <div className="md:col-span-2 lg:col-span-1">
