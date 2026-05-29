@@ -93,6 +93,15 @@ body {
   animation-play-state: paused;
 }
 
+/* ── Hidden scrollbar (mobile swipe carousels) ─────────────── */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* ── Lenis HTML setup ──────────────────────────────────────── */
 html.lenis, html.lenis body {
   height: auto;
