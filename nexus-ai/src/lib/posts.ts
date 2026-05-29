@@ -18,6 +18,86 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: 'ai-automation-cost-and-roi',
+    title: 'What Does AI Automation Actually Cost? A Plain-English Guide to ROI',
+    excerpt:
+      '“How much does it cost?” is the wrong first question. Here’s how to think about what AI automation is worth — and the simple math to prove it.',
+    date: 'May 30, 2026',
+    readTime: '6 min read',
+    tag: 'ROI',
+    content: [
+      {
+        type: 'p',
+        text: 'The first question almost everyone asks is “how much does it cost?” It’s the wrong place to start. A £500 automation that saves nothing is expensive; a £15,000 build that saves two salaries a year is cheap. The number that matters isn’t the price tag — it’s the return. So let’s break down what actually drives the cost, and the simple math to work out what it’s worth to you.',
+      },
+      { type: 'h2', text: 'What drives the cost' },
+      {
+        type: 'p',
+        text: 'No two automation projects are priced the same, but the cost almost always comes down to a handful of factors:',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Complexity — how many steps, decisions, and edge cases the workflow has.',
+          'Integrations — how many tools it has to talk to (CRM, calendar, billing, custom systems).',
+          'Custom AI vs. templated — a bespoke agent costs more than wiring up off-the-shelf blocks.',
+          'Volume and scale — handling 100 events a day is different from 100,000.',
+          'Ongoing support — monitoring, maintenance, and iteration after launch.',
+        ],
+      },
+      { type: 'h2', text: 'The three ways automation pays you back' },
+      {
+        type: 'p',
+        text: 'Return shows up in three distinct places. Add them up and you have your real ROI:',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Time saved — hours your team no longer spends on manual work, multiplied by what those hours cost you.',
+          'Revenue captured — faster response times, fewer missed leads, and more deals that don’t slip through the cracks.',
+          'Errors avoided — the cost of mistakes, rework, and missed follow-ups that simply stop happening.',
+        ],
+      },
+      { type: 'h2', text: 'A simple ROI calculation you can run today' },
+      {
+        type: 'p',
+        text: 'You don’t need a finance team for this. Take one process and estimate: hours it eats per week × your loaded hourly cost × 52. A task that burns 10 hours a week at £30/hour is costing you roughly £15,600 a year — every year. If automation removes most of that, the build pays for itself in months, then keeps paying. Do the same for revenue (what’s one recovered lead worth, times how many you miss?) and the case usually makes itself.',
+      },
+      { type: 'h2', text: 'Build vs. subscription vs. agency' },
+      {
+        type: 'p',
+        text: 'There are three common ways to get there, with different cost shapes:',
+      },
+      {
+        type: 'ul',
+        items: [
+          'DIY tools — cheapest in cash, most expensive in your time, and brittle when things change.',
+          'Off-the-shelf subscriptions — quick to start, but generic, per-seat, and rarely fit your exact process.',
+          'A custom agency build — higher upfront, but it fits your workflow exactly and becomes an asset you own.',
+        ],
+      },
+      { type: 'h2', text: 'How to keep the cost down' },
+      {
+        type: 'p',
+        text: 'The cheapest project is a focused one. To get strong ROI without overspending:',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Start with one high-leverage workflow, not ten at once.',
+          'Automate the predictable 80% and leave the rare edge cases to a human.',
+          'Measure the hours and revenue it returns in the first month.',
+          'Reinvest those savings into the next automation, and compound from there.',
+        ],
+      },
+      { type: 'h2', text: 'The bottom line' },
+      {
+        type: 'p',
+        text: 'AI automation isn’t a cost to minimise — it’s an investment to size correctly. Anchor on the return, start with the workflow that’s bleeding the most time or money, and let the savings fund what comes next. At NEXUS we scope every project against real ROI before we build, so you know what it’s worth before you spend a thing — book a call and we’ll run the numbers with you.',
+      },
+    ],
+  },
+  {
     slug: 'ai-voice-agents-for-business',
     title: 'Never Miss Another Call: What an AI Voice Agent Does for Your Business',
     excerpt:
