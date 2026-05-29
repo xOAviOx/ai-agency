@@ -368,7 +368,7 @@ export function Showcase() {
                 style={{
                   fontSize: 'clamp(5rem, 10vw, 9rem)',
                   letterSpacing: '-0.03em',
-                  fontFamily: 'var(--font-geist-sans)',
+                  fontFamily: 'var(--font-display)',
                 }}
               >
                 Show
