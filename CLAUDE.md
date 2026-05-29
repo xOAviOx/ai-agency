@@ -129,8 +129,47 @@ Implementation notes / gotchas:
 - TUNABLES for the handoff feel: phase boundaries `activeEnd/handoffEnd` (×vh of `orbitTop`), `CTA_RECENTER` (152), backdrop `scale 0.92`/`opacity 0.6`, `nodeExitX` distance (900), spring stiffness on `mtS`. Top-of-file: `DRIFT_REV_MS`, `SMALL_SCALE`.
 - Reusable parts: `RingSystem`, `Ring`, `OrbitItem`.
 
+## Multi-Page, Button Wiring & Integrations (added 2026-05-30)
+
+### Routes
+Home stays single-scroll. New App Router routes: `/about` (+`#team`), `/process` (+`#standards`),
+`/portfolio`, `/blog`, `/blog/[slug]`, `/privacy`, `/ai-policy`, `/terms`. Inner pages are animated
+with `<Reveal>` + `<AmbientCircle>` + card hover-lift, matching the home aesthetic.
+
+### Content sources (edit these — NO CMS)
+- `lib/posts.ts` — blog posts; add an object = new post (newest first). 4 posts: ROI, voice agents, agents-vs-automation, growth.
+- `lib/legal.ts` — PRIVACY / AI_POLICY / TERMS (UK/GDPR templates, NOT legal advice; governing law defaults to England & Wales).
+
+### Button wiring (all CTAs functional)
+- Nav `NAV_LINKS` now `{label,target}`: **Work→/portfolio**, Services→#services, About→/about, Blog→/blog.
+  Hash targets smooth-scroll when on "/", else `router.push("/#…")`. Logo→scrollToTop (or "/"). "For agencies"→#agencies.
+- **"Book a call" / "Start a project" everywhere → `openCalendly()`** (nav desktop+mobile, hero, cta, footer "Useful links", about/blog/process/portfolio buttons via `CalendlyButton`).
+- Showcase "View all →" cards (desktop + mobile) → `/portfolio`.
+- "Why NEXUS" orbit slides: "Meet the makers"→`/about#team`, "Our process"→`/process`, "Our architecture SLA"→`/process` (was `#standards`; user wanted top-of-page).
+- Footer legal links → `/privacy` `/ai-policy` `/terms`. `LinkColumn` accepts an `actions` map (used to route "Book a call"→openCalendly).
+
+### Integrations
+- **Calendly** (`lib/booking.ts`): `CALENDLY_URL = https://calendly.com/avishuklacode/new-meeting-1`. `openCalendly()` lazy-loads widget.js/css on first click → popup, falls back to new tab. Calendly auto-emails host on booking = the "notify". `CalendlyButton` for Server Components.
+- **Partner form** (`ui/partner-form.tsx`): modal from Agencies "Partner with us" (open-state in agencies.tsx). POSTs to **Web3Forms** (`WEB3FORMS_ACCESS_KEY=5f06f556-b045-4fa4-89aa-824a2e64e3a6`, or `NEXT_PUBLIC_WEB3FORMS_KEY`). Emails the address registered with that key. Honeypot + loading/success/error states.
+- **Voice agent demo** (`lib/voice-demo.ts`): `startVoiceDemo(id)` is a STUB returning false. "Try it" shows "connects once platform added". TODO: wire Vapi/ElevenLabs/Retell in ONE place here, return true when a call starts.
+
+### Lenis route-change fix (IMPORTANT gotcha)
+Lenis owns the scroll position, so Next's automatic scroll-to-top on navigation does NOT apply — you'd
+land on the previous page's scroll pixel (i.e. the footer of a short page). `lenis-provider.tsx` now uses
+`usePathname()` + a `lenisRef`: on route change it `lenis.scrollTo(0,{immediate:true})`, or if the URL has
+a hash, `requestAnimationFrame` → `lenis.scrollTo(el,{offset:-88})`. **In-page anchors must use
+`scrollToHash` (smooth-scroll.ts), not raw `<a href="#">`**, for the same reason. Use `scroll-mt-28` on
+hash-target sections so the fixed 80px header doesn't cover them.
+
+### Pending content TODOs (placeholders in code)
+- About: real team (names/roles/photos) + real stat numbers.
+- Process: real steps + SLA numbers (uptime %, delivery days).
+- Portfolio: real website name/tag/blurb/URL + screenshots (replace gradient thumbs); real voice agents + pick voice platform.
+- Legal: confirm legal entity name, contact email, governing law.
+
 ## Build Status
 All 10 build steps complete. Polish pass done (reduced-motion CSS, TypeScript type fix).
+Expanded into a multi-page site (about/process/portfolio/blog/legal) with every CTA wired (2026-05-30). `tsc --noEmit` clean.
 
 ## Known Issues / Notes
 - `ConcentricCircles` rotation prop accepts `number | MotionValue<number>` — Framer Motion handles both in style objects natively
