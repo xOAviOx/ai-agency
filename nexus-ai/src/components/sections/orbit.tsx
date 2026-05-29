@@ -268,7 +268,7 @@ export function OrbitJourney() {
 
   // Scroll updater: Maps the 300vh normal-flow scroll range cleanly to the dial states
   const updateScroll = (sv: number) => {
-    const { showcaseTop, agenciesTop, orbitTop, orbitBottom, vh } = m.current;
+    const { showcaseTop, agenciesTop, orbitTop, orbitBottom, ctaBottom, vh } = m.current;
     if (!orbitBottom) return;
 
     // Fast, responsive 300vh scroll keypoints inside a normal-flow container
@@ -278,27 +278,33 @@ export function OrbitJourney() {
     const growStart   = orbitTop - vh * 0.4;
     const growEnd     = orbitTop + vh * 0.1;
     const activeEnd   = orbitTop + vh * 1.95;
-    const exitEnd     = orbitTop + vh * 2.3;
+    const handoffEnd  = orbitTop + vh * 2.75;                   // pills exit + circle recenters
+    const ctaHoldEnd  = ctaBottom ? ctaBottom - vh : handoffEnd + vh; // circle = CTA backdrop
+    const finalEnd    = ctaBottom ? ctaBottom : ctaHoldEnd + vh * 0.6;
+    const CTA_RECENTER = 152; // px to drop the dial so its CIRCLE (not the column) centers
 
     if (reducedMotion) {
-      const inRegion = sv >= growStart && sv <= exitEnd;
-      scale.set(inRegion ? 1 : SMALL_SCALE);
-      opacity.set(inRegion ? 1 : 0);
-      driftY.set(0);
-      centerOp.set(inRegion ? 1 : 0);
-      sweep.set(180);
-      orbitPhaseRaw.set(inRegion ? 0.4 : 0);
+      const inRegion = sv >= growStart && sv <= finalEnd;
+      const inCta = sv >= handoffEnd;
+      scale.set(inRegion ? (inCta ? 0.92 : 1) : SMALL_SCALE);
+      opacity.set(inRegion ? (inCta ? 0.6 : 1) : 0);
+      driftY.set(inCta ? CTA_RECENTER : 0);
+      centerOp.set(inRegion && !inCta ? 1 : 0);
+      mt.set(inCta ? 0 : -240);
+      sweep.set(inCta ? 60 : 180);
+      orbitPhaseRaw.set(inRegion ? (inCta ? 1 : 0.4) : 0);
       return;
     }
 
-    /* Hidden: before the journey, over the parallax, and after the exit. */
-    if (sv < appearStart || (sv >= preHide && sv < reappear) || sv > exitEnd) {
+    /* Hidden: before the journey, over the parallax, and after the CTA. */
+    if (sv < appearStart || (sv >= preHide && sv < reappear) || sv > finalEnd) {
       opacity.set(0);
       if (sv < reappear) {
         scale.set(SMALL_SCALE);
         orbitPhaseRaw.set(0);
         sweep.set(180);
-      } else if (sv > exitEnd) {
+        mt.set(-240);
+      } else if (sv > finalEnd) {
         orbitPhaseRaw.set(1);
         sweep.set(60); // Matches Slide 2 (120deg active node) sweep
       }
@@ -315,6 +321,7 @@ export function OrbitJourney() {
       centerOp.set(0);
       sweep.set(180);
       orbitPhaseRaw.set(0);
+      mt.set(-240);
 
     /* Phase B — small travelling circle THROUGH For Agencies. */
     } else if (sv < growStart) {
@@ -325,6 +332,7 @@ export function OrbitJourney() {
       centerOp.set(0);
       sweep.set(180);
       orbitPhaseRaw.set(0);
+      mt.set(-240);
 
     /* Phase C — transition small → BIG as you scroll past For Agencies. */
     } else if (sv < growEnd) {
@@ -335,6 +343,7 @@ export function OrbitJourney() {
       centerOp.set(Math.min(1, Math.max(0, (p - 0.5) / 0.5)));
       sweep.set(180);
       orbitPhaseRaw.set(0);
+      mt.set(-240);
 
     /* Phase D — active: snappy physical stepped dial brings nodes one-by-one to 6 o'clock focus! */
     } else if (sv < activeEnd) {
@@ -343,21 +352,45 @@ export function OrbitJourney() {
       opacity.set(0.95);
       driftY.set(0);
       centerOp.set(1);
-      
+      mt.set(-240);
+
       // Calculate stepped snaps out of the 3 scrolling blocks (Index 0 to 2)
       const rawIndex = p * 2;
       const snappedIndex = snapValue(rawIndex);
       sweep.set(180 - snappedIndex * 60);
-      
+
       orbitPhaseRaw.set(p);
 
-    /* Phase E — exit: shrink + fade into the next section. */
+    /* Phase E — handoff: pills slide off-right + fade (driven by orbitPhase),
+       the SAME circle recenters (mt → 0) and eases to its CTA-backdrop state. */
+    } else if (sv < handoffEnd) {
+      const p = smooth(clamp((sv - activeEnd) / (handoffEnd - activeEnd)));
+      scale.set(lerp(1, 0.92, p));
+      opacity.set(lerp(0.95, 0.6, p));
+      driftY.set(lerp(0, CTA_RECENTER, p));
+      centerOp.set(0);
+      mt.set(lerp(-240, 0, p));
+      sweep.set(60);
+      orbitPhaseRaw.set(1);
+
+    /* Phase F — CTA hold: centered dimmed circle behind the CTA copy. */
+    } else if (sv < ctaHoldEnd) {
+      scale.set(0.92);
+      opacity.set(0.6);
+      driftY.set(CTA_RECENTER);
+      centerOp.set(0);
+      mt.set(0);
+      sweep.set(60);
+      orbitPhaseRaw.set(1);
+
+    /* Phase G — final exit: shrink + fade out into the trust marquee. */
     } else {
-      const p = Math.min(1, Math.max(0, (sv - activeEnd) / (exitEnd - activeEnd)));
-      scale.set(lerp(1, 0.86, p));
-      opacity.set(lerp(0.95, 0, p));
-      driftY.set(lerp(0, -vh * 0.08, p));
-      centerOp.set(lerp(1, 0, Math.min(1, Math.max(0, p * 1.4))));
+      const p = smooth(clamp((sv - ctaHoldEnd) / (finalEnd - ctaHoldEnd)));
+      scale.set(lerp(0.92, 0.8, p));
+      opacity.set(lerp(0.6, 0, p));
+      driftY.set(CTA_RECENTER - vh * 0.06 * p);
+      centerOp.set(0);
+      mt.set(0);
       sweep.set(60);
       orbitPhaseRaw.set(1);
     }
