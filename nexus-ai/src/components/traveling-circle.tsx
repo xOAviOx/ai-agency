@@ -112,6 +112,9 @@ export function TravelingCircle() {
     }
   });
 
+  // All hooks above run unconditionally (React rules); only the output is gated.
+  if (!mounted) return null;
+
   return (
     // Fixed, full-viewport wrapper so flex-centering places the circle at
     // the viewport mid-point; the y spring shifts the whole plane.
