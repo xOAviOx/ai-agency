@@ -640,10 +640,13 @@ export function Orbit() {
               <p className="mt-3 text-sm lg:text-[15px] text-white/50 leading-relaxed font-body">
                 You speak directly to the builders solving your problem. No administrative overhead, no telephone games with account managers—just direct engineering alignment and rapid startup-speed execution.
               </p>
-              <button className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider text-violet-300 border border-violet-500/20 bg-violet-500/5 hover:bg-violet-500/10 hover:text-violet-200 transition-colors cursor-pointer group font-body">
+              <Link
+                href="/about#team"
+                className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider text-violet-300 border border-violet-500/20 bg-violet-500/5 hover:bg-violet-500/10 hover:text-violet-200 transition-colors cursor-pointer group font-body"
+              >
                 Meet the makers
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-              </button>
+              </Link>
             </div>
           </div>
 
