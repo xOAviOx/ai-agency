@@ -8,7 +8,7 @@ import { X, ArrowRight, Check, Loader2 } from 'lucide-react';
    submissions land in that inbox. The key is PUBLIC by design (safe in client
    code). Set NEXT_PUBLIC_WEB3FORMS_KEY in .env.local, or replace the fallback. */
 const WEB3FORMS_ACCESS_KEY =
-  process.env.NEXT_PUBLIC_WEB3FORMS_KEY ?? 'REPLACE-WITH-YOUR-WEB3FORMS-KEY';
+  process.env.NEXT_PUBLIC_WEB3FORMS_KEY ?? '5f06f556-b045-4fa4-89aa-824a2e64e3a6';
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
