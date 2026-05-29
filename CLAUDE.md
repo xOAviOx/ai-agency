@@ -116,5 +116,6 @@ All 10 build steps complete. Polish pass done (reduced-motion CSS, TypeScript ty
 
 ## Known Issues / Notes
 - `ConcentricCircles` rotation prop accepts `number | MotionValue<number>` — Framer Motion handles both in style objects natively
-- GSAP ScrollTrigger horizontal parallax only activates on `min-width: 768px` via matchMedia
+- GSAP ScrollTrigger horizontal pin-parallax only activates on `min-width: 768px` via matchMedia. Below that, Showcase uses a native scroll-snap swipe carousel instead (intentional — pin+scrub fights touch momentum scroll and is the main mobile jank source). `.no-scrollbar` util in globals.css hides its scrollbar.
 - Lenis `raf` receives seconds from GSAP ticker, so it's multiplied by 1000 to convert to ms
+- Mobile perf cuts (phones): orbit pills drop `backdrop-blur` (`md:backdrop-blur-md`); dial idle `drift`+`float` disabled; pre-travel phases suppressed. Verify mobile via Playwright at 390×844 (`is_mobile`); note `window.innerHeight` can read a touch higher than CSS `100vh` in emulation — trust the eye over computed scroll offsets.
