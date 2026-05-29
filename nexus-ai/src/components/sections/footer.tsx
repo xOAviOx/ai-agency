@@ -21,6 +21,17 @@ const BADGES = [
   { icon: Sparkles, label: 'Enterprise', sub: 'AI-grade' },
 ];
 
+/* Giant bottom wordmark — staggered per-letter hover (lift + violet + glow) */
+const WORDMARK = 'NEXUS'.split('');
+const wmContainer = {
+  rest: {},
+  hover: { transition: { staggerChildren: 0.045 } },
+};
+const wmLetter = {
+  rest: { y: '0%', color: 'rgba(255,255,255,1)', textShadow: '0 0 0px rgba(124,58,237,0)' },
+  hover: { y: '-8%', color: 'rgba(168,85,247,1)', textShadow: '0 0 55px rgba(124,58,237,0.5)' },
+};
+
 function LinkColumn({ heading, links }: { heading: string; links: string[] }) {
   return (
     <div>
