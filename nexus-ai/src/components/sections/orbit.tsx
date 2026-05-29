@@ -163,6 +163,7 @@ function OrbitItem({
   orbitPhase,
   isActive,
   nodeExitX,
+  isMobile,
 }: {
   phrase: (typeof PHRASES)[number];
   radius: number;
@@ -170,6 +171,7 @@ function OrbitItem({
   orbitPhase: MotionValue<number>;
   isActive: boolean;
   nodeExitX: MotionValue<number>; // shared slide-off-right on handoff
+  isMobile: boolean;
 }) {
   const Icon = phrase.icon;
   const time = useTime();
@@ -179,8 +181,8 @@ function OrbitItem({
   const x = useTransform([baseX, nodeExitX] as MotionValue[], ([bx, nx]: number[]) => bx + nx);
   const yOrbit = useTransform(angle, (a) => Math.sin(degToRad(a - 90)) * radius);
 
-  // Subtle float
-  const float = useTransform(time, (t) => Math.sin(t / 1600 + phrase.angle) * 4);
+  // Subtle float (desktop only — keeps the dial perfectly still when idle on phones)
+  const float = useTransform(time, (t) => (isMobile ? 0 : Math.sin(t / 1600 + phrase.angle) * 4));
   const y = useTransform([yOrbit, float] as MotionValue[], ([o, f]: number[]) => o + f);
 
   // Collective fade in/out of nodes keyed to orbitPhase
