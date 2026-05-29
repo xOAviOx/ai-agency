@@ -72,26 +72,33 @@ travels across sections, driven by global `scrollY` + measured section offsets. 
 just a 300vh transparent "stage" (`data-orbit-stage`) that supplies scroll distance + the centered
 Why NEXUS moment; on mobile the travel scene is skipped for a stacked list.
 
-Scroll journey (phases in the `useMotionValueEvent(scrollY,...)` handler):
-- **A — small travel** (Case Study, before parallax): small circle (`SMALL_SCALE=0.14`) fades in/out, drifts.
-- **HIDDEN over Showcase parallax** — opacity forced 0 across `preHide → reappear` (never overlays parallax).
-- **B — small travel** through For Agencies.
-- **C — grow** small→full as you scroll PAST For Agencies (smoothstep); "Why NEXUS." fades in.
-- **D — active**: labels sweep **right→left** (`sweep = -p*ORBIT_SWEEP_DEG`); ring uses same `spin` so it rotates the SAME direction.
-- **E — handoff**: labels gone; **"Why NEXUS." slides off to the RIGHT** (`whyX` → `size*0.95`) + fades while the SAME circle continues down toward the CTA (gentle `driftY`).
-- **F — CTA hold**: circle settles centered (`scale 0.92`, `opacity 0.6`) as the **CTA backdrop**; cta.tsx's copy fades in inside it (driven by the CTA stage's own `scrollYProgress`).
+Current design = **rotary DIAL**: the circle is shifted up (`mt`, default `-240px`) so its bottom arc sits
+in the viewport; pill nodes (`OrbitItem`) orbit and the one nearest 6 o'clock (180°) zooms/glows
+(`isActive`, chosen by the `spin` solver). `sweep` steps through nodes via `snapValue` (stepped smoothstep).
+Center title "Why NEXUS." sits in a block BELOW the dial, shown only when `!showDetail`.
+
+Scroll journey (phases in `updateScroll(sv)`, called from the `scrollY` handler + on measure):
+- **A** small travel (Case Study, before parallax): `SMALL_SCALE=0.14`, fades in/out, drifts. `mt=-240`.
+- **HIDDEN over Showcase parallax** — opacity forced 0 across `preHide → reappear`.
+- **B** small travel through For Agencies. `mt=-240`.
+- **C** grow small→full past For Agencies (smoothstep); "Why NEXUS." fades in. `mt=-240`.
+- **D — active dial**: stepped `sweep = 180 - snappedIndex*60` brings nodes to 6 o'clock one by one.
+- **E — handoff**: pills **slide off to the RIGHT + fade** (`nodeExitX = useTransform(orbitPhase,[0.82,1],[0,900])`),
+  the SAME circle **recenters** (`mt -240→0`) and eases to backdrop (`scale 1→0.92`, `opacity .95→.6`),
+  and drops by `CTA_RECENTER=152px` (`driftY`) so the CIRCLE—not the flex column—centers.
+- **F — CTA hold**: centered dimmed circle (`scale .92`, `opacity .6`, `driftY 152`) behind the CTA copy.
 - **G — final exit**: shrink + fade out into the trust marquee.
 
-Handoff requires `data-cta-stage` on the CTA's 200vh stage (measured as `ctaTop`/`ctaBottom`). `whyX` is a spring-smoothed MotionValue applied as `x` on the center-text wrapper. The CTA button stays interactive because it lives in cta.tsx (the fixed OrbitJourney overlay is `pointer-events-none`).
+Handoff requires `data-cta-stage` on the CTA's 200vh stage (measured `ctaTop`/`ctaBottom`). cta.tsx copy
+fades in via its OWN `scrollYProgress` and stays interactive (OrbitJourney overlay is `pointer-events-none`).
 
 Implementation notes / gotchas:
-- Markers: needs `data-section="showcase"`, `data-section="agencies"` on section roots + `data-orbit-stage` on the stage. Re-measures on resize + a 500ms timeout (lets GSAP pin spacers settle).
-- Rings + center text + labels share ONE scale wrapper (grow as one object). Label radius = `size*0.46`.
+- Markers: needs `data-section="showcase"`, `data-section="agencies"`, `data-orbit-stage`, `data-cta-stage`. Re-measures on resize, a 500ms timeout, `document.fonts.ready`, and GSAP `ScrollTrigger` `refresh`.
+- `mt`/`mtS` (margin-top spring) recenters the dial; `nodeExitX` drives the pill slide-off (off `orbitPhase`).
 - `vectorEffect="non-scaling-stroke"` on all rings → thin strokes stay crisp at 0.14 scale.
-- Direction: sweep + continuous `drift` are BOTH negative (counter-clockwise = R→L). Flip both signs to reverse.
-- Scroll values are spring-smoothed (matches TravelingCircle pattern); continuous "alive" drift via `useTime` (rAF), independent of scroll.
-- Tunables at top of file: `DRIFT_REV_MS`, `ORBIT_SWEEP_DEG`, `SMALL_SCALE`.
-- Reusable parts in orbit.tsx: `RingSystem`, `Ring`, `OrbitItem`.
+- Scroll values are spring-smoothed; continuous "alive" drift via `useTime` (rAF), independent of scroll.
+- TUNABLES for the handoff feel: phase boundaries `activeEnd/handoffEnd` (×vh of `orbitTop`), `CTA_RECENTER` (152), backdrop `scale 0.92`/`opacity 0.6`, `nodeExitX` distance (900), spring stiffness on `mtS`. Top-of-file: `DRIFT_REV_MS`, `SMALL_SCALE`.
+- Reusable parts: `RingSystem`, `Ring`, `OrbitItem`.
 
 ## Build Status
 All 10 build steps complete. Polish pass done (reduced-motion CSS, TypeScript type fix).
