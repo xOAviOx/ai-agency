@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
 import { Navigation } from '@/components/sections/navigation';
 import { Footer } from '@/components/sections/footer';
+import { CalendlyButton } from '@/components/ui/calendly-button';
 
 export const metadata: Metadata = {
   title: 'About — NEXUS',
