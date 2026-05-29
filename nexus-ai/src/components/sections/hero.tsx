@@ -8,6 +8,7 @@ import {
   useReducedMotion,
 } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import { openCalendly } from '@/lib/booking';
 
 /* ── Animated headline word split ───────────────────────────── */
 function AnimatedHeadline({ text }: { text: string }) {
@@ -107,6 +108,8 @@ function MagneticButton() {
   return (
     <motion.button
       ref={ref}
+      type="button"
+      onClick={() => openCalendly()}
       style={{ x: springBx, y: springBy }}
       variants={{
         rest: { scale: 1 },
