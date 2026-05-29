@@ -416,7 +416,7 @@ export function Showcase() {
           <h2
             className="text-white font-bold leading-[0.95]"
             style={{
-              fontSize: 'clamp(3rem, 16vw, 4.5rem)',
+              fontSize: 'clamp(2.25rem, 10vw, 3.5rem)',
               letterSpacing: '-0.03em',
               fontFamily: 'var(--font-display)',
             }}
