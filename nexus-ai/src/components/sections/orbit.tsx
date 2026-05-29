@@ -416,7 +416,21 @@ export function OrbitJourney() {
   useEffect(() => {
     function measure() {
       const vh = window.innerHeight;
-      setSize(Math.min(window.innerWidth * 0.85, 780));
+      const vw = window.innerWidth;
+      const mobile = vw < 768;
+      const sz = Math.min(vw * 0.85, 780);
+      setSize(sz);
+      setIsMobile(mobile);
+
+      // Responsive dial geometry. The dial is pushed up by `dialMt` so its
+      // bottom arc sweeps the upper-middle of the viewport. On phones the
+      // circle is smaller, so the offset shrinks proportionally.
+      const rad = sz * 0.46;
+      const dialMt = mobile ? -Math.round(rad * 0.62) : -240;
+      const titleH = mobile ? 200 : 280;
+      // Drop the dial by half the (title block + its 24px top margin) so the
+      // CIRCLE — not the whole flex column — ends up centered in the CTA.
+      const ctaRecenter = Math.round((titleH + 24) / 2);
 
       const top = (sel: string) => {
         const el = document.querySelector(sel) as HTMLElement | null;
@@ -433,7 +447,10 @@ export function OrbitJourney() {
       const ctaTop = ctaStage ? ctaStage.getBoundingClientRect().top + window.scrollY : 0;
       const ctaBottom = ctaStage ? ctaTop + ctaStage.offsetHeight : 0;
 
-      m.current = { showcaseTop, agenciesTop, orbitTop, orbitBottom, ctaTop, ctaBottom, vh };
+      m.current = {
+        showcaseTop, agenciesTop, orbitTop, orbitBottom, ctaTop, ctaBottom, vh,
+        isMobile: mobile, dialMt, ctaRecenter,
+      };
       updateScroll(window.scrollY);
     }
     measure();
