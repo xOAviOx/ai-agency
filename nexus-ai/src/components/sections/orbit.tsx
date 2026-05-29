@@ -517,7 +517,7 @@ export function OrbitJourney() {
 
   return (
     <motion.div
-      className="pointer-events-none fixed inset-0 z-[5] hidden items-center justify-center md:flex"
+      className="pointer-events-none fixed inset-0 z-[5] flex items-center justify-center"
       style={{ opacity }}
       aria-hidden="true"
     >
