@@ -459,10 +459,10 @@ export function OrbitJourney() {
 
           <RingSystem rotation={spin} counter={counter} />
 
-          {/* Center label */}
+          {/* Center label — "Why NEXUS." slides off to the right on handoff */}
           <motion.div
             className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center"
-            style={{ opacity: centerOp }}
+            style={{ opacity: centerOp, x: whyXS }}
           >
             <p className="mono-caption mb-3 text-white/30">What you get</p>
             <h2
