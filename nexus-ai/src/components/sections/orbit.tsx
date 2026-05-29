@@ -291,7 +291,7 @@ export function OrbitJourney() {
     const handoffEnd  = orbitTop + vh * 2.75;                   // pills exit + circle recenters
     const ctaHoldEnd  = ctaBottom ? ctaBottom - vh : handoffEnd + vh; // circle = CTA backdrop
     const finalEnd    = ctaBottom ? ctaBottom : ctaHoldEnd + vh * 0.6;
-    const CTA_RECENTER = 152; // px to drop the dial so its CIRCLE (not the column) centers
+    const CTA_RECENTER = m.current.ctaRecenter; // px to drop the dial so its CIRCLE (not the column) centers
 
     if (reducedMotion) {
       const inRegion = sv >= growStart && sv <= finalEnd;
