@@ -57,10 +57,14 @@ export function CTA() {
   const copyY = useTransform(scrollYProgress, [0.06, 0.24], [28, 0]);
 
   return (
-    <section id="contact" data-section="cta" className="relative" style={{ background: 'var(--bg)' }}>
+    <section data-section="cta" className="relative" style={{ background: 'var(--bg)' }}>
       {/* Scroll stage — the circle backdrop is the travelling <OrbitJourney/>
           circle that hands off from "Why NEXUS". Active on mobile too. */}
       <div ref={stageRef} data-cta-stage className="relative" style={{ height: '200vh' }}>
+        {/* Scroll anchor for "Book a call" / "#contact". Placed ~mid-stage so the
+            sticky copy ("Got a project in mind?") is faded-in & centered when we
+            land here — the stage top would be blank (copy opacity is 0 there). */}
+        <div id="contact" aria-hidden className="absolute left-0 top-[58vh] h-px w-px" />
         <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden px-6">
           <motion.div
             style={{ opacity: copyOpacity, y: copyY }}
