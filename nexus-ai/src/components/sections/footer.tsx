@@ -142,6 +142,43 @@ export function Footer() {
           </div>
         </div>
       </div>
+
+      {/* ── Decorative divider with circle endpoints ── */}
+      <div className="relative flex items-center gap-3 px-6 md:px-12">
+        <div className="h-2 w-2 flex-shrink-0 rounded-full border border-white/15" />
+        <div className="flex-1 border-t border-dashed border-white/[0.08]" />
+        <div className="h-2 w-2 flex-shrink-0 rounded-full border border-white/15" />
+      </div>
+
+      {/* ── Giant wordmark (last, full-bleed) with staggered hover ── */}
+      <div className="relative overflow-hidden px-4 md:px-8">
+        <motion.div
+          initial="rest"
+          animate="rest"
+          whileHover="hover"
+          variants={wmContainer}
+          className="flex cursor-default select-none font-bold leading-[0.8]"
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 'clamp(4.5rem, 22vw, 20rem)',
+            letterSpacing: '-0.04em',
+          }}
+        >
+          {WORDMARK.map((ch, i) => (
+            <motion.span
+              key={i}
+              variants={wmLetter}
+              transition={{ type: 'spring', stiffness: 320, damping: 22 }}
+              className="inline-block will-change-transform"
+            >
+              {ch}
+            </motion.span>
+          ))}
+        </motion.div>
+      </div>
+
+      {/* tiny bottom breathing room */}
+      <div className="h-4" />
     </footer>
   );
 }
