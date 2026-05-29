@@ -603,7 +603,7 @@ export function OrbitJourney() {
    ────────────────────────────────────────────────────────────── */
 export function Orbit() {
   return (
-    <section className="relative" style={{ background: 'var(--bg)' }}>
+    <section id="why" className="relative" style={{ background: 'var(--bg)' }}>
       {/* Scroll stage — 300vh for 3 scrolling blocks. Now active on mobile too:
           the travelling dial (OrbitJourney) is driven by this stage's scroll. */}
       <div data-orbit-stage className="relative" style={{ height: '300vh' }}>
