@@ -463,9 +463,12 @@ export function Showcase() {
               </div>
               <h3 className="text-white font-medium">View all work</h3>
               <p className="text-sm text-white/40">See every project we&apos;ve shipped.</p>
-              <button className="w-full py-2 text-sm font-medium text-white border border-white/10 rounded-md hover:bg-white/[0.04] transition-colors">
+              <Link
+                href="/portfolio"
+                className="w-full py-2 text-center text-sm font-medium text-white border border-white/10 rounded-md hover:bg-white/[0.04] transition-colors"
+              >
                 View all →
-              </button>
+              </Link>
             </div>
           </article>
         </div>
