@@ -64,41 +64,48 @@ export default async function BlogPostPage({
   return (
     <>
       <Navigation />
-      <main className="relative min-h-screen" style={{ background: 'var(--bg)' }}>
-        <article className="mx-auto max-w-[760px] px-6 pt-36 pb-24 md:pt-44">
-          <Link
-            href="/blog"
-            className="mb-10 inline-flex items-center gap-1.5 text-sm text-white/45 transition-colors hover:text-white"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            All posts
-          </Link>
+      <main className="relative min-h-screen overflow-hidden" style={{ background: 'var(--bg)' }}>
+        <AmbientCircle />
+        <article className="relative mx-auto max-w-[760px] px-6 pt-36 pb-24 md:pt-44">
+          <Reveal>
+            <Link
+              href="/blog"
+              className="mb-10 inline-flex items-center gap-1.5 text-sm text-white/45 transition-colors hover:text-white"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              All posts
+            </Link>
 
-          <div className="mb-6 flex items-center gap-3">
-            <span className="mono-caption text-violet-400">{post.tag}</span>
-            <span className="mono-caption text-white/30">{post.date}</span>
-            <span className="mono-caption text-white/30">{post.readTime}</span>
-          </div>
+            <div className="mb-6 flex items-center gap-3">
+              <span className="mono-caption text-violet-400">{post.tag}</span>
+              <span className="mono-caption text-white/30">{post.date}</span>
+              <span className="mono-caption text-white/30">{post.readTime}</span>
+            </div>
 
-          <h1 className="display-l text-white mb-6">{post.title}</h1>
-          <p className="body-l text-white/55 mb-4 border-b border-white/[0.08] pb-10">
-            {post.excerpt}
-          </p>
+            <h1 className="display-l text-white mb-6">{post.title}</h1>
+            <p className="body-l text-white/55 mb-4 border-b border-white/[0.08] pb-10">
+              {post.excerpt}
+            </p>
+          </Reveal>
 
           <div className="mt-10">
             {post.content.map((block, i) => (
-              <Block key={i} block={block} />
+              <Reveal key={i} y={16}>
+                <Block block={block} />
+              </Reveal>
             ))}
           </div>
 
           {/* End-of-post CTA */}
-          <div className="mt-16 rounded-2xl border border-white/[0.08] bg-white/[0.02] px-8 py-10 text-center">
-            <h2 className="display-l text-white mb-3 text-[1.75rem]">Got a process worth automating?</h2>
-            <p className="body-l text-white/55 max-w-md mx-auto mb-8">
-              We&apos;ll find the one workflow that buys your team the most time — and build it.
-            </p>
-            <CalendlyButton />
-          </div>
+          <Reveal>
+            <div className="mt-16 rounded-2xl border border-white/[0.08] bg-white/[0.02] px-8 py-10 text-center">
+              <h2 className="display-l text-white mb-3 text-[1.75rem]">Got a process worth automating?</h2>
+              <p className="body-l text-white/55 max-w-md mx-auto mb-8">
+                We&apos;ll find the one workflow that buys your team the most time — and build it.
+              </p>
+              <CalendlyButton />
+            </div>
+          </Reveal>
         </article>
       </main>
       <Footer />
