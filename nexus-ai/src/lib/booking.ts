@@ -8,8 +8,8 @@ declare global {
   }
 }
 
-/** 👉 REPLACE with your real Calendly scheduling link. */
-export const CALENDLY_URL = 'https://calendly.com/REPLACE-ME/intro-call';
+/** Calendly scheduling link. Calendly emails the host on every booking. */
+export const CALENDLY_URL = 'https://calendly.com/avishuklacode/new-meeting-1';
 
 const CALENDLY_CSS = 'https://assets.calendly.com/assets/external/widget.css';
 const CALENDLY_JS = 'https://assets.calendly.com/assets/external/widget.js';
