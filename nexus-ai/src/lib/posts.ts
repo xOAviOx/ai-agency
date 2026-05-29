@@ -18,6 +18,82 @@ export type Post = {
 
 export const POSTS: Post[] = [
   {
+    slug: 'ai-agents-vs-automation',
+    title: 'AI Agents vs. Automation: Which One Does Your Business Actually Need?',
+    excerpt:
+      'The terms get used like synonyms, but agents and automation solve different problems. Here’s the practical way to tell which one fits the job in front of you.',
+    date: 'May 30, 2026',
+    readTime: '6 min read',
+    tag: 'AI Agents',
+    content: [
+      {
+        type: 'p',
+        text: 'Walk into any conversation about AI right now and you’ll hear “agent” and “automation” used like they mean the same thing. They don’t. They solve different problems, cost different amounts to build, and break in different ways. Knowing the difference is the fastest way to spend your budget on the right thing — so here’s the practical version.',
+      },
+      { type: 'h2', text: 'The short version' },
+      {
+        type: 'p',
+        text: 'Automation follows fixed rules you define up front: when X happens, do Y. It’s fast, cheap, and rock-solid — as long as the steps never change. An AI agent reasons. You give it a goal and the tools to reach it, and it decides what to do, handles messy input, and adapts when things don’t go to plan. Automation executes a recipe; an agent works toward an outcome.',
+      },
+      { type: 'h2', text: 'What automation is great at' },
+      {
+        type: 'p',
+        text: 'If a process is repetitive and predictable, automation is almost always the right tool. It’s cheaper to build, easier to trust, and runs forever without surprises.',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Moving data between tools — CRM, spreadsheets, invoicing, email.',
+          'Triggered sequences: a form is submitted, so a record is created and a welcome email goes out.',
+          'Scheduled jobs: nightly reports, reminders, backups, and syncs.',
+          'Rule-based routing: send this ticket to that team based on simple conditions.',
+        ],
+      },
+      { type: 'h2', text: 'What an AI agent adds' },
+      {
+        type: 'p',
+        text: 'Agents earn their keep the moment a task involves language, judgment, or variation you can’t fully script in advance.',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Reading and understanding free text — emails, support tickets, documents, contracts.',
+          'Making a call when there’s no clean rule: is this lead worth a sales follow-up?',
+          'Holding a real conversation with a customer and taking action mid-chat.',
+          'Pulling from several sources, weighing them, and producing an answer or a draft.',
+        ],
+      },
+      { type: 'h2', text: 'A simple way to choose' },
+      {
+        type: 'p',
+        text: 'Ask one question about the task: does it ever require judgment? If the steps are identical every single time, automate it — don’t pay for intelligence you don’t need. If the task changes based on context, wording, or a decision a person would normally make, that’s agent territory.',
+      },
+      { type: 'h2', text: 'The best systems use both' },
+      {
+        type: 'p',
+        text: 'In practice, the strongest setups combine the two. An agent handles the thinking — reading an inbound email, understanding what the customer wants, deciding the next step — then hands off to plain automation for the reliable mechanical work: update the CRM, book the slot, send the confirmation. You get the flexibility of AI where you need it and the dependability of automation everywhere else.',
+      },
+      { type: 'h2', text: 'How to get started' },
+      {
+        type: 'p',
+        text: 'You don’t choose between agents and automation in the abstract — you choose per task. Start by mapping one real workflow and marking each step:',
+      },
+      {
+        type: 'ul',
+        items: [
+          'Same every time → automate it.',
+          'Needs reading, judgment, or a decision → that step is for an agent.',
+          'Then connect them so work flows end to end without a person babysitting it.',
+        ],
+      },
+      { type: 'h2', text: 'Bottom line' },
+      {
+        type: 'p',
+        text: 'Automation makes predictable work disappear. AI agents handle the messy, judgment-heavy work that used to need a human. Most businesses need both — applied to the right steps. That’s what we do at NEXUS: we map your process, automate what’s repetitive, deploy agents where judgment is required, and wire it together so it runs like a teammate who never logs off.',
+      },
+    ],
+  },
+  {
     slug: 'how-ai-automation-helps-businesses-grow',
     title: 'How AI Automation Helps Businesses Grow (Without Adding Headcount)',
     excerpt:
