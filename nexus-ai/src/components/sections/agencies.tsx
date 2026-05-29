@@ -8,6 +8,7 @@ export function Agencies() {
   const reducedMotion = useReducedMotion();
   return (
     <section
+      id="agencies"
       data-section="agencies"
       className="relative py-32 overflow-hidden"
       style={{ background: 'var(--bg)' }}
