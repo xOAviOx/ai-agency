@@ -36,7 +36,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}
+      className={`${spaceGrotesk.variable} ${geistMono.variable} ${inter.variable} antialiased`}
     >
       <body>
         <LenisProvider>{children}</LenisProvider>
