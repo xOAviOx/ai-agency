@@ -25,14 +25,23 @@ export function CTA() {
   return (
     <section className="relative py-40 overflow-hidden" style={{ background: 'var(--bg)' }}>
       {/* Circle motif */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+      <div className="absolute top-1/2 left-1/2 z-0 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
         <motion.div
           animate={reducedMotion ? {} : { rotate: 360 }}
-          transition={{ duration: 100, repeat: Infinity, ease: 'linear' }}
+          transition={{ duration: 120, repeat: Infinity, ease: 'linear' }}
         >
-          <ConcentricCircles size={900} opacity={0.5} />
+          <ConcentricCircles size={1100} opacity={0.35} />
         </motion.div>
       </div>
+
+      {/* Readability vignette — softly pools the bg behind the copy so rings don't cut through text */}
+      <div
+        className="absolute inset-0 z-[1] pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse 46% 52% at 50% 42%, var(--bg) 0%, var(--bg) 30%, rgba(10,10,11,0.85) 48%, transparent 72%)',
+        }}
+      />
 
       <div className="relative z-10 mx-auto max-w-[1280px] px-6 md:px-12 text-center">
         {/* Eyebrow */}
