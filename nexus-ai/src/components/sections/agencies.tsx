@@ -159,6 +159,8 @@ export function Agencies() {
           </div>
         </div>
       </div>
+
+      <PartnerForm open={partnerOpen} onClose={() => setPartnerOpen(false)} />
     </section>
   );
 }
