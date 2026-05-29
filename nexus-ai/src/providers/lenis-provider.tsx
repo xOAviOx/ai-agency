@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { setLenis } from '@/lib/smooth-scroll';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,6 +15,9 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       touchMultiplier: 2,
     });
+
+    // Expose this instance so the nav (and anywhere else) can scrollTo sections.
+    setLenis(lenis);
 
     // Bridge Lenis virtual scroll to GSAP ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update);
