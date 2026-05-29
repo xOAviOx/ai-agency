@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useEffect, type CSSProperties } from 'react';
+import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { gsap } from 'gsap';
