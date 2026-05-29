@@ -295,7 +295,7 @@ export function OrbitJourney() {
   const orbitPhase = useSpring(orbitPhaseRaw, { stiffness: 200, damping: 40 });
 
   useMotionValueEvent(scrollY, 'change', (sv) => {
-    const { showcaseTop, agenciesTop, orbitTop, orbitBottom, vh } = m.current;
+    const { showcaseTop, agenciesTop, orbitTop, orbitBottom, ctaTop, ctaBottom, vh } = m.current;
     if (!orbitBottom) return;
 
     /* Scroll keypoints (document space):
@@ -305,35 +305,42 @@ export function OrbitJourney() {
        reappear     fades in small as For Agencies arrives
        growStart→growEnd   transitions small → big across the Agencies→stage seam
        activeEnd    end of the held Why NEXUS moment
-       exitEnd      fully gone into the CTA                                       */
+       handoffEnd   "Why NEXUS." has slid off-right; circle continues to the CTA
+       ctaHoldEnd   circle sits centered as the CTA backdrop through the CTA stage
+       finalEnd     circle finally shrinks + fades out into the trust marquee     */
     const appearStart = showcaseTop - vh * 1.1;
     const preHide     = showcaseTop - vh * 0.25;
     const reappear    = agenciesTop;
     const growStart   = orbitTop - vh * 0.4;
     const growEnd     = orbitTop + vh * 0.6;
     const activeEnd   = orbitBottom - vh;
-    const exitEnd     = activeEnd + vh * 0.6;
+    const handoffEnd  = orbitBottom;                              // end of orbit stage
+    const ctaHoldEnd  = ctaBottom ? ctaBottom - vh : handoffEnd + vh;
+    const finalEnd    = ctaBottom ? ctaBottom : ctaHoldEnd + vh * 0.6;
 
     if (reducedMotion) {
-      // Static: reveal at full size only inside the Why NEXUS region.
-      const inRegion = sv >= growStart && sv <= exitEnd;
+      // Static: reveal at full size across the whole Why NEXUS → CTA region.
+      const inRegion = sv >= growStart && sv <= finalEnd;
+      const inCta = sv >= handoffEnd;
       scale.set(inRegion ? 1 : SMALL_SCALE);
-      opacity.set(inRegion ? 1 : 0);
+      opacity.set(inRegion ? (inCta ? 0.6 : 1) : 0);
       driftY.set(0);
-      centerOp.set(inRegion ? 1 : 0);
+      centerOp.set(inRegion && !inCta ? 1 : 0);
+      whyX.set(inCta ? 600 : 0);
       sweep.set(0);
-      orbitPhaseRaw.set(inRegion ? 0.4 : 0);
+      orbitPhaseRaw.set(inRegion && !inCta ? 0.4 : inCta ? 1 : 0);
       return;
     }
 
-    /* Hidden: before the journey, over the parallax, and after the exit. */
-    if (sv < appearStart || (sv >= preHide && sv < reappear) || sv > exitEnd) {
+    /* Hidden: before the journey, over the parallax, and after the CTA. */
+    if (sv < appearStart || (sv >= preHide && sv < reappear) || sv > finalEnd) {
       opacity.set(0);
       // keep small unless we're already past the big moment
       if (sv < reappear) {
         scale.set(SMALL_SCALE);
         orbitPhaseRaw.set(0);
-      } else if (sv > exitEnd) {
+        whyX.set(0);
+      } else if (sv > finalEnd) {
         orbitPhaseRaw.set(1);
       }
       return;
@@ -348,6 +355,7 @@ export function OrbitJourney() {
       opacity.set(fade * 0.7);
       driftY.set(lerp(-vh * 0.12, vh * 0.12, p));
       centerOp.set(0);
+      whyX.set(0);
       sweep.set(0);
       orbitPhaseRaw.set(0);
 
@@ -358,6 +366,7 @@ export function OrbitJourney() {
       opacity.set(clamp(p / 0.25) * 0.75);
       driftY.set(lerp(-vh * 0.1, 0, p));
       centerOp.set(0);
+      whyX.set(0);
       sweep.set(0);
       orbitPhaseRaw.set(0);
 
@@ -368,6 +377,7 @@ export function OrbitJourney() {
       opacity.set(lerp(0.75, 0.95, p));
       driftY.set(0);
       centerOp.set(clamp((p - 0.5) / 0.5)); // "Why NEXUS." fades in late
+      whyX.set(0);
       sweep.set(0);
       orbitPhaseRaw.set(0);
 
@@ -378,16 +388,41 @@ export function OrbitJourney() {
       opacity.set(0.95);
       driftY.set(0);
       centerOp.set(1);
+      whyX.set(0);
       sweep.set(-p * ORBIT_SWEEP_DEG); // negative = counter-clockwise = R→L
       orbitPhaseRaw.set(p);
 
-    /* Phase E — exit: shrink + fade into the next section. */
+    /* Phase E — handoff: labels gone, "Why NEXUS." slides off to the RIGHT
+       and fades while the SAME circle continues toward the CTA. */
+    } else if (sv < handoffEnd) {
+      const p = smooth(clamp((sv - activeEnd) / (handoffEnd - activeEnd)));
+      scale.set(1);
+      opacity.set(0.95);
+      driftY.set(lerp(0, vh * 0.05, p)); // gentle travel downward
+      centerOp.set(lerp(1, 0, clamp(p / 0.7)));
+      whyX.set(lerp(0, size * 0.95, p)); // exit stage right
+      sweep.set(-ORBIT_SWEEP_DEG);
+      orbitPhaseRaw.set(1);
+
+    /* Phase F — CTA hold: circle settles centered as the CTA backdrop while
+       the section's copy fades in inside it. */
+    } else if (sv < ctaHoldEnd) {
+      scale.set(0.92);
+      opacity.set(0.6);
+      driftY.set(0);
+      centerOp.set(0);
+      whyX.set(size * 0.95);
+      sweep.set(-ORBIT_SWEEP_DEG);
+      orbitPhaseRaw.set(1);
+
+    /* Phase G — final exit: shrink + fade out into the trust marquee. */
     } else {
-      const p = clamp((sv - activeEnd) / (exitEnd - activeEnd));
-      scale.set(lerp(1, 0.86, p));
-      opacity.set(lerp(0.95, 0, p));
+      const p = clamp((sv - ctaHoldEnd) / (finalEnd - ctaHoldEnd));
+      scale.set(lerp(0.92, 0.8, p));
+      opacity.set(lerp(0.6, 0, p));
       driftY.set(lerp(0, -vh * 0.08, p));
-      centerOp.set(lerp(1, 0, clamp(p * 1.4)));
+      centerOp.set(0);
+      whyX.set(size * 0.95);
       sweep.set(-ORBIT_SWEEP_DEG);
       orbitPhaseRaw.set(1);
     }
