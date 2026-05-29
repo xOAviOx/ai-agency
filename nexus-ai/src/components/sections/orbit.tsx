@@ -518,6 +518,7 @@ export function OrbitJourney() {
               spin={spin}
               orbitPhase={orbitPhase}
               isActive={showDetail && activeSlide === i}
+              nodeExitX={nodeExitX}
             />
           ))}
         </motion.div>
