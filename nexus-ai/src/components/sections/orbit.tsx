@@ -326,34 +326,37 @@ export function OrbitJourney() {
       const p = Math.min(1, Math.max(0, (sv - appearStart) / (preHide - appearStart)));
       const fade = Math.min(Math.min(1, Math.max(0, p / 0.3)), Math.min(1, Math.max(0, (1 - p) / 0.3)));
       scale.set(SMALL_SCALE);
-      opacity.set(fade * 0.7);
+      // On phones we skip the small travelling-circle pre-journey — the dial
+      // simply grows in over "Why NEXUS" (lighter, less motion on small screens).
+      opacity.set(isMobile ? 0 : fade * 0.7);
       driftY.set(lerp(-vh * 0.12, vh * 0.12, p));
       centerOp.set(0);
       sweep.set(180);
       orbitPhaseRaw.set(0);
-      mt.set(-240);
+      mt.set(dialMt);
 
     /* Phase B — small travelling circle THROUGH For Agencies. */
     } else if (sv < growStart) {
       const p = Math.min(1, Math.max(0, (sv - reappear) / (growStart - reappear)));
       scale.set(SMALL_SCALE);
-      opacity.set(Math.min(1, Math.max(0, p / 0.25)) * 0.75);
+      opacity.set(isMobile ? 0 : Math.min(1, Math.max(0, p / 0.25)) * 0.75);
       driftY.set(lerp(-vh * 0.1, 0, p));
       centerOp.set(0);
       sweep.set(180);
       orbitPhaseRaw.set(0);
-      mt.set(-240);
+      mt.set(dialMt);
 
     /* Phase C — transition small → BIG as you scroll past For Agencies. */
     } else if (sv < growEnd) {
       const p = smooth(Math.min(1, Math.max(0, (sv - growStart) / (growEnd - growStart))));
       scale.set(lerp(SMALL_SCALE, 1, p));
-      opacity.set(lerp(0.75, 0.95, p));
+      // Mobile fades the dial in from 0 (no pre-journey to carry opacity over).
+      opacity.set(lerp(isMobile ? 0 : 0.75, 0.95, p));
       driftY.set(0);
       centerOp.set(Math.min(1, Math.max(0, (p - 0.5) / 0.5)));
       sweep.set(180);
       orbitPhaseRaw.set(0);
-      mt.set(-240);
+      mt.set(dialMt);
 
     /* Phase D — active: snappy physical stepped dial brings nodes one-by-one to 6 o'clock focus! */
     } else if (sv < activeEnd) {
@@ -362,7 +365,7 @@ export function OrbitJourney() {
       opacity.set(0.95);
       driftY.set(0);
       centerOp.set(1);
-      mt.set(-240);
+      mt.set(dialMt);
 
       // Calculate stepped snaps out of the 3 scrolling blocks (Index 0 to 2)
       const rawIndex = p * 2;
