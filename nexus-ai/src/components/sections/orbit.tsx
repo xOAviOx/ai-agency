@@ -11,29 +11,27 @@ import {
   useMotionValueEvent,
   useReducedMotion,
   MotionValue,
+  AnimatePresence,
 } from 'framer-motion';
 import { ArrowRight, Zap, Clock, Users, Star, Shield, Rocket } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { degToRad } from '@/lib/utils';
+import { degToRad, cn } from '@/lib/utils';
 
 /* ──────────────────────────────────────────────────────────────
-   "Why NEXUS" — a single circle that TRAVELS across sections.
+   "Why NEXUS" — a single giant rotary dial.
 
-   The circle is one fixed, full-viewport object (<OrbitJourney/>,
-   rendered at the page root). Driven by global scrollY it:
-
-     Showcase (parallax) ── appears small, faint, drifting
-            │
-            ▼  grows after "For Agencies"
-     Why NEXUS stage ───── full-size ring; labels sweep L→R;
-                           the ring rotates the SAME direction
-            │
-            ▼  fades + shrinks into the CTA
-
-   <Orbit/> itself is just a tall transparent "stage" in normal
-   flow that provides the scroll distance + a measurement marker
-   for the pinned Why NEXUS moment. On mobile the whole travelling
-   scene is skipped for a clean stacked list.
+   The circle acts as a massive dial positioned at the top-center
+   of the section. Driven by global scrollY, it:
+   
+     1. Pushes the dial center upwards (off-screen/high up) so only
+        the bottom arc sweeps through the viewport.
+     2. As you scroll, the nodes rotate through the bottom focus point
+        (6 o'clock / 180 degrees axis).
+     3. When a node rotates onto this axis, that point heavily ZOOMS
+        and glows.
+     4. The rich content sections (avatars, uptime charts, etc.)
+        scroll vertically in flow in front of the pinned circle,
+        matching the exact design layout of the SALO reference website!
    ────────────────────────────────────────────────────────────── */
 
 /* ── Orbit content ──────────────────────────────────────────── */
@@ -41,25 +39,31 @@ const PHRASES: {
   angle: number;
   headline: string;
   sub: string;
-  cta: string;
   icon: LucideIcon;
 }[] = [
-  { angle: 0,   headline: 'Ship in weeks',   sub: 'Not quarters.',          cta: 'Case studies', icon: Rocket },
-  { angle: 60,  headline: 'Embedded trust',  sub: 'Like in-house talent.',  cta: 'How we embed', icon: Shield },
-  { angle: 120, headline: 'Less downtime',   sub: 'More action.',           cta: 'Our process',  icon: Zap    },
-  { angle: 180, headline: '24-hour replies', sub: 'Always on, always you.', cta: 'How we work',  icon: Clock  },
-  { angle: 240, headline: 'Senior talent',   sub: 'On every project.',      cta: 'Meet the team',icon: Star   },
-  { angle: 300, headline: 'Direct access',   sub: 'No account managers.',   cta: 'Say hello',    icon: Users  },
+  { angle: 0,   headline: 'Direct access', sub: 'Meet the makers', icon: Users  },
+  { angle: 60,  headline: 'Embedded trust', sub: 'Slack + GitHub',  icon: Shield },
+  { angle: 120, headline: 'Less downtime',  sub: '99.98% uptime',   icon: Zap    },
+  { angle: 180, headline: '24-hour replies', sub: 'Always active',   icon: Clock  },
+  { angle: 240, headline: 'Senior talent',   sub: 'Expert builders', icon: Star   },
+  { angle: 300, headline: 'Ship in weeks',   sub: 'Startup speed',   icon: Rocket },
 ];
 
-/* Tunables — retune the whole journey here. */
+/* Tunables */
 const DRIFT_REV_MS = 140_000; // ms for one slow "alive" revolution (no scroll)
-const ORBIT_SWEEP_DEG = 180;  // right→left sweep across the Why NEXUS region
 const SMALL_SCALE = 0.14;     // size of the travelling circle before it grows
+
+// Snappy physical stepped dial transition function
+const snapValue = (x: number) => {
+  const integer = Math.floor(x);
+  const fractional = x - integer;
+  const snapT = Math.min(1, Math.max(0, (fractional - 0.275) / 0.45));
+  const easedT = snapT * snapT * (3 - 2 * snapT); // smoothstep
+  return integer + easedT;
+};
 
 /* ──────────────────────────────────────────────────────────────
    RingSystem — the oversized circle graphic.
-   Two stacked square SVGs so each layer rotates independently.
    ────────────────────────────────────────────────────────────── */
 const VB = 600;          // viewBox size
 const C = VB / 2;        // center
@@ -107,39 +111,37 @@ function RingSystem({
   const accentR = 286;
   return (
     <div className="relative h-full w-full">
-      {/* Main layer — rotates with the sweep (same direction as labels) */}
       <motion.svg
         viewBox={`0 0 ${VB} ${VB}`}
         className="absolute inset-0 h-full w-full transform-gpu will-change-transform"
         style={{ rotate: rotation }}
         aria-hidden="true"
       >
-        <Ring r={290} opacity={0.1} width={1} dash="46 22" />
+        <Ring r={290} opacity={0.06} width={1} dash="46 22" />
         <Ring
           r={accentR}
-          opacity={0.55}
+          opacity={0.35}
           width={1.5}
           color="#A855F7"
           dash={`${circ(accentR) * 0.2} ${circ(accentR)}`}
           rotate={-30}
         />
-        <Ring r={208} opacity={0.14} width={1} dash="2 12" />
-        <Ring r={120} opacity={0.1} width={1} />
+        <Ring r={208} opacity={0.08} width={1} dash="2 12" />
+        <Ring r={120} opacity={0.06} width={1} />
       </motion.svg>
 
-      {/* Counter layer — slower opposite spin for depth */}
       <motion.svg
         viewBox={`0 0 ${VB} ${VB}`}
         className="absolute inset-0 h-full w-full transform-gpu will-change-transform"
         style={{ rotate: counter }}
         aria-hidden="true"
       >
-        <Ring r={252} opacity={0.16} width={1} dash={`${circ(252) * 0.88} ${circ(252)}`} />
-        <Ring r={170} opacity={0.12} width={1} />
-        <Ring r={300} opacity={0.06} width={1} />
+        <Ring r={252} opacity={0.1} width={1} dash={`${circ(252) * 0.88} ${circ(252)}`} />
+        <Ring r={170} opacity={0.06} width={1} />
+        <Ring r={300} opacity={0.03} width={1} />
         <Ring
           r={170}
-          opacity={0.5}
+          opacity={0.25}
           width={1.5}
           color="#7C3AED"
           dash={`${circ(170) * 0.06} ${circ(170)}`}
@@ -151,21 +153,21 @@ function RingSystem({
 }
 
 /* ──────────────────────────────────────────────────────────────
-   OrbitItem — one label travelling around the ring.
-   Position is pure translation so text stays upright + readable.
+   OrbitItem — one sleek glowing badge pill orbiting the ring.
+   Pills are focused and heavily ZOOMED when reaching 6 o'clock (180deg).
    ────────────────────────────────────────────────────────────── */
 function OrbitItem({
   phrase,
-  index,
   radius,
   spin,
   orbitPhase,
+  isActive,
 }: {
   phrase: (typeof PHRASES)[number];
-  index: number;
   radius: number;
-  spin: MotionValue<number>;       // total rotation (drift + scroll sweep)
-  orbitPhase: MotionValue<number>; // 0→1 across the Why NEXUS region
+  spin: MotionValue<number>;
+  orbitPhase: MotionValue<number>;
+  isActive: boolean;
 }) {
   const Icon = phrase.icon;
   const time = useTime();
@@ -174,67 +176,65 @@ function OrbitItem({
   const x = useTransform(angle, (a) => Math.cos(degToRad(a - 90)) * radius);
   const yOrbit = useTransform(angle, (a) => Math.sin(degToRad(a - 90)) * radius);
 
-  // Subtle independent bob so the system never feels mechanical.
-  const float = useTransform(time, (t) => Math.sin(t / 1600 + phrase.angle) * 6);
+  // Subtle float
+  const float = useTransform(time, (t) => Math.sin(t / 1600 + phrase.angle) * 4);
   const y = useTransform([yOrbit, float] as MotionValue[], ([o, f]: number[]) => o + f);
 
-  // Individual staggered fade-in, collective fade-out — keyed to the
-  // Why NEXUS phase so labels only exist while the circle is big.
-  const inStart = index * 0.04;
+  // Collective fade in/out of nodes keyed to orbitPhase
   const opacity = useTransform(
     orbitPhase,
-    [inStart, inStart + 0.16, 0.82, 0.96],
+    [0, 0.15, 0.85, 0.98],
     [0, 1, 1, 0]
   );
 
   return (
     <motion.div
-      className="absolute left-1/2 top-1/2 transform-gpu will-change-transform"
+      className="absolute left-1/2 top-1/2 transform-gpu will-change-transform z-20"
       style={{ x, y, opacity }}
     >
-      <div className="group w-48 -translate-x-1/2 -translate-y-1/2 lg:w-56">
-        <div className="mb-2.5 flex h-9 w-9 items-center justify-center rounded-full border border-violet-500/25 bg-violet-500/10 shadow-[0_0_24px_-6px_rgba(124,58,237,0.6)]">
-          <Icon className="h-4 w-4 text-violet-300" />
+      <motion.div
+        className="flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 px-3.5 py-2 rounded-full border bg-black/85 backdrop-blur-md cursor-pointer transition-all duration-350 select-none shadow-[0_6px_20px_rgba(0,0,0,0.6)]"
+        animate={{
+          borderColor: isActive ? 'rgba(168, 85, 247, 0.55)' : 'rgba(255, 255, 255, 0.08)',
+          boxShadow: isActive 
+            ? '0 0 30px rgba(168, 85, 247, 0.35), inset 0 0 15px rgba(168, 85, 247, 0.15)' 
+            : '0 0 0px rgba(0,0,0,0)',
+          scale: isActive ? 1.35 : 0.86, // Heavily zoom active point on axis!
+        }}
+      >
+        <div className={cn(
+          "flex h-6.5 w-6.5 items-center justify-center rounded-full transition-colors duration-300",
+          isActive ? "bg-violet-500 text-white" : "bg-white/5 text-white/40"
+        )}>
+          <Icon className="h-3.5 w-3.5" />
         </div>
-        <h4 className="text-2xl font-semibold leading-tight tracking-tight text-white lg:text-[28px]">
+        <span className={cn(
+          "text-[10px] font-bold tracking-wider uppercase transition-colors duration-300 font-mono",
+          isActive ? "text-white" : "text-white/40"
+        )}>
           {phrase.headline}
-        </h4>
-        <p className="mt-1 text-sm text-white/45 lg:text-[15px]">{phrase.sub}</p>
-        <button className="mt-2 inline-flex items-center gap-1 text-[13px] text-violet-300/70 transition-colors hover:text-violet-200">
-          {phrase.cta}
-          <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
-        </button>
-      </div>
+        </span>
+      </motion.div>
     </motion.div>
   );
 }
 
 /* small helpers */
-const clamp = (v: number, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, v));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const smooth = (t: number) => t * t * (3 - 2 * t); // smoothstep easing
 
 /* ──────────────────────────────────────────────────────────────
    OrbitJourney — the fixed, travelling circle.
-   Rendered once at the page root; reads global scrollY and the
-   measured positions of Showcase / For Agencies / the Why NEXUS
-   stage to drive scale, opacity, drift, and the L→R sweep.
    ────────────────────────────────────────────────────────────── */
 export function OrbitJourney() {
   const reducedMotion = useReducedMotion();
 
-  // Base render size of the circle (full-size). Label radius tracks it.
-  const [size, setSize] = useState(640);
+  const [size, setSize] = useState(720);
   const radius = size * 0.46;
 
-  // Render client-side only. This is a decorative, rAF/spring-animated fixed
-  // overlay, so its initial motion-value styles can differ between the SSR
-  // snapshot and the client's first paint → hydration mismatch. Mounting it
-  // after hydration sidesteps that entirely (no content/SEO cost; aria-hidden).
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  // Measurements kept in refs so the scroll callback never reads stale state.
   const m = useRef({
     showcaseTop: 0,
     agenciesTop: 0,
@@ -243,10 +243,129 @@ export function OrbitJourney() {
     vh: 900,
   });
 
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [showDetail, setShowDetail] = useState(false);
+
+  /* ── Scroll-driven motion values ── */
+  const { scrollY } = useScroll();
+
+  const scale = useMotionValue(SMALL_SCALE);
+  const opacity = useMotionValue(0);
+  const driftY = useMotionValue(0);
+  const centerOp = useMotionValue(0);
+  const sweep = useMotionValue(180);         // Start sweep aligned to Slide 0 (180deg)
+  const orbitPhaseRaw = useMotionValue(0);  // 0→1 across the Why NEXUS region
+
+  const scaleS = useSpring(scale, { stiffness: 220, damping: 38 });
+  const driftS = useSpring(driftY, { stiffness: 220, damping: 38 });
+  const sweepS = useSpring(sweep, { stiffness: 180, damping: 28 }); // Snappy magnetic spring!
+  const orbitPhase = useSpring(orbitPhaseRaw, { stiffness: 200, damping: 40 });
+
+  // Scroll updater: Maps the 300vh normal-flow scroll range cleanly to the dial states
+  const updateScroll = (sv: number) => {
+    const { showcaseTop, agenciesTop, orbitTop, orbitBottom, vh } = m.current;
+    if (!orbitBottom) return;
+
+    // Fast, responsive 300vh scroll keypoints inside a normal-flow container
+    const appearStart = showcaseTop - vh * 1.1;
+    const preHide     = showcaseTop - vh * 0.25;
+    const reappear    = agenciesTop;
+    const growStart   = orbitTop - vh * 0.4;
+    const growEnd     = orbitTop + vh * 0.1;
+    const activeEnd   = orbitTop + vh * 1.95;
+    const exitEnd     = orbitTop + vh * 2.3;
+
+    if (reducedMotion) {
+      const inRegion = sv >= growStart && sv <= exitEnd;
+      scale.set(inRegion ? 1 : SMALL_SCALE);
+      opacity.set(inRegion ? 1 : 0);
+      driftY.set(0);
+      centerOp.set(inRegion ? 1 : 0);
+      sweep.set(180);
+      orbitPhaseRaw.set(inRegion ? 0.4 : 0);
+      return;
+    }
+
+    /* Hidden: before the journey, over the parallax, and after the exit. */
+    if (sv < appearStart || (sv >= preHide && sv < reappear) || sv > exitEnd) {
+      opacity.set(0);
+      if (sv < reappear) {
+        scale.set(SMALL_SCALE);
+        orbitPhaseRaw.set(0);
+        sweep.set(180);
+      } else if (sv > exitEnd) {
+        orbitPhaseRaw.set(1);
+        sweep.set(60); // Matches Slide 2 (120deg active node) sweep
+      }
+      return;
+    }
+
+    /* Phase A — small travelling circle BEFORE the parallax (Case Study). */
+    if (sv < preHide) {
+      const p = Math.min(1, Math.max(0, (sv - appearStart) / (preHide - appearStart)));
+      const fade = Math.min(Math.min(1, Math.max(0, p / 0.3)), Math.min(1, Math.max(0, (1 - p) / 0.3)));
+      scale.set(SMALL_SCALE);
+      opacity.set(fade * 0.7);
+      driftY.set(lerp(-vh * 0.12, vh * 0.12, p));
+      centerOp.set(0);
+      sweep.set(180);
+      orbitPhaseRaw.set(0);
+
+    /* Phase B — small travelling circle THROUGH For Agencies. */
+    } else if (sv < growStart) {
+      const p = Math.min(1, Math.max(0, (sv - reappear) / (growStart - reappear)));
+      scale.set(SMALL_SCALE);
+      opacity.set(Math.min(1, Math.max(0, p / 0.25)) * 0.75);
+      driftY.set(lerp(-vh * 0.1, 0, p));
+      centerOp.set(0);
+      sweep.set(180);
+      orbitPhaseRaw.set(0);
+
+    /* Phase C — transition small → BIG as you scroll past For Agencies. */
+    } else if (sv < growEnd) {
+      const p = smooth(Math.min(1, Math.max(0, (sv - growStart) / (growEnd - growStart))));
+      scale.set(lerp(SMALL_SCALE, 1, p));
+      opacity.set(lerp(0.75, 0.95, p));
+      driftY.set(0);
+      centerOp.set(Math.min(1, Math.max(0, (p - 0.5) / 0.5)));
+      sweep.set(180);
+      orbitPhaseRaw.set(0);
+
+    /* Phase D — active: snappy physical stepped dial brings nodes one-by-one to 6 o'clock focus! */
+    } else if (sv < activeEnd) {
+      const p = Math.min(1, Math.max(0, (sv - growEnd) / (activeEnd - growEnd)));
+      scale.set(1);
+      opacity.set(0.95);
+      driftY.set(0);
+      centerOp.set(1);
+      
+      // Calculate stepped snaps out of the 3 scrolling blocks (Index 0 to 2)
+      const rawIndex = p * 2;
+      const snappedIndex = snapValue(rawIndex);
+      sweep.set(180 - snappedIndex * 60);
+      
+      orbitPhaseRaw.set(p);
+
+    /* Phase E — exit: shrink + fade into the next section. */
+    } else {
+      const p = Math.min(1, Math.max(0, (sv - activeEnd) / (exitEnd - activeEnd)));
+      scale.set(lerp(1, 0.86, p));
+      opacity.set(lerp(0.95, 0, p));
+      driftY.set(lerp(0, -vh * 0.08, p));
+      centerOp.set(lerp(1, 0, Math.min(1, Math.max(0, p * 1.4))));
+      sweep.set(60);
+      orbitPhaseRaw.set(1);
+    }
+  };
+
+  useMotionValueEvent(scrollY, 'change', (sv) => {
+    updateScroll(sv);
+  });
+
   useEffect(() => {
     function measure() {
       const vh = window.innerHeight;
-      setSize(Math.min(window.innerWidth * 0.78, 760));
+      setSize(Math.min(window.innerWidth * 0.85, 780));
 
       const top = (sel: string) => {
         const el = document.querySelector(sel) as HTMLElement | null;
@@ -259,140 +378,65 @@ export function OrbitJourney() {
       const orbitBottom = stage ? orbitTop + stage.offsetHeight : 0;
 
       m.current = { showcaseTop, agenciesTop, orbitTop, orbitBottom, vh };
+      updateScroll(window.scrollY);
     }
     measure();
     window.addEventListener('resize', measure);
-    // Re-measure after layout settles (fonts / images / GSAP pin spacers).
+
+    // Listen to ScrollTrigger refresh so that measurements update when GSAP pins/spacers settle
+    let cleanupST: (() => void) | null = null;
+    import('gsap/ScrollTrigger')
+      .then(({ ScrollTrigger }) => {
+        ScrollTrigger.addEventListener('refresh', measure);
+        cleanupST = () => ScrollTrigger.removeEventListener('refresh', measure);
+        measure();
+      })
+      .catch((err) => console.error('ScrollTrigger listen error:', err));
+
     const t = setTimeout(measure, 500);
+    let fontsReady = false;
+    if (typeof document !== 'undefined' && document.fonts) {
+      document.fonts.ready.then(() => {
+        fontsReady = true;
+        measure();
+        setTimeout(measure, 200);
+      });
+    }
     return () => {
       window.removeEventListener('resize', measure);
+      if (cleanupST) cleanupST();
       clearTimeout(t);
     };
   }, []);
 
-  /* ── Scroll-driven motion values (imperatively set, then spring-smoothed) ── */
-  const { scrollY } = useScroll();
-
-  const scale = useMotionValue(SMALL_SCALE);
-  const opacity = useMotionValue(0);
-  const driftY = useMotionValue(0);
-  const centerOp = useMotionValue(0);
-  const sweep = useMotionValue(0);          // scroll contribution to rotation
-  const orbitPhaseRaw = useMotionValue(0);  // 0→1 across the Why NEXUS region
-
-  const scaleS = useSpring(scale, { stiffness: 220, damping: 38 });
-  const driftS = useSpring(driftY, { stiffness: 220, damping: 38 });
-  const sweepS = useSpring(sweep, { stiffness: 160, damping: 40 });
-  const orbitPhase = useSpring(orbitPhaseRaw, { stiffness: 200, damping: 40 });
-
-  useMotionValueEvent(scrollY, 'change', (sv) => {
-    const { showcaseTop, agenciesTop, orbitTop, orbitBottom, vh } = m.current;
-    if (!orbitBottom) return;
-
-    /* Scroll keypoints (document space):
-       appearStart  small circle fades in (around Case Study, before parallax)
-       preHide      fades back out as the parallax takes over
-       [preHide → reappear]  HIDDEN over the whole Showcase parallax
-       reappear     fades in small as For Agencies arrives
-       growStart→growEnd   transitions small → big across the Agencies→stage seam
-       activeEnd    end of the held Why NEXUS moment
-       exitEnd      fully gone into the CTA                                       */
-    const appearStart = showcaseTop - vh * 1.1;
-    const preHide     = showcaseTop - vh * 0.25;
-    const reappear    = agenciesTop;
-    const growStart   = orbitTop - vh * 0.4;
-    const growEnd     = orbitTop + vh * 0.6;
-    const activeEnd   = orbitBottom - vh;
-    const exitEnd     = activeEnd + vh * 0.6;
-
-    if (reducedMotion) {
-      // Static: reveal at full size only inside the Why NEXUS region.
-      const inRegion = sv >= growStart && sv <= exitEnd;
-      scale.set(inRegion ? 1 : SMALL_SCALE);
-      opacity.set(inRegion ? 1 : 0);
-      driftY.set(0);
-      centerOp.set(inRegion ? 1 : 0);
-      sweep.set(0);
-      orbitPhaseRaw.set(inRegion ? 0.4 : 0);
-      return;
-    }
-
-    /* Hidden: before the journey, over the parallax, and after the exit. */
-    if (sv < appearStart || (sv >= preHide && sv < reappear) || sv > exitEnd) {
-      opacity.set(0);
-      // keep small unless we're already past the big moment
-      if (sv < reappear) {
-        scale.set(SMALL_SCALE);
-        orbitPhaseRaw.set(0);
-      } else if (sv > exitEnd) {
-        orbitPhaseRaw.set(1);
-      }
-      return;
-    }
-
-    /* Phase A — small travelling circle BEFORE the parallax (Case Study).
-       Fades in, drifts down, fades out before the parallax dominates. */
-    if (sv < preHide) {
-      const p = clamp((sv - appearStart) / (preHide - appearStart));
-      const fade = Math.min(clamp(p / 0.3), clamp((1 - p) / 0.3));
-      scale.set(SMALL_SCALE);
-      opacity.set(fade * 0.7);
-      driftY.set(lerp(-vh * 0.12, vh * 0.12, p));
-      centerOp.set(0);
-      sweep.set(0);
-      orbitPhaseRaw.set(0);
-
-    /* Phase B — small travelling circle THROUGH For Agencies. */
-    } else if (sv < growStart) {
-      const p = clamp((sv - reappear) / (growStart - reappear));
-      scale.set(SMALL_SCALE);
-      opacity.set(clamp(p / 0.25) * 0.75);
-      driftY.set(lerp(-vh * 0.1, 0, p));
-      centerOp.set(0);
-      sweep.set(0);
-      orbitPhaseRaw.set(0);
-
-    /* Phase C — transition small → BIG as you scroll past For Agencies. */
-    } else if (sv < growEnd) {
-      const p = smooth(clamp((sv - growStart) / (growEnd - growStart)));
-      scale.set(lerp(SMALL_SCALE, 1, p));
-      opacity.set(lerp(0.75, 0.95, p));
-      driftY.set(0);
-      centerOp.set(clamp((p - 0.5) / 0.5)); // "Why NEXUS." fades in late
-      sweep.set(0);
-      orbitPhaseRaw.set(0);
-
-    /* Phase D — active: labels sweep right→left, ring rotates with them. */
-    } else if (sv < activeEnd) {
-      const p = clamp((sv - growEnd) / (activeEnd - growEnd));
-      scale.set(1);
-      opacity.set(0.95);
-      driftY.set(0);
-      centerOp.set(1);
-      sweep.set(-p * ORBIT_SWEEP_DEG); // negative = counter-clockwise = R→L
-      orbitPhaseRaw.set(p);
-
-    /* Phase E — exit: shrink + fade into the next section. */
-    } else {
-      const p = clamp((sv - activeEnd) / (exitEnd - activeEnd));
-      scale.set(lerp(1, 0.86, p));
-      opacity.set(lerp(0.95, 0, p));
-      driftY.set(lerp(0, -vh * 0.08, p));
-      centerOp.set(lerp(1, 0, clamp(p * 1.4)));
-      sweep.set(-ORBIT_SWEEP_DEG);
-      orbitPhaseRaw.set(1);
-    }
-  });
-
   /* ── Continuous "alive" drift + scroll sweep → shared spin ── */
   const time = useTime();
   const drift = useTransform(time, (t) =>
-    reducedMotion ? 0 : -(t / DRIFT_REV_MS) * 360 // negative = same R→L direction
+    reducedMotion ? 0 : -(t / DRIFT_REV_MS) * 360
   );
   const spin = useTransform([drift, sweepS] as MotionValue[], ([d, s]: number[]) => d + s);
   const counter = useTransform(spin, (s) => -s * 0.5);
 
-  // All hooks above run unconditionally; only the output is gated.
+  // Solver: Active node is the one closest to 180 degrees (bottom-most / 6 o'clock position)
+  useMotionValueEvent(spin, 'change', (s) => {
+    let bestIndex = 0;
+    let minDiff = Infinity;
+    PHRASES.forEach((p, idx) => {
+      const itemAngle = (p.angle + s) % 360;
+      let diff = Math.abs(itemAngle - 180);
+      if (diff > 180) diff = 360 - diff;
+      if (diff < minDiff) {
+        minDiff = diff;
+        bestIndex = idx;
+      }
+    });
+    setActiveSlide(bestIndex);
+  });
+
+  useMotionValueEvent(orbitPhase, 'change', (v) => {
+    setShowDetail(v > 0.04);
+  });
+
   if (!mounted) return null;
 
   return (
@@ -401,50 +445,63 @@ export function OrbitJourney() {
       style={{ opacity }}
       aria-hidden="true"
     >
-      <motion.div style={{ y: driftS }} className="relative flex items-center justify-center">
-        {/* Scaling stage — rings + labels scale together as one object */}
+      {/* Centered dial container - Circle shifts up so bottom arc sweeps through upper-middle */}
+      <motion.div style={{ y: driftS }} className="relative flex flex-col items-center justify-center">
+        {/* Giant Dial Circle */}
         <motion.div
           className="relative transform-gpu will-change-transform"
-          style={{ width: size, height: size, scale: scaleS }}
+          style={{ width: size, height: size, scale: scaleS, marginTop: '-240px' }}
         >
           {/* soft violet halo behind the rings */}
           <div
             className="pointer-events-none absolute inset-[12%] rounded-full blur-3xl"
-            style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.18), transparent 65%)' }}
+            style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.11), transparent 65%)' }}
           />
 
           <RingSystem rotation={spin} counter={counter} />
 
-          {/* Center label */}
-          <motion.div
-            className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center"
-            style={{ opacity: centerOp }}
-          >
-            <p className="mono-caption mb-3 text-white/30">What you get</p>
-            <h2
-              className="font-semibold tracking-tight text-white"
-              style={{
-                fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
-                letterSpacing: '-0.03em',
-                textShadow: '0 0 40px rgba(124,58,237,0.45)',
-              }}
-            >
-              Why NEXUS.
-            </h2>
-          </motion.div>
-
-          {/* Orbiting labels */}
+          {/* Orbiting nodes - lock & zoom at the bottom center (6 o'clock position) */}
           {PHRASES.map((phrase, i) => (
             <OrbitItem
               key={phrase.headline}
               phrase={phrase}
-              index={i}
               radius={radius}
               spin={spin}
               orbitPhase={orbitPhase}
+              isActive={showDetail && activeSlide === i}
             />
           ))}
         </motion.div>
+
+        {/* Dynamic Title placeholder when not showing dynamic cards */}
+        <div className="h-[280px] w-full max-w-4xl flex flex-col items-center justify-start mt-6 px-6 text-center pointer-events-none">
+          <AnimatePresence>
+            {!showDetail && (
+              <motion.div
+                key="main-title"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                className="flex flex-col items-center justify-center text-center mt-6"
+                style={{ opacity: centerOp }}
+              >
+                <p className="mono-caption mb-3 text-white/30 font-mono">What you get</p>
+                <h2
+                  className="font-bold tracking-tight text-white uppercase"
+                  style={{
+                    fontSize: 'clamp(2.3rem, 5vw, 3.8rem)',
+                    letterSpacing: '-0.04em',
+                    fontFamily: 'var(--font-display)',
+                    textShadow: '0 0 40px rgba(124,58,237,0.3)',
+                  }}
+                >
+                  Why NEXUS.
+                </h2>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </motion.div>
     </motion.div>
   );
@@ -452,28 +509,98 @@ export function OrbitJourney() {
 
 /* ──────────────────────────────────────────────────────────────
    Orbit — the in-flow "stage".
-   Desktop: a tall, transparent spacer that gives the journey its
-   scroll distance and a measurable Why NEXUS moment.
-   Mobile: a clean stacked list (the travelling scene is skipped).
    ────────────────────────────────────────────────────────────── */
 export function Orbit() {
   return (
     <section className="relative" style={{ background: 'var(--bg)' }}>
-      {/* Desktop / tablet stage — visuals come from <OrbitJourney/> */}
+      {/* Desktop / tablet stage — height is 300vh for 3 scrolling blocks */}
       <div data-orbit-stage className="relative hidden md:block" style={{ height: '300vh' }}>
-        {/* Ambient glow anchored to the centered Why NEXUS moment */}
-        <div className="sticky top-0 h-screen overflow-hidden">
+        {/* Sticky container that holds the ambient background glow */}
+        <div className="sticky top-0 h-screen overflow-hidden pointer-events-none">
           <div
             className="pointer-events-none absolute inset-0"
             style={{
               background:
-                'radial-gradient(ellipse 55% 55% at 50% 50%, rgba(124,58,237,0.08) 0%, transparent 70%)',
+                'radial-gradient(ellipse 55% 55% at 50% 50%, rgba(124,58,237,0.06) 0%, transparent 70%)',
             }}
           />
         </div>
+
+        {/* Stacked 100vh text content cards scrolling vertically in flow, layered on top of the circle */}
+        <div className="absolute inset-0 z-20 flex flex-col pointer-events-none">
+          {/* Slide 1 */}
+          <div className="h-screen w-full flex flex-col items-center justify-end pb-24 text-center">
+            <div className="flex flex-col items-center max-w-2xl px-6 pointer-events-auto">
+              <div className="mb-4 h-12 flex items-center justify-center overflow-visible">
+                <div className="flex -space-x-2 overflow-hidden bg-black/50 border border-white/10 rounded-full px-4 py-1.5 shadow-[0_0_20px_rgba(124,58,237,0.15)]">
+                  <img className="inline-block h-6.5 w-6.5 rounded-full ring-2 ring-black" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="Team member" />
+                  <img className="inline-block h-6.5 w-6.5 rounded-full ring-2 ring-black" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" alt="Team member" />
+                  <img className="inline-block h-6.5 w-6.5 rounded-full ring-2 ring-black" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80" alt="Team member" />
+                  <img className="inline-block h-6.5 w-6.5 rounded-full ring-2 ring-black" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80" alt="Team member" />
+                  <img className="inline-block h-6.5 w-6.5 rounded-full ring-2 ring-black" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80" alt="Team member" />
+                  <div className="flex h-6.5 w-6.5 items-center justify-center rounded-full bg-violet-900/50 ring-2 ring-black text-[9px] font-bold text-violet-300 font-mono">+</div>
+                </div>
+              </div>
+              <h3 className="text-white font-bold leading-tight tracking-tight text-2xl lg:text-3xl max-w-xl uppercase tracking-wide font-display">
+                Direct access to expert talent
+              </h3>
+              <p className="mt-3 text-sm lg:text-[15px] text-white/50 leading-relaxed font-body">
+                You speak directly to the builders solving your problem. No administrative overhead, no telephone games with account managers—just direct engineering alignment and rapid startup-speed execution.
+              </p>
+              <button className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider text-violet-300 border border-violet-500/20 bg-violet-500/5 hover:bg-violet-500/10 hover:text-violet-200 transition-colors cursor-pointer group font-body">
+                Meet the makers
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+              </button>
+            </div>
+          </div>
+
+          {/* Slide 2 */}
+          <div className="h-screen w-full flex flex-col items-center justify-end pb-24 text-center">
+            <div className="flex flex-col items-center max-w-2xl px-6 pointer-events-auto">
+              <div className="mb-4 h-12 flex items-center justify-center overflow-visible">
+                <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[10px] font-bold text-emerald-400 uppercase tracking-widest font-mono shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Avg delivery: 18 days
+                </div>
+              </div>
+              <h3 className="text-white font-bold leading-tight tracking-tight text-2xl lg:text-3xl max-w-xl uppercase tracking-wide font-display">
+                The NEXUS Standard
+              </h3>
+              <p className="mt-3 text-sm lg:text-[15px] text-white/50 leading-relaxed font-body">
+                We don&apos;t just copy-paste prompts. We build custom multi-agent routing engines with self-healing database syncs and dynamic API validation protocols, ensuring our solutions perform flawlessly at scale.
+              </p>
+              <button className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider text-violet-300 border border-violet-500/20 bg-violet-500/5 hover:bg-violet-500/10 hover:text-violet-200 transition-colors cursor-pointer group font-body">
+                Our architecture SLA
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+              </button>
+            </div>
+          </div>
+
+          {/* Slide 3 */}
+          <div className="h-screen w-full flex flex-col items-center justify-end pb-24 text-center">
+            <div className="flex flex-col items-center max-w-2xl px-6 pointer-events-auto">
+              <div className="mb-4 h-12 flex items-center justify-center overflow-visible">
+                <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/25 text-[10px] font-bold text-violet-400 uppercase tracking-widest font-mono shadow-[0_0_15px_rgba(124,58,237,0.1)]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-violet-400 animate-ping" />
+                  99.98% Monitored Uptime
+                </div>
+              </div>
+              <h3 className="text-white font-bold leading-tight tracking-tight text-2xl lg:text-3xl max-w-xl uppercase tracking-wide font-display">
+                Less Downtime. More Action.
+              </h3>
+              <p className="mt-3 text-sm lg:text-[15px] text-white/50 leading-relaxed font-body">
+                Stop wasting time managing disjointed freelancers. We are a unified, on-tap AI engineering team that works as a single synchronized unit, delivering bulletproof, zero-gap execution.
+              </p>
+              <button className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider text-violet-300 border border-violet-500/20 bg-violet-500/5 hover:bg-violet-500/10 hover:text-violet-200 transition-colors cursor-pointer group font-body">
+                Our process
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Mobile — simplified, readable stacked list */}
+      {/* Mobile — simplified, readable stacked list of rich cards */}
       <div className="px-6 py-24 md:hidden">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -482,32 +609,105 @@ export function Orbit() {
           transition={{ duration: 0.6 }}
           className="mb-12 text-center"
         >
-          <p className="mono-caption mb-3 text-white/35">What you get</p>
+          <p className="mono-caption mb-3 text-white/35 font-mono">What you get</p>
           <h2 className="display-l text-white">Why teams choose NEXUS.</h2>
         </motion.div>
 
-        <div className="mx-auto flex max-w-sm flex-col gap-7">
-          {PHRASES.map((p, i) => {
-            const Icon = p.icon;
-            return (
-              <motion.div
-                key={p.headline}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.06 }}
-                className="flex items-start gap-4"
-              >
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-violet-500/25 bg-violet-500/10">
-                  <Icon className="h-4 w-4 text-violet-300" />
-                </div>
-                <div>
-                  <h4 className="text-lg font-semibold text-white">{p.headline}</h4>
-                  <p className="text-sm text-white/50">{p.sub}</p>
-                </div>
-              </motion.div>
-            );
-          })}
+        <div className="mx-auto flex max-w-sm flex-col gap-10">
+          {/* Block 1 */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col gap-4 p-5 rounded-2xl border border-white/[0.06] bg-bg-elevated/40 backdrop-blur-sm shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full border border-violet-500/25 bg-violet-500/10">
+                <Users className="h-4 w-4 text-violet-300" />
+              </div>
+              <h4 className="text-md font-bold text-white tracking-tight font-display">Direct access</h4>
+            </div>
+            
+            <div className="my-1 flex justify-start">
+              <div className="flex -space-x-1 overflow-hidden bg-black/40 border border-white/10 rounded-full px-2.5 py-1">
+                <img className="inline-block h-5 w-5 rounded-full ring-1 ring-black" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="Team member" />
+                <img className="inline-block h-5 w-5 rounded-full ring-1 ring-black" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" alt="Team member" />
+                <img className="inline-block h-5 w-5 rounded-full ring-1 ring-black" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80" alt="Team member" />
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-violet-900/50 ring-1 ring-black text-[7px] font-bold text-violet-300 font-mono">+</div>
+              </div>
+            </div>
+
+            <p className="text-xs text-white/50 leading-relaxed font-body">
+              You speak directly to the builders solving your problem. No administrative overhead, no telephone games—just direct engineering alignment.
+            </p>
+            <button className="mt-2 text-xs font-semibold text-violet-300/80 hover:text-violet-200 transition-colors flex items-center gap-1 self-start cursor-pointer group font-body">
+              Meet the makers
+              <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+            </button>
+          </motion.div>
+
+          {/* Block 2 */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.05 }}
+            className="flex flex-col gap-4 p-5 rounded-2xl border border-white/[0.06] bg-bg-elevated/40 backdrop-blur-sm shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full border border-violet-500/25 bg-violet-500/10">
+                <Shield className="h-4 w-4 text-violet-300" />
+              </div>
+              <h4 className="text-md font-bold text-white tracking-tight font-display">The NEXUS Standard</h4>
+            </div>
+            
+            <div className="my-1 flex justify-start">
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[9px] font-semibold text-emerald-400 uppercase tracking-widest font-mono">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Avg delivery: 18 days
+              </div>
+            </div>
+
+            <p className="text-xs text-white/50 leading-relaxed font-body">
+              We build custom multi-agent routing engines with self-healing database syncs and dynamic API validation protocols.
+            </p>
+            <button className="mt-2 text-xs font-semibold text-violet-300/80 hover:text-violet-200 transition-colors flex items-center gap-1 self-start cursor-pointer group font-body">
+              Our architecture SLA
+              <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+            </button>
+          </motion.div>
+
+          {/* Block 3 */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="flex flex-col gap-4 p-5 rounded-2xl border border-white/[0.06] bg-bg-elevated/40 backdrop-blur-sm shadow-[0_8px_30px_rgb(0,0,0,0.5)]"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full border border-violet-500/25 bg-violet-500/10">
+                <Zap className="h-4 w-4 text-violet-300" />
+              </div>
+              <h4 className="text-md font-bold text-white tracking-tight font-display">Less downtime</h4>
+            </div>
+            
+            <div className="my-1 flex justify-start">
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/25 text-[9px] font-semibold text-violet-400 uppercase tracking-widest font-mono">
+                <span className="h-1.5 w-1.5 rounded-full bg-violet-400 animate-ping" />
+                99.98% Monitored Uptime
+              </div>
+            </div>
+
+            <p className="text-xs text-white/50 leading-relaxed font-body">
+              A unified, on-tap AI engineering team working as a single synchronized unit, delivering bulletproof, zero-gap execution.
+            </p>
+            <button className="mt-2 text-xs font-semibold text-violet-300/80 hover:text-violet-200 transition-colors flex items-center gap-1 self-start cursor-pointer group font-body">
+              Our process
+              <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+            </button>
+          </motion.div>
         </div>
       </div>
     </section>

@@ -55,7 +55,7 @@ export function Footer() {
           className="select-none cursor-default font-bold leading-none"
           style={{
             fontSize: 'clamp(8rem, 25vw, 22rem)',
-            fontFamily: 'var(--font-geist-sans)',
+            fontFamily: 'var(--font-display)',
             color: '#fff',
             letterSpacing: '-0.02em',
             paddingLeft: '0.5rem',

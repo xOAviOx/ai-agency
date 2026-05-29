@@ -1,22 +1,23 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Inter } from 'next/font/google';
+import { Unbounded, Space_Grotesk, Space_Mono } from 'next/font/google';
 import { LenisProvider } from '@/providers/lenis-provider';
 import './globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const unbounded = Unbounded({
+  variable: '--font-unbounded',
   subsets: ['latin'],
   display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const spaceGrotesk = Space_Grotesk({
+  variable: '--font-space-grotesk',
   subsets: ['latin'],
   display: 'swap',
 });
 
-const inter = Inter({
-  variable: '--font-inter',
+const spaceMono = Space_Mono({
+  variable: '--font-space-mono',
+  weight: ['400', '700'],
   subsets: ['latin'],
   display: 'swap',
 });
@@ -35,7 +36,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}
+      className={`${unbounded.variable} ${spaceGrotesk.variable} ${spaceMono.variable} antialiased`}
     >
       <body>
         <LenisProvider>{children}</LenisProvider>
