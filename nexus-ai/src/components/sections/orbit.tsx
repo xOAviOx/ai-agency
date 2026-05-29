@@ -593,8 +593,9 @@ export function OrbitJourney() {
 export function Orbit() {
   return (
     <section className="relative" style={{ background: 'var(--bg)' }}>
-      {/* Desktop / tablet stage — height is 300vh for 3 scrolling blocks */}
-      <div data-orbit-stage className="relative hidden md:block" style={{ height: '300vh' }}>
+      {/* Scroll stage — 300vh for 3 scrolling blocks. Now active on mobile too:
+          the travelling dial (OrbitJourney) is driven by this stage's scroll. */}
+      <div data-orbit-stage className="relative" style={{ height: '300vh' }}>
         {/* Sticky container that holds the ambient background glow */}
         <div className="sticky top-0 h-screen overflow-hidden pointer-events-none">
           <div
