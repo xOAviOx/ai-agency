@@ -463,6 +463,9 @@ export function OrbitJourney() {
   const spin = useTransform([drift, sweepS] as MotionValue[], ([d, s]: number[]) => d + s);
   const counter = useTransform(spin, (s) => -s * 0.5);
 
+  // Pills slide off to the RIGHT + fade as the dial finishes (handoff into the CTA).
+  const nodeExitX = useTransform(orbitPhase, [0.82, 1], [0, 900]);
+
   // Solver: Active node is the one closest to 180 degrees (bottom-most / 6 o'clock position)
   useMotionValueEvent(spin, 'change', (s) => {
     let bestIndex = 0;
