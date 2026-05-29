@@ -3,16 +3,12 @@ import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { Navigation } from '@/components/sections/navigation';
 import { Footer } from '@/components/sections/footer';
+import { POSTS } from '@/lib/posts';
 
 export const metadata: Metadata = {
   title: 'Blog — NEXUS',
   description: 'Notes on AI automation, agents, and shipping fast.',
 };
-
-/* NOTE: placeholder — no posts yet. Drop real posts into POSTS (or wire a CMS)
-   once content is provided. Empty array renders the "coming soon" state. */
-type Post = { title: string; excerpt: string; date: string; href: string };
-const POSTS: Post[] = [];
 
 export default function BlogPage() {
   return (
@@ -47,19 +43,25 @@ export default function BlogPage() {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {POSTS.map((post) => (
                 <Link
-                  key={post.href}
-                  href={post.href}
-                  className="group rounded-2xl border border-white/[0.08] bg-white/[0.02] p-7 transition-colors hover:border-violet-500/30"
+                  key={post.slug}
+                  href={`/blog/${post.slug}`}
+                  className="group flex flex-col rounded-2xl border border-white/[0.08] bg-white/[0.02] p-7 transition-colors hover:border-violet-500/30"
                 >
-                  <p className="mono-caption text-white/35 mb-4">{post.date}</p>
+                  <div className="mb-4 flex items-center gap-3">
+                    <span className="mono-caption text-violet-400">{post.tag}</span>
+                    <span className="mono-caption text-white/30">{post.readTime}</span>
+                  </div>
                   <h2 className="text-white text-xl font-medium leading-snug mb-3 font-display">
                     {post.title}
                   </h2>
-                  <p className="text-sm text-white/55 leading-relaxed mb-5">{post.excerpt}</p>
-                  <span className="inline-flex items-center gap-1.5 text-sm text-violet-300 group-hover:text-violet-200">
-                    Read more
-                    <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                  </span>
+                  <p className="text-sm text-white/55 leading-relaxed mb-6">{post.excerpt}</p>
+                  <div className="mt-auto flex items-center justify-between">
+                    <span className="mono-caption text-white/35">{post.date}</span>
+                    <span className="inline-flex items-center gap-1.5 text-sm text-violet-300 group-hover:text-violet-200">
+                      Read
+                      <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </span>
+                  </div>
                 </Link>
               ))}
             </div>
