@@ -258,11 +258,13 @@ export function OrbitJourney() {
   const centerOp = useMotionValue(0);
   const sweep = useMotionValue(180);         // Start sweep aligned to Slide 0 (180deg)
   const orbitPhaseRaw = useMotionValue(0);  // 0→1 across the Why NEXUS region
+  const mt = useMotionValue(-240);          // dial vertical offset; → 0 to recenter as CTA backdrop
 
   const scaleS = useSpring(scale, { stiffness: 220, damping: 38 });
   const driftS = useSpring(driftY, { stiffness: 220, damping: 38 });
   const sweepS = useSpring(sweep, { stiffness: 180, damping: 28 }); // Snappy magnetic spring!
   const orbitPhase = useSpring(orbitPhaseRaw, { stiffness: 200, damping: 40 });
+  const mtS = useSpring(mt, { stiffness: 150, damping: 34 });
 
   // Scroll updater: Maps the 300vh normal-flow scroll range cleanly to the dial states
   const updateScroll = (sv: number) => {
