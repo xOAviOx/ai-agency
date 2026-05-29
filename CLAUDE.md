@@ -13,7 +13,7 @@ High-end dark-themed marketing website for an AI automation agency.
 - GSAP + ScrollTrigger (horizontal parallax in Showcase)
 - Lenis smooth scroll (bridged to GSAP ticker in lenis-provider.tsx)
 - lucide-react icons
-- Fonts: Geist Sans (display), Inter (body), Geist Mono (mono) via next/font
+- Fonts (layout.tsx): Unbounded (display), Space Grotesk (body), Space Mono (mono) via next/font; referenced as `var(--font-display)` / `--font-body` / `--font-mono`
 
 ## Dev Command
 ```
