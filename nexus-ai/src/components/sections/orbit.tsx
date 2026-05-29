@@ -499,7 +499,7 @@ export function OrbitJourney() {
         {/* Giant Dial Circle */}
         <motion.div
           className="relative transform-gpu will-change-transform"
-          style={{ width: size, height: size, scale: scaleS, marginTop: '-240px' }}
+          style={{ width: size, height: size, scale: scaleS, marginTop: mtS }}
         >
           {/* soft violet halo behind the rings */}
           <div
