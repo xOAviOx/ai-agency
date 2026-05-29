@@ -287,12 +287,12 @@ export function Showcase() {
     <section
       ref={sectionRef}
       data-section="showcase"
-      className="relative h-screen"
+      className="relative md:h-screen"
       style={{ background: 'var(--bg)' }}
     >
-      {/* Backdrop pattern visible when frame is contained */}
+      {/* Backdrop pattern visible when frame is contained (desktop only) */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.18]"
+        className="hidden md:block absolute inset-0 pointer-events-none opacity-[0.18]"
         style={{
           backgroundImage:
             'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.25) 1px, transparent 0)',
