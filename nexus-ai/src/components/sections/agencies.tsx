@@ -147,7 +147,11 @@ export function Agencies() {
                 ))}
               </div>
 
-              <button className="flex items-center gap-2.5 px-6 py-3 text-sm font-medium text-white/80 border border-white/10 rounded-md hover:bg-white/[0.04] hover:text-white transition-all duration-200 group">
+              <button
+                type="button"
+                onClick={() => setPartnerOpen(true)}
+                className="flex items-center gap-2.5 px-6 py-3 text-sm font-medium text-white/80 border border-white/10 rounded-md hover:bg-white/[0.04] hover:text-white transition-all duration-200 group cursor-pointer"
+              >
                 Partner with us
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
