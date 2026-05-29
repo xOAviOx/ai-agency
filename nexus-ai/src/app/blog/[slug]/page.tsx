@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, ArrowUpRight } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Navigation } from '@/components/sections/navigation';
 import { Footer } from '@/components/sections/footer';
+import { CalendlyButton } from '@/components/ui/calendly-button';
 import { POSTS, getPost, type PostBlock } from '@/lib/posts';
 
 export function generateStaticParams() {
@@ -94,13 +95,7 @@ export default async function BlogPostPage({
             <p className="body-l text-white/55 max-w-md mx-auto mb-8">
               We&apos;ll find the one workflow that buys your team the most time — and build it.
             </p>
-            <Link
-              href="/#contact"
-              className="inline-flex items-center gap-2.5 px-7 py-3.5 text-base font-medium text-white bg-gradient-to-b from-violet-600 to-violet-700 rounded-md shadow-[0_0_40px_rgba(124,58,237,0.4)] hover:shadow-[0_0_60px_rgba(124,58,237,0.6)] transition-all duration-300 group"
-            >
-              Book a call
-              <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </Link>
+            <CalendlyButton />
           </div>
         </article>
       </main>

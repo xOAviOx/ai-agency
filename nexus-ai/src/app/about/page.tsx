@@ -33,13 +33,7 @@ export default function AboutPage() {
             faster without adding headcount.
           </p>
 
-          <Link
-            href="/#contact"
-            className="inline-flex items-center gap-2.5 px-7 py-3.5 text-base font-medium text-white bg-gradient-to-b from-violet-600 to-violet-700 rounded-md shadow-[0_0_40px_rgba(124,58,237,0.4)] hover:shadow-[0_0_60px_rgba(124,58,237,0.6)] transition-all duration-300 group"
-          >
-            Book a call
-            <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </Link>
+          <CalendlyButton />
 
           <div className="mt-20 grid grid-cols-1 gap-6 sm:grid-cols-3 max-w-3xl">
             {STATS.map((s) => (
