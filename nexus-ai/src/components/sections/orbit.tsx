@@ -13,6 +13,7 @@ import {
   MotionValue,
   AnimatePresence,
 } from 'framer-motion';
+import Link from 'next/link';
 import { ArrowRight, Zap, Clock, Users, Star, Shield, Rocket } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { degToRad, cn } from '@/lib/utils';
