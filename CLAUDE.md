@@ -33,7 +33,7 @@ src/
   lib/
     utils.ts            — cn(), degToRad(), polarToCartesian()
   components/
-    traveling-circle.tsx— Fixed hero→services circle (HeroCircle), scrollY-driven travel/shrink (z-15)
+    traveling-circle.tsx— Fixed hero→services circle (HeroCircle), scrollY-driven travel/shrink (z-15). Mobile (`isMobileRef`, <768): docks nowhere (no grid), instead a soft backdrop that sinks/shrinks/fades behind the hero.
     ui/
       concentric-circles.tsx  — Reusable SVG rings with notched segments + tick marks
     sections/
