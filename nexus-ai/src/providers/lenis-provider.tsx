@@ -30,6 +30,7 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
     gsap.ticker.lagSmoothing(0);
 
     return () => {
+      setLenis(null);
       lenis.destroy();
       gsap.ticker.remove(lenisRaf);
     };

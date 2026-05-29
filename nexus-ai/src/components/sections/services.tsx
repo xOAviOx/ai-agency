@@ -411,7 +411,7 @@ function Quadrant({ service, position }: QuadrantProps) {
 
 export function Services() {
   return (
-    <section className="relative z-10 py-24 overflow-hidden" style={{ background: 'var(--bg)' }}>
+    <section id="services" className="relative z-10 py-24 overflow-hidden" style={{ background: 'var(--bg)' }}>
       <div className="mx-auto max-w-[1280px] px-6 md:px-12">
         {/* Section label */}
         <motion.div
