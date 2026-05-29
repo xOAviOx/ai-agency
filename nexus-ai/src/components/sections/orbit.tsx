@@ -222,6 +222,7 @@ function OrbitItem({
 /* small helpers */
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const smooth = (t: number) => t * t * (3 - 2 * t); // smoothstep easing
+const clamp = (v: number, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, v));
 
 /* ──────────────────────────────────────────────────────────────
    OrbitJourney — the fixed, travelling circle.
