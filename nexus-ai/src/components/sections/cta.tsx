@@ -2,7 +2,6 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
-import { ConcentricCircles } from '@/components/ui/concentric-circles';
 
 const LOGOS = ['Acme', 'Northwind', 'Vertex', 'Helix', 'Lumen', 'Atlas', 'Beacon', 'Prism'];
 
@@ -27,62 +26,76 @@ export function CTA() {
   const reducedMotion = useReducedMotion();
 
   return (
-    <section className="relative py-32 overflow-hidden" style={{ background: 'var(--bg)' }}>
-      {/* Focused violet glow behind the panel — single, intentional light source */}
-      <div
-        aria-hidden="true"
-        className="absolute left-1/2 top-1/2 h-[560px] w-[820px] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-        style={{
-          background:
-            'radial-gradient(50% 50% at 50% 50%, rgba(124,58,237,0.22) 0%, rgba(124,58,237,0.06) 40%, transparent 72%)',
-        }}
-      />
+    <section className="relative overflow-hidden" style={{ background: 'var(--bg)' }}>
+      {/* Content stage — circle frame is centered on this, not the whole section */}
+      <div className="relative flex items-center justify-center py-44 md:py-52">
+        {/* Focused violet glow — single, intentional light source */}
+        <div
+          aria-hidden="true"
+          className="absolute h-[620px] w-[620px] rounded-full pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(50% 50% at 50% 50%, rgba(124,58,237,0.20) 0%, rgba(124,58,237,0.05) 45%, transparent 72%)',
+          }}
+        />
 
-      <div className="relative z-10 mx-auto max-w-[820px] px-6">
+        {/* Soft disc — a circular "panel" instead of a square card */}
+        <div
+          aria-hidden="true"
+          className="absolute aspect-square w-[min(94vw,640px)] rounded-full border border-white/[0.07] pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(circle at 50% 35%, rgba(255,255,255,0.035) 0%, transparent 68%)',
+          }}
+        />
+
+        {/* Concentric ring frame — echoes the orbit motif, kept clear of the copy */}
+        <motion.svg
+          aria-hidden="true"
+          viewBox="0 0 800 800"
+          animate={reducedMotion ? {} : { rotate: 360 }}
+          transition={{ duration: 120, repeat: Infinity, ease: 'linear' }}
+          className="absolute aspect-square w-[min(108vw,800px)] pointer-events-none"
+        >
+          <circle cx="400" cy="400" r="398" fill="none" stroke="white" strokeOpacity="0.05" strokeWidth="1" />
+          <circle cx="400" cy="400" r="340" fill="none" stroke="white" strokeOpacity="0.09" strokeWidth="1" />
+          <circle
+            cx="400"
+            cy="400"
+            r="290"
+            fill="none"
+            stroke="white"
+            strokeOpacity="0.06"
+            strokeWidth="1"
+            strokeDasharray="1 16"
+            strokeLinecap="round"
+          />
+          {/* orbiting accent marks */}
+          <circle cx="400" cy="60" r="3.5" fill="#A855F7" />
+          <circle cx="740" cy="400" r="2" fill="white" fillOpacity="0.5" />
+          <circle cx="400" cy="740" r="2" fill="white" fillOpacity="0.3" />
+        </motion.svg>
+
+        {/* Copy */}
         <motion.div
-          initial={{ opacity: 0, y: 28 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="relative rounded-[28px] border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-white/[0.005] px-8 py-16 md:px-16 md:py-20 text-center overflow-hidden"
+          className="relative z-10 max-w-md px-6 text-center"
         >
-          {/* Top edge highlight */}
-          <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
-
-          {/* Corner dots — matches the blueprint frame language used elsewhere */}
-          {[
-            'top-4 left-4',
-            'top-4 right-4',
-            'bottom-4 left-4',
-            'bottom-4 right-4',
-          ].map((pos) => (
-            <div
-              key={pos}
-              className={`absolute ${pos} h-1.5 w-1.5 rounded-full bg-white/20`}
-            />
-          ))}
-
-          {/* Spinning concentric badge — the circle motif, now a deliberate accent */}
-          <motion.div
-            animate={reducedMotion ? {} : { rotate: 360 }}
-            transition={{ duration: 90, repeat: Infinity, ease: 'linear' }}
-            className="mx-auto mb-7 w-fit"
-          >
-            <ConcentricCircles size={64} opacity={0.9} />
-          </motion.div>
-
           {/* Eyebrow */}
           <p className="mono-caption text-violet-400 mb-5">Got a project in mind?</p>
 
           {/* Headline */}
-          <h2 className="display-l text-white max-w-xl mx-auto mb-6">
+          <h2 className="display-l text-white mb-6">
             Give your team the firepower it deserves.
           </h2>
 
           {/* Body */}
-          <p className="body-l text-white/55 max-w-lg mx-auto mb-10">
-            Stop letting manual work or limited dev capacity hold you back. Get AI automations and
-            websites built by senior operators, embedded like in-house.
+          <p className="body-l text-white/55 mb-9">
+            Stop letting manual work hold you back — AI automations and websites built by senior
+            operators, embedded like in-house.
           </p>
 
           {/* CTA */}
@@ -97,7 +110,7 @@ export function CTA() {
       </div>
 
       {/* Trust marquee */}
-      <div className="relative z-10 mt-24">
+      <div className="relative z-10 pb-32">
         <p className="text-center mono-caption text-white/20 mb-5">Trusted by</p>
         <TrustMarquee />
       </div>
