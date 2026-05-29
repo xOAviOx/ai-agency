@@ -401,31 +401,68 @@ export function Showcase() {
         </div>
         </div>
 
-        {/* Mobile fallback: vertical stack inside the frame */}
-        <div className="md:hidden h-full overflow-y-auto py-12 px-6">
-          <div className="max-w-md mx-auto">
-            <p className="mono-caption text-white/35 mb-2">What we do</p>
-            <h2 className="text-6xl font-bold text-white mb-10" style={{ letterSpacing: '-0.03em' }}>
-              Showcase
-            </h2>
-            <div className="flex flex-col gap-12">
-              {PROJECTS.map((project) => (
-                <div key={project.id} className="flex flex-col gap-4">
-                  <div className="rounded-xl overflow-hidden border border-white/[0.08] h-44">
-                    <MockupScreen type={project.type} gradientFrom={project.gradientFrom} gradientTo={project.gradientTo} />
-                  </div>
-                  <div className="rounded-xl border border-white/[0.08] bg-bg-elevated p-5">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: project.tagColor }} />
-                      <span className="mono-caption" style={{ color: project.tagColor }}>{project.tag}</span>
-                    </div>
-                    <h3 className="text-white font-medium leading-snug mb-2">{project.title}</h3>
-                    <p className="text-sm text-white/50 leading-relaxed">{project.summary}</p>
-                  </div>
+      </div>
+
+      {/* Mobile — swipeable horizontal carousel (no GSAP pin/parallax → smooth on touch) */}
+      <div className="md:hidden px-6 pt-20 pb-16">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.5 }}
+          className="mb-8"
+        >
+          <p className="mono-caption text-white/35 mb-3">Selected work</p>
+          <h2
+            className="text-white font-bold leading-[0.95]"
+            style={{
+              fontSize: 'clamp(3rem, 16vw, 4.5rem)',
+              letterSpacing: '-0.03em',
+              fontFamily: 'var(--font-display)',
+            }}
+          >
+            Showcase
+          </h2>
+          <p className="mono-caption text-white/25 mt-4 flex items-center gap-2">
+            Swipe to explore
+            <ArrowRight className="w-3.5 h-3.5" />
+          </p>
+        </motion.div>
+
+        {/* Native scroll-snap row — bleeds to the screen edges */}
+        <div className="no-scrollbar -mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 [scroll-padding-left:1.5rem]">
+          {PROJECTS.map((project) => (
+            <article
+              key={project.id}
+              className="snap-center shrink-0 w-[80vw] max-w-[320px]"
+            >
+              <div className="rounded-xl overflow-hidden border border-white/[0.08] h-44 mb-4">
+                <MockupScreen type={project.type} gradientFrom={project.gradientFrom} gradientTo={project.gradientTo} />
+              </div>
+              <div className="rounded-xl border border-white/[0.08] bg-bg-elevated p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ background: project.tagColor }} />
+                  <span className="mono-caption" style={{ color: project.tagColor }}>{project.tag}</span>
                 </div>
-              ))}
+                <h3 className="text-white font-medium leading-snug mb-2 text-[15px]">{project.title}</h3>
+                <p className="text-sm text-white/50 leading-relaxed">{project.summary}</p>
+              </div>
+            </article>
+          ))}
+
+          {/* Trailing CTA card */}
+          <article className="snap-center shrink-0 w-[72vw] max-w-[280px] flex">
+            <div className="w-full rounded-xl border border-white/[0.08] bg-bg-elevated p-8 flex flex-col items-center justify-center text-center gap-4">
+              <div className="w-12 h-12 rounded-full border border-violet-500/30 flex items-center justify-center">
+                <ArrowRight className="w-5 h-5 text-violet-400" />
+              </div>
+              <h3 className="text-white font-medium">View all work</h3>
+              <p className="text-sm text-white/40">See every project we&apos;ve shipped.</p>
+              <button className="w-full py-2 text-sm font-medium text-white border border-white/10 rounded-md hover:bg-white/[0.04] transition-colors">
+                View all →
+              </button>
             </div>
-          </div>
+          </article>
         </div>
       </div>
     </section>
