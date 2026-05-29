@@ -240,6 +240,8 @@ export function OrbitJourney() {
     agenciesTop: 0,
     orbitTop: 0,
     orbitBottom: 0,
+    ctaTop: 0,
+    ctaBottom: 0,
     vh: 900,
   });
 

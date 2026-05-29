@@ -1,8 +1,8 @@
 'use client';
 
-import { motion, useReducedMotion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
-import { ConcentricCircles } from '@/components/ui/concentric-circles';
 
 const LOGOS = ['Acme', 'Northwind', 'Vertex', 'Helix', 'Lumen', 'Atlas', 'Beacon', 'Prism'];
 
@@ -11,7 +11,10 @@ function TrustMarquee() {
     <div className="w-full border-t border-b border-white/[0.06] py-5 overflow-hidden marquee-track">
       <div className="flex animate-marquee" style={{ width: 'max-content' }}>
         {[...LOGOS, ...LOGOS].map((logo, i) => (
-          <span key={i} className="mx-10 text-white/20 font-semibold text-sm tracking-widest mono-caption whitespace-nowrap">
+          <span
+            key={i}
+            className="mx-10 text-white/20 font-semibold text-sm tracking-widest mono-caption whitespace-nowrap"
+          >
             {logo}
           </span>
         ))}
@@ -20,86 +23,74 @@ function TrustMarquee() {
   );
 }
 
-export function CTA() {
-  const reducedMotion = useReducedMotion();
+/* The interactive copy that lives inside the travelling circle.
+   Reused by both the desktop stage and the mobile fallback. */
+function CtaCopy() {
   return (
-    <section className="relative py-40 overflow-hidden" style={{ background: 'var(--bg)' }}>
-      {/* Circle motif */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-        <motion.div
-          animate={reducedMotion ? {} : { rotate: 360 }}
-          transition={{ duration: 100, repeat: Infinity, ease: 'linear' }}
-        >
-          <ConcentricCircles size={900} opacity={0.5} />
-        </motion.div>
+    <>
+      <p className="mono-caption text-violet-400 mb-5">Got a project in mind?</p>
+      <h2 className="display-l text-white mb-6">Give your team the firepower it deserves.</h2>
+      <p className="body-l text-white/55 mb-9">
+        Stop letting manual work hold you back — AI automations and websites built by senior
+        operators, embedded like in-house.
+      </p>
+      <div className="flex flex-col items-center gap-3">
+        <button className="flex items-center gap-2.5 px-8 py-4 text-base font-medium text-white bg-gradient-to-b from-violet-600 to-violet-700 rounded-md shadow-[0_0_40px_rgba(124,58,237,0.4)] hover:shadow-[0_0_60px_rgba(124,58,237,0.6)] transition-all duration-300 group">
+          Start a project
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        </button>
+        <p className="mono-caption text-white/30">Replies in 24 hours. No obligation.</p>
+      </div>
+    </>
+  );
+}
+
+export function CTA() {
+  // Drive the copy's fade in/out from this section's own scroll progress, so it
+  // lands inside the travelling circle (rendered by <OrbitJourney/>) as it arrives.
+  const stageRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: stageRef,
+    offset: ['start start', 'end end'],
+  });
+  const copyOpacity = useTransform(scrollYProgress, [0.06, 0.24, 0.72, 0.92], [0, 1, 1, 0]);
+  const copyY = useTransform(scrollYProgress, [0.06, 0.24], [28, 0]);
+
+  return (
+    <section data-section="cta" className="relative" style={{ background: 'var(--bg)' }}>
+      {/* Desktop / tablet stage — the circle backdrop is the travelling
+          <OrbitJourney/> circle that hands off from "Why NEXUS". */}
+      <div ref={stageRef} data-cta-stage className="relative hidden md:block" style={{ height: '200vh' }}>
+        <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden px-6">
+          <motion.div
+            style={{ opacity: copyOpacity, y: copyY }}
+            className="relative z-10 max-w-md text-center"
+          >
+            <CtaCopy />
+          </motion.div>
+        </div>
       </div>
 
-      <div className="relative z-10 mx-auto max-w-[1280px] px-6 md:px-12 text-center">
-        {/* Eyebrow */}
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.5 }}
-          className="mono-caption text-violet-400 mb-6"
-        >
-          Got a project in mind?
-        </motion.p>
-
-        {/* Headline */}
-        <motion.h2
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="display-xl text-white max-w-4xl mx-auto mb-8"
-        >
-          Give your team the firepower it deserves.
-        </motion.h2>
-
-        {/* Decorative line with circle endpoints */}
-        <motion.div
-          initial={{ opacity: 0, scaleX: 0 }}
-          whileInView={{ opacity: 1, scaleX: 1 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="flex items-center justify-center gap-3 my-10"
-        >
-          <div className="w-2 h-2 rounded-full border border-white/20" />
-          <div className="w-48 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
-          <div className="w-2 h-2 rounded-full border border-white/20" />
-        </motion.div>
-
-        {/* Body */}
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.6, delay: 0.25 }}
-          className="body-l text-white/50 max-w-2xl mx-auto mb-12"
-        >
-          Stop letting manual work or limited dev capacity hold you back. Get AI automations and
-          websites built by senior operators, embedded like in-house.
-        </motion.p>
-
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.6, delay: 0.35 }}
-          className="flex flex-col items-center gap-3"
-        >
-          <button className="flex items-center gap-2.5 px-8 py-4 text-base font-medium text-white bg-gradient-to-b from-violet-600 to-violet-700 rounded-md shadow-[0_0_40px_rgba(124,58,237,0.4)] hover:shadow-[0_0_60px_rgba(124,58,237,0.6)] transition-all duration-300 group">
-            Start a project
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </button>
-          <p className="mono-caption text-white/30">Replies in 24 hours. No obligation.</p>
-        </motion.div>
+      {/* Mobile — static, self-contained (the travelling scene is desktop-only) */}
+      <div className="md:hidden px-6 py-28">
+        <div className="relative mx-auto max-w-md text-center">
+          {/* simple violet glow stand-in for the circle */}
+          <div
+            aria-hidden="true"
+            className="absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
+            style={{
+              background:
+                'radial-gradient(50% 50% at 50% 50%, rgba(124,58,237,0.16) 0%, transparent 70%)',
+            }}
+          />
+          <div className="relative z-10">
+            <CtaCopy />
+          </div>
+        </div>
       </div>
 
       {/* Trust marquee */}
-      <div className="relative z-10 mt-24">
+      <div className="relative z-10 pb-32 pt-4">
         <p className="text-center mono-caption text-white/20 mb-5">Trusted by</p>
         <TrustMarquee />
       </div>
