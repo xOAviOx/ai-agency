@@ -14,7 +14,7 @@ import { openCalendly } from '@/lib/booking';
 type NavLink = { label: string; target: string };
 
 const NAV_LINKS: NavLink[] = [
-  { label: 'Work', target: '#work' },
+  { label: 'Work', target: '/portfolio' },
   { label: 'Services', target: '#services' },
   { label: 'About', target: '/about' },
   { label: 'Blog', target: '/blog' },
