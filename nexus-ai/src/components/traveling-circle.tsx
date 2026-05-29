@@ -151,7 +151,7 @@ export function TravelingCircle() {
     // z-[2] keeps the circle behind hero text (z-[10]) and brand strip
     // (z-[10] + solid bg) while still rendering above the page background.
     <motion.div
-      className="fixed inset-0 flex items-center justify-center pointer-events-none z-[15] hidden md:flex"
+      className="fixed inset-0 flex items-center justify-center pointer-events-none z-[15]"
       style={{ y: yS, opacity: op }}
       aria-hidden="true"
     >
