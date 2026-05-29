@@ -3,6 +3,8 @@ import { Compass, PenTool, Code2, Rocket, LifeBuoy, Activity, ShieldCheck, Clock
 import { Navigation } from '@/components/sections/navigation';
 import { Footer } from '@/components/sections/footer';
 import { CalendlyButton } from '@/components/ui/calendly-button';
+import { Reveal } from '@/components/ui/reveal';
+import { AmbientCircle } from '@/components/ui/ambient-circle';
 
 export const metadata: Metadata = {
   title: 'Our Process — NEXUS',
@@ -65,37 +67,49 @@ export default function ProcessPage() {
   return (
     <>
       <Navigation />
-      <main className="relative min-h-screen" style={{ background: 'var(--bg)' }}>
+      <main className="relative min-h-screen overflow-hidden" style={{ background: 'var(--bg)' }}>
+        <AmbientCircle />
+
         {/* ── Hero ── */}
-        <section className="mx-auto max-w-[1280px] px-6 md:px-12 pt-36 pb-20 md:pt-44">
-          <p className="mono-caption text-violet-400 mb-6">Our process</p>
-          <h1 className="display-xl text-white max-w-4xl mb-6">
-            How we ship — fast, and built to last.
-          </h1>
-          <p className="body-l text-white/60 max-w-2xl mb-10">
-            A single synchronized team, not a chain of freelancers. Here&apos;s how a
-            NEXUS engagement runs from first call to live system.
-          </p>
-          <CalendlyButton label="Start a project" />
+        <section className="relative mx-auto max-w-[1280px] px-6 md:px-12 pt-36 pb-20 md:pt-44">
+          <Reveal>
+            <div className="mb-6 inline-flex items-center gap-2">
+              <div className="h-px w-4 bg-violet-500" />
+              <span className="mono-caption text-violet-400">Our process</span>
+            </div>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <h1 className="display-xl text-white max-w-4xl mb-6">
+              How we ship — fast, and built to last.
+            </h1>
+          </Reveal>
+          <Reveal delay={0.16}>
+            <p className="body-l text-white/60 max-w-2xl mb-10">
+              A single synchronized team, not a chain of freelancers. Here&apos;s how a
+              NEXUS engagement runs from first call to live system.
+            </p>
+          </Reveal>
+          <Reveal delay={0.24}>
+            <CalendlyButton label="Start a project" />
+          </Reveal>
         </section>
 
         {/* ── Steps ── */}
-        <section className="mx-auto max-w-[1280px] px-6 md:px-12 pb-28">
+        <section className="relative mx-auto max-w-[1280px] px-6 md:px-12 pb-28">
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-5">
             {STEPS.map((step, i) => (
-              <div
-                key={step.title}
-                className="flex flex-col rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 transition-colors hover:border-violet-500/30"
-              >
-                <div className="mb-5 flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-violet-300">
-                    <step.icon className="h-5 w-5" />
+              <Reveal key={step.title} delay={i * 0.08}>
+                <div className="flex h-full flex-col rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-violet-500/30">
+                  <div className="mb-5 flex items-center justify-between">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-violet-300">
+                      <step.icon className="h-5 w-5" />
+                    </div>
+                    <span className="mono-caption text-white/25">0{i + 1}</span>
                   </div>
-                  <span className="mono-caption text-white/25">0{i + 1}</span>
+                  <h2 className="text-white text-lg font-medium mb-2 font-display">{step.title}</h2>
+                  <p className="text-sm text-white/55 leading-relaxed">{step.body}</p>
                 </div>
-                <h2 className="text-white text-lg font-medium mb-2 font-display">{step.title}</h2>
-                <p className="text-sm text-white/55 leading-relaxed">{step.body}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </section>
@@ -103,49 +117,56 @@ export default function ProcessPage() {
         {/* ── Standards & SLA (anchor target for "Our architecture SLA") ── */}
         <section
           id="standards"
-          className="mx-auto max-w-[1280px] px-6 md:px-12 pb-32 scroll-mt-28"
+          className="relative mx-auto max-w-[1280px] px-6 md:px-12 pb-32 scroll-mt-28"
         >
-          <div className="mb-4 inline-flex items-center gap-2">
-            <div className="h-px w-4 bg-violet-500" />
-            <span className="mono-caption text-violet-400">The NEXUS Standard</span>
-          </div>
-          <h2 className="display-l text-white max-w-2xl mb-4">
-            Architecture &amp; SLA you can build a business on.
-          </h2>
-          <p className="body-l text-white/55 max-w-2xl mb-12">
-            We don&apos;t just copy-paste prompts. Every system is engineered to perform
-            flawlessly at scale — here&apos;s what that means in practice.
-          </p>
+          <Reveal>
+            <div className="mb-4 inline-flex items-center gap-2">
+              <div className="h-px w-4 bg-violet-500" />
+              <span className="mono-caption text-violet-400">The NEXUS Standard</span>
+            </div>
+          </Reveal>
+          <Reveal delay={0.06}>
+            <h2 className="display-l text-white max-w-2xl mb-4">
+              Architecture &amp; SLA you can build a business on.
+            </h2>
+          </Reveal>
+          <Reveal delay={0.12}>
+            <p className="body-l text-white/55 max-w-2xl mb-12">
+              We don&apos;t just copy-paste prompts. Every system is engineered to perform
+              flawlessly at scale — here&apos;s what that means in practice.
+            </p>
+          </Reveal>
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {STANDARDS.map((item) => (
-              <div
-                key={item.title}
-                className="flex gap-5 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-7 transition-colors hover:border-violet-500/30"
-              >
-                <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-violet-300">
-                  <item.icon className="h-5 w-5" />
+            {STANDARDS.map((item, i) => (
+              <Reveal key={item.title} delay={i * 0.08}>
+                <div className="flex h-full gap-5 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-7 transition-all duration-300 hover:-translate-y-1 hover:border-violet-500/30">
+                  <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-violet-300">
+                    <item.icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-white text-lg font-medium mb-2 font-display">{item.title}</h3>
+                    <p className="text-sm text-white/55 leading-relaxed">{item.body}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-white text-lg font-medium mb-2 font-display">{item.title}</h3>
-                  <p className="text-sm text-white/55 leading-relaxed">{item.body}</p>
-                </div>
-              </div>
+              </Reveal>
             ))}
           </div>
 
           {/* Closing CTA */}
-          <div className="mt-16 rounded-2xl border border-white/[0.08] bg-white/[0.02] px-8 py-10 text-center">
-            <h2 className="display-l text-white mb-3" style={{ fontSize: '1.75rem' }}>
-              Want this running in your business?
-            </h2>
-            <p className="body-l text-white/55 max-w-md mx-auto mb-8">
-              Book a call and we&apos;ll scope the highest-leverage automation for your team.
-            </p>
-            <div className="flex justify-center">
-              <CalendlyButton />
+          <Reveal delay={0.1}>
+            <div className="mt-16 rounded-2xl border border-white/[0.08] bg-white/[0.02] px-8 py-10 text-center">
+              <h2 className="display-l text-white mb-3" style={{ fontSize: '1.75rem' }}>
+                Want this running in your business?
+              </h2>
+              <p className="body-l text-white/55 max-w-md mx-auto mb-8">
+                Book a call and we&apos;ll scope the highest-leverage automation for your team.
+              </p>
+              <div className="flex justify-center">
+                <CalendlyButton />
+              </div>
             </div>
-          </div>
+          </Reveal>
         </section>
       </main>
       <Footer />
