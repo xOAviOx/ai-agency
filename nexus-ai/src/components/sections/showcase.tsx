@@ -192,16 +192,18 @@ export function Showcase() {
     const mm = gsap.matchMedia();
 
     mm.add('(min-width: 768px)', () => {
-      /* Measure at natural (final) scale so the parallax distance is correct */
-      const totalScrollWidth = track.scrollWidth - window.innerWidth;
-      const expandDistance   = window.innerHeight * 1.1;
-      const scrollDistance   = totalScrollWidth;
+      /* Distances are computed lazily so ScrollTrigger.refresh() can recompute
+         them (invalidateOnRefresh). With 12 live-preview cards the track is wide,
+         so the horizontal scroll must run all the way to the LAST card before the
+         pin releases. */
+      const expandDistance = () => window.innerHeight * 1.1;
+      const scrollDistance = () => Math.max(0, track.scrollWidth - window.innerWidth);
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: 'top top',
-          end: `+=${expandDistance + scrollDistance + 200}`,
+          end: () => `+=${expandDistance() + scrollDistance() + 200}`,
           scrub: 1.1,
           pin: true,
           anticipatePin: 1,
@@ -217,29 +219,42 @@ export function Showcase() {
         '--frame-border': 'rgba(168,85,247,0)',
         '--frame-glow':   '0 40px 120px -30px rgba(0,0,0,0.9)',
         ease: 'power2.inOut',
-        duration: expandDistance,
+        duration: expandDistance(),
       }, 0);
 
       /* Phase 1b — content scales up in sync with the frame */
       tl.fromTo(scale,
         { scale: 0.72 },
-        { scale: 1, ease: 'power2.inOut', duration: expandDistance },
+        { scale: 1, ease: 'power2.inOut', duration: expandDistance() },
         0
       );
 
-      /* Phase 2 — horizontal parallax track (only after expansion completes) */
+      /* Phase 2 — horizontal parallax track; x re-evaluates on refresh so it
+         always travels the full measured width (→ reveals the last card). */
       tl.to(track, {
-        x: -totalScrollWidth,
+        x: () => -scrollDistance(),
         ease: 'none',
-        duration: scrollDistance,
-      }, expandDistance);
+        duration: scrollDistance(),
+      }, expandDistance());
 
       return () => {
         tl.kill();
       };
     });
 
+    /* Re-measure once the cards/iframes have laid out and fonts are ready, so the
+       pin length matches the real track width (an early measurement can otherwise
+       end the scroll before the last card is reached). */
+    const refresh = () => ScrollTrigger.refresh();
+    const refreshTimer = setTimeout(refresh, 400);
+    let cancelled = false;
+    if (typeof document !== 'undefined' && 'fonts' in document) {
+      document.fonts.ready.then(() => { if (!cancelled) refresh(); }).catch(() => {});
+    }
+
     return () => {
+      cancelled = true;
+      clearTimeout(refreshTimer);
       mm.revert();
     };
   }, [reducedMotion]);
