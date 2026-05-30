@@ -483,9 +483,15 @@ export function Showcase() {
               key={project.id}
               className="snap-center shrink-0 w-[80vw] max-w-[320px]"
             >
-              <div className="rounded-xl overflow-hidden border border-white/[0.08] h-44 mb-4">
-                <MockupScreen type={project.type} gradientFrom={project.gradientFrom} gradientTo={project.gradientTo} />
-              </div>
+              {project.type === 'website' && project.url ? (
+                <div className="rounded-xl overflow-hidden border border-white/[0.08] mb-4">
+                  <WebsitePreview url={project.url} from={project.gradientFrom} to={project.gradientTo} title={project.title} />
+                </div>
+              ) : (
+                <div className="rounded-xl overflow-hidden border border-white/[0.08] h-44 mb-4">
+                  <MockupScreen type={project.type} gradientFrom={project.gradientFrom} gradientTo={project.gradientTo} />
+                </div>
+              )}
               <div className="rounded-xl border border-white/[0.08] bg-bg-elevated p-5">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="w-1.5 h-1.5 rounded-full" style={{ background: project.tagColor }} />
@@ -493,6 +499,17 @@ export function Showcase() {
                 </div>
                 <h3 className="text-white font-medium leading-snug mb-2 text-[15px]">{project.title}</h3>
                 <p className="text-sm text-white/50 leading-relaxed">{project.summary}</p>
+                {project.url && (
+                  <a
+                    href={project.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 inline-flex items-center gap-1.5 text-sm text-violet-300 hover:text-violet-200 transition-colors"
+                  >
+                    Visit site
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </a>
+                )}
               </div>
             </article>
           ))}
