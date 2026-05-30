@@ -52,13 +52,22 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
 
     const hash = window.location.hash;
     if (hash) {
-      // Wait a frame so the destination page's DOM (and the target id) exists.
-      const raf = requestAnimationFrame(() => {
+      const scrollToTarget = () => {
         const el = document.querySelector(hash);
         if (el) lenis.scrollTo(el as HTMLElement, { offset: -88 });
         else lenis.scrollTo(0, { immediate: true });
-      });
-      return () => cancelAnimationFrame(raf);
+      };
+      // Scroll once the DOM exists, then correct after the page settles: heavy
+      // pages (e.g. /portfolio with 12 live-preview iframes) grow after first
+      // paint, which moves a lower target down — a single early scroll lands short.
+      const raf = requestAnimationFrame(scrollToTarget);
+      const t1 = setTimeout(scrollToTarget, 300);
+      const t2 = setTimeout(scrollToTarget, 700);
+      return () => {
+        cancelAnimationFrame(raf);
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
     }
 
     lenis.scrollTo(0, { immediate: true });
