@@ -11,7 +11,6 @@ export const metadata: Metadata = {
   description: 'How we ship AI automation: fast, monitored, and built to last.',
 };
 
-/* NOTE: placeholder copy — tune the steps + standards to your real delivery. */
 const STEPS = [
   {
     icon: Compass,
@@ -59,7 +58,7 @@ const STANDARDS = [
   {
     icon: Clock,
     title: 'Fast, predictable delivery',
-    body: 'A typical build ships in around 18 days, with clear scope and milestones agreed up front.',
+    body: 'A typical build ships in around a week, with clear scope and milestones agreed up front.',
   },
 ];
 

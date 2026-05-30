@@ -189,73 +189,105 @@ export function Showcase() {
     const track   = trackRef.current;
     if (!section || !frame || !scale || !track) return;
 
-    const mm = gsap.matchMedia();
+    let cancelled = false;
+    let rafId = 0;
+    let trigger: ScrollTrigger | undefined; // this section's own pin trigger (desktop only)
 
-    mm.add('(min-width: 768px)', () => {
-      /* Distances are computed lazily so ScrollTrigger.refresh() can recompute
-         them (invalidateOnRefresh). With 12 live-preview cards the track is wide,
-         so the horizontal scroll must run all the way to the LAST card before the
-         pin releases. */
-      const expandDistance = () => window.innerHeight * 1.1;
-      const scrollDistance = () => Math.max(0, track.scrollWidth - window.innerWidth);
+    /* Scope every GSAP animation/ScrollTrigger/matchMedia to a context so a single
+       ctx.revert() on unmount (and on dev Fast Refresh / Strict Mode double-invoke)
+       fully removes the pin-spacer GSAP injects. Without this, a stale pin-spacer
+       from a previous mount collides with React's reconciliation → the
+       `insertBefore` NotFoundError seen during refresh(). */
+    const ctx = gsap.context(() => {
+      const mm = gsap.matchMedia();
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: 'top top',
-          end: () => `+=${expandDistance() + scrollDistance() + 200}`,
-          scrub: 1.1,
-          pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        },
+      mm.add('(min-width: 768px)', () => {
+        /* Distances are computed lazily so ScrollTrigger.refresh() can recompute
+           them (invalidateOnRefresh). With 12 live-preview cards the track is wide,
+           so the horizontal scroll must run all the way to the LAST card before the
+           pin releases. */
+        const expandDistance = () => window.innerHeight * 1.1;
+        const scrollDistance = () => Math.max(0, track.scrollWidth - window.innerWidth);
+
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: 'top top',
+            end: () => `+=${expandDistance() + scrollDistance() + 200}`,
+            scrub: 1.1,
+            pin: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          },
+        });
+        trigger = tl.scrollTrigger;
+
+        /* Phase 1a — frame expands from contained card → full viewport */
+        tl.to(frame, {
+          '--inset-x':      '0vw',
+          '--inset-y':      '0vh',
+          '--frame-radius': '0px',
+          '--frame-border': 'rgba(168,85,247,0)',
+          '--frame-glow':   '0 40px 120px -30px rgba(0,0,0,0.9)',
+          ease: 'power2.inOut',
+          duration: expandDistance(),
+        }, 0);
+
+        /* Phase 1b — content scales up in sync with the frame */
+        tl.fromTo(scale,
+          { scale: 0.72 },
+          { scale: 1, ease: 'power2.inOut', duration: expandDistance() },
+          0
+        );
+
+        /* Phase 2 — horizontal parallax track; x re-evaluates on refresh so it
+           always travels the full measured width (→ reveals the last card). */
+        tl.to(track, {
+          x: () => -scrollDistance(),
+          ease: 'none',
+          duration: scrollDistance(),
+        }, expandDistance());
+
+        return () => {
+          tl.kill();
+        };
       });
-
-      /* Phase 1a — frame expands from contained card → full viewport */
-      tl.to(frame, {
-        '--inset-x':      '0vw',
-        '--inset-y':      '0vh',
-        '--frame-radius': '0px',
-        '--frame-border': 'rgba(168,85,247,0)',
-        '--frame-glow':   '0 40px 120px -30px rgba(0,0,0,0.9)',
-        ease: 'power2.inOut',
-        duration: expandDistance(),
-      }, 0);
-
-      /* Phase 1b — content scales up in sync with the frame */
-      tl.fromTo(scale,
-        { scale: 0.72 },
-        { scale: 1, ease: 'power2.inOut', duration: expandDistance() },
-        0
-      );
-
-      /* Phase 2 — horizontal parallax track; x re-evaluates on refresh so it
-         always travels the full measured width (→ reveals the last card). */
-      tl.to(track, {
-        x: () => -scrollDistance(),
-        ease: 'none',
-        duration: scrollDistance(),
-      }, expandDistance());
-
-      return () => {
-        tl.kill();
-      };
-    });
+    }, section);
 
     /* Re-measure once the cards/iframes have laid out and fonts are ready, so the
        pin length matches the real track width (an early measurement can otherwise
-       end the scroll before the last card is reached). */
-    const refresh = () => ScrollTrigger.refresh();
-    const refreshTimer = setTimeout(refresh, 400);
-    let cancelled = false;
+       end the scroll before the last card is reached).
+
+       Refresh ONLY this section's own trigger — never the global ScrollTrigger
+       registry. A global refresh re-pins every trigger on the page (the orbit +
+       traveling-circle), and when this fires during a fresh navigation to /#…
+       (the whole home page + 12 iframes remounting at once) one of those other
+       triggers' pin-spacers races React's commit → `insertBefore` NotFoundError.
+       The call is deferred to the next frame, guarded against teardown/detach,
+       and wrapped: the pin-spacer-vs-React-commit race is benign and layout
+       self-corrects on the next resize/scroll refresh. */
+    const safeRefresh = () => {
+      if (cancelled || !section.isConnected || !trigger) return;
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        if (cancelled || !section.isConnected || !trigger) return;
+        try {
+          trigger.refresh();
+        } catch {
+          /* harmless GSAP pin-spacer / React reconciliation race during remounts */
+        }
+      });
+    };
+    const refreshTimer = window.setTimeout(safeRefresh, 400);
     if (typeof document !== 'undefined' && 'fonts' in document) {
-      document.fonts.ready.then(() => { if (!cancelled) refresh(); }).catch(() => {});
+      document.fonts.ready.then(safeRefresh).catch(() => {});
     }
 
     return () => {
       cancelled = true;
       clearTimeout(refreshTimer);
-      mm.revert();
+      cancelAnimationFrame(rafId);
+      ctx.revert();
     };
   }, [reducedMotion]);
 

@@ -656,7 +656,7 @@ export function Orbit() {
               <div className="mb-4 h-12 flex items-center justify-center overflow-visible">
                 <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[10px] font-bold text-emerald-400 uppercase tracking-widest font-mono shadow-[0_0_15px_rgba(16,185,129,0.1)]">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Avg delivery: 18 days
+                  Avg delivery: ~1 week
                 </div>
               </div>
               <h3 className="text-white font-bold leading-tight tracking-tight text-2xl lg:text-3xl max-w-xl uppercase tracking-wide font-display">

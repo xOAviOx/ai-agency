@@ -28,7 +28,7 @@ export const POSTS: Post[] = [
     content: [
       {
         type: 'p',
-        text: 'The first question almost everyone asks is “how much does it cost?” It’s the wrong place to start. A £500 automation that saves nothing is expensive; a £15,000 build that saves two salaries a year is cheap. The number that matters isn’t the price tag — it’s the return. So let’s break down what actually drives the cost, and the simple math to work out what it’s worth to you.',
+        text: 'The first question almost everyone asks is “how much does it cost?” It’s the wrong place to start. A ₹50,000 automation that saves nothing is expensive; a ₹15 lakh build that saves two salaries a year is cheap. The number that matters isn’t the price tag — it’s the return. So let’s break down what actually drives the cost, and the simple math to work out what it’s worth to you.',
       },
       { type: 'h2', text: 'What drives the cost' },
       {
@@ -61,7 +61,7 @@ export const POSTS: Post[] = [
       { type: 'h2', text: 'A simple ROI calculation you can run today' },
       {
         type: 'p',
-        text: 'You don’t need a finance team for this. Take one process and estimate: hours it eats per week × your loaded hourly cost × 52. A task that burns 10 hours a week at £30/hour is costing you roughly £15,600 a year — every year. If automation removes most of that, the build pays for itself in months, then keeps paying. Do the same for revenue (what’s one recovered lead worth, times how many you miss?) and the case usually makes itself.',
+        text: 'You don’t need a finance team for this. Take one process and estimate: hours it eats per week × your loaded hourly cost × 52. A task that burns 10 hours a week at ₹1,000/hour is costing you roughly ₹5.2 lakh a year — every year. If automation removes most of that, the build pays for itself in months, then keeps paying. Do the same for revenue (what’s one recovered lead worth, times how many you miss?) and the case usually makes itself.',
       },
       { type: 'h2', text: 'Build vs. subscription vs. agency' },
       {

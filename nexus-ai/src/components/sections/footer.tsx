@@ -27,7 +27,7 @@ const USEFUL_LINKS = ['Latest case studies', 'Book a call', 'Contact us'];
 /* "Book a call" is an action (openCalendly); the rest navigate. */
 const USEFUL_TARGETS: Record<string, string> = {
   'Latest case studies': '/portfolio',
-  'Contact us': 'mailto:hello@nexus.ai',
+  'Contact us': 'mailto:avishuklawork@gmail.com',
 };
 
 const LEGAL_LINKS = [
@@ -159,16 +159,16 @@ export function Footer() {
 
           <div className="flex flex-col gap-1.5 text-[15px] md:items-end">
             <a
-              href="mailto:hello@nexus.ai"
+              href="mailto:avishuklawork@gmail.com"
               className="text-violet-300 transition-colors hover:text-violet-200"
             >
-              hello@nexus.ai
+              Mail us
             </a>
             <a
-              href="tel:+447738288101"
+              href="tel:+916393906196"
               className="text-white/50 transition-colors hover:text-white/80"
             >
-              +44 07738 288101
+              Call us
             </a>
           </div>
         </div>

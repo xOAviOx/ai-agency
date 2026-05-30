@@ -20,6 +20,6 @@ Push-If-Changed
 
 # Watcher loop – poll every 20 seconds
 while ($true) {
-    Start-Sleep -Seconds 20
+    Start-Sleep -Seconds 5
     Push-If-Changed
 }

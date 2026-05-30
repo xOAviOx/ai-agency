@@ -35,8 +35,8 @@ const WEBSITES: Website[] = [
   { name: 'Nakamura Voss', tag: 'Legal', blurb: 'Technology and venture law firm in Palo Alto since 2011, advising founders on venture capital, M&A, IP strategy and AI governance.', url: 'https://nakamura-voss.netlify.app', from: '#6366F1', to: '#1E3A8A' },
 ];
 
-/* NOTE: placeholder voice agents — "Try it" is a stub until you add a platform
-   (see src/lib/voice-demo.ts). */
+/* Live voice demos — wired to ElevenLabs Conversational AI (see src/lib/voice-demo.ts).
+   Agent ids resolve from NEXT_PUBLIC_EL_AGENT_* env vars at runtime. */
 const VOICE_AGENTS = [
   { id: 'reception', name: 'Reception AI', use: 'Answers inbound calls, books appointments, and routes urgent ones to a human.' },
   { id: 'lead-qualifier', name: 'Lead Qualifier', use: 'Calls new leads within seconds, qualifies them, and books a demo on your calendar.' },

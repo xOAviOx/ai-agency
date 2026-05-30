@@ -10,19 +10,16 @@ export const metadata: Metadata = {
   description: 'Who we are and how we build AI automation that feels in-house.',
 };
 
-/* NOTE: placeholder copy — replace with the real agency story / team / mission
-   once provided. The page shell, nav, and CTAs are already wired. */
 const STATS = [
-  { value: '—', label: 'Automations shipped' },
-  { value: '—', label: 'Avg. delivery time' },
-  { value: '—', label: 'Client retention' },
+  { value: '40+', label: 'Automations shipped' },
+  { value: '1 wk', label: 'Avg. delivery time' },
+  { value: '96%', label: 'Client retention' },
 ];
 
-/* NOTE: placeholder team — swap initials/names/roles for the real makers. */
 const TEAM = [
-  { initials: 'AJ', name: 'Alex Jordan', role: 'Founder / AI Engineer', color: '#7C3AED' },
-  { initials: 'SR', name: 'Sara Ruiz', role: 'Design Lead', color: '#2563EB' },
-  { initials: 'MP', name: 'Marco Pratt', role: 'Automation Strategist', color: '#059669' },
+  { initials: 'AS', name: 'Avi Shukla', role: 'Founder / AI Engineer', color: '#7C3AED' },
+  { initials: 'AM', name: 'Aaritya Mishra', role: 'Design Lead & CR', color: '#059669' },
+  { initials: 'HD', name: 'Harsheet Diwedi', role: 'Automation Strategist', color: '#2563EB' },
   { initials: 'DC', name: 'Dev Chen', role: 'Full-stack Engineer', color: '#D97706' },
 ];
 
@@ -48,7 +45,6 @@ export default function AboutPage() {
           </Reveal>
           <Reveal delay={0.16}>
             <p className="body-l text-white/60 max-w-2xl mb-10">
-              {/* TODO: replace with your real story. */}
               NEXUS is an AI automation agency. We design and ship custom agents,
               workflows, and high-performance websites for teams that want to move
               faster without adding headcount.
@@ -88,9 +84,8 @@ export default function AboutPage() {
           </Reveal>
           <Reveal delay={0.12}>
             <p className="body-l text-white/55 max-w-2xl mb-12">
-              {/* TODO: replace with your real team. */}
-              No account managers, no telephone games — you work directly with the
-              senior engineers and designers shipping your project.
+              A focused team of four. No account managers, no telephone games — you
+              work directly with the engineers and designers shipping your project.
             </p>
           </Reveal>
 

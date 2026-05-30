@@ -1,8 +1,9 @@
-/* Legal page content. These are professional, sensible-default templates with a
-   UK / GDPR lean (the site uses £ and a +44 number). They are NOT legal advice —
-   have them reviewed and confirm company name, contact, and governing law before
-   relying on them. Edit text here; the /privacy, /ai-policy and /terms pages
-   render from this single source. */
+/* Legal page content. These are professional, sensible-default templates with an
+   India lean (₹ pricing, +91 contact, governed by Indian law). Data-protection
+   wording is still GDPR-style — swap to India's DPDP Act, 2023 if you want it
+   localised. They are NOT legal advice — have them reviewed and confirm company
+   name, contact, and governing law before relying on them. Edit text here; the
+   /privacy, /ai-policy and /terms pages render from this single source. */
 
 export type LegalBlock = { type: 'p'; text: string } | { type: 'ul'; items: string[] };
 export type LegalSection = { heading: string; blocks: LegalBlock[] };
@@ -14,7 +15,7 @@ export type LegalDoc = {
 };
 
 const UPDATED = 'May 30, 2026';
-const CONTACT_EMAIL = 'hello@nexus.ai';
+const CONTACT_EMAIL = 'avishuklawork@gmail.com';
 
 export const PRIVACY: LegalDoc = {
   title: 'Privacy Policy',
@@ -268,7 +269,7 @@ export const TERMS: LegalDoc = {
     {
       heading: 'Governing law',
       blocks: [
-        { type: 'p', text: 'These terms are governed by the laws of England and Wales, and any disputes are subject to the exclusive jurisdiction of its courts. (Confirm the jurisdiction that applies to your business.)' },
+        { type: 'p', text: 'These terms are governed by the laws of India, and any disputes are subject to the exclusive jurisdiction of the courts of India. (Confirm the specific city / state jurisdiction that applies to your business.)' },
       ],
     },
     {
