@@ -117,7 +117,7 @@ export default function PortfolioPage() {
         </section>
 
         {/* ── AI Voice Agents ── */}
-        <section className="relative mx-auto max-w-[1280px] px-6 md:px-12 pb-32">
+        <section id="voice-agents" className="relative mx-auto max-w-[1280px] px-6 md:px-12 pb-32 scroll-mt-28">
           <Reveal>
             <div className="mb-3 inline-flex items-center gap-2">
               <div className="h-px w-4 bg-violet-500" />

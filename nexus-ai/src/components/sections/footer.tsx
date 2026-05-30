@@ -1,9 +1,11 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowUpRight, Shield, Lock, BadgeCheck, Sparkles } from 'lucide-react';
 import { openCalendly } from '@/lib/booking';
+import { scrollToHash, scrollToTop } from '@/lib/smooth-scroll';
 
 const SERVICES = [
   'AI Agents & Workflows',
@@ -12,7 +14,21 @@ const SERVICES = [
   'AI Strategy & Integration',
 ];
 
+/* Each service points at the most relevant live proof on /portfolio. */
+const SERVICE_TARGETS: Record<string, string> = {
+  'AI Agents & Workflows': '/portfolio#voice-agents',
+  'Process Automation': '/portfolio#voice-agents',
+  'High-Performance Websites': '/portfolio#websites',
+  'AI Strategy & Integration': '/portfolio#voice-agents',
+};
+
 const USEFUL_LINKS = ['Latest case studies', 'Book a call', 'Contact us'];
+
+/* "Book a call" is an action (openCalendly); the rest navigate. */
+const USEFUL_TARGETS: Record<string, string> = {
+  'Latest case studies': '/portfolio',
+  'Contact us': 'mailto:hello@nexus.ai',
+};
 
 const LEGAL_LINKS = [
   { label: 'Privacy Policy', href: '/privacy' },
