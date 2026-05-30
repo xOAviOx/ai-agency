@@ -76,7 +76,7 @@ export default function PortfolioPage() {
         </section>
 
         {/* ── Websites ── */}
-        <section className="relative mx-auto max-w-[1280px] px-6 md:px-12 pb-28">
+        <section id="websites" className="relative mx-auto max-w-[1280px] px-6 md:px-12 pb-28 scroll-mt-28">
           <Reveal>
             <h2 className="display-l text-white mb-3" style={{ fontSize: '2rem' }}>
               Websites
