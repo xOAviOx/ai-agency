@@ -48,15 +48,55 @@ export async function startVoiceDemo(
 
   try {
     const { Conversation } = await import('@elevenlabs/client');
+
+    let errored = false;
+    let removeRejectionGuard: (() => void) | undefined;
+
     const conversation = await Conversation.startSession({
       agentId,
       connectionType: 'webrtc',
       onConnect: () => handlers.onConnect?.(),
-      onDisconnect: () => handlers.onDisconnect?.(),
+      onDisconnect: () => {
+        removeRejectionGuard?.();
+        // If we already reported an agent failure, don't override the error
+        // state by resetting the card back to idle.
+        if (!errored) handlers.onDisconnect?.();
+      },
       onError: (message) => handlers.onError?.(message),
       onModeChange: ({ mode }) => handlers.onMode?.(mode),
     });
-    return { ok: true, session: { end: () => conversation.endSession() } };
+
+    /* The ElevenLabs SDK (v1.9.0) throws when the server emits a malformed
+       "error" event — it reads `event.error_event.error_type`, which is
+       undefined when an agent fails server-side ("the AI agent appears to be
+       having technical issues"). That surfaces as an unhandled rejection and,
+       in dev, a full-screen error overlay. Catch that one specific case so a
+       broken/misconfigured agent degrades to a clean error state instead. */
+    const onRejection = (e: PromiseRejectionEvent) => {
+      const reason = e?.reason;
+      const msg =
+        reason instanceof Error ? reason.message : String(reason ?? '');
+      if (msg.includes('error_type')) {
+        e.preventDefault();
+        errored = true;
+        removeRejectionGuard?.();
+        handlers.onError?.('The agent is temporarily unavailable.');
+        void conversation.endSession().catch(() => {});
+      }
+    };
+    window.addEventListener('unhandledrejection', onRejection);
+    removeRejectionGuard = () =>
+      window.removeEventListener('unhandledrejection', onRejection);
+
+    return {
+      ok: true,
+      session: {
+        end: async () => {
+          removeRejectionGuard?.();
+          await conversation.endSession();
+        },
+      },
+    };
   } catch (e) {
     return {
       ok: false,
