@@ -83,7 +83,8 @@ export default function PortfolioPage() {
           </Reveal>
           <Reveal delay={0.06}>
             <p className="body-l text-white/50 mb-12 max-w-xl">
-              High-performance sites — fast, animated, and built to convert.
+              Live builds across dental, fitness, and legal — each card is a real,
+              scaled-down preview of the deployed site. Click any to open it.
             </p>
           </Reveal>
 
