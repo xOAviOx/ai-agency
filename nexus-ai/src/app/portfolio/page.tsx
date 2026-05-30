@@ -40,7 +40,8 @@ const WEBSITES: Website[] = [
 const VOICE_AGENTS = [
   { id: 'reception', name: 'Reception AI', use: 'Answers inbound calls, books appointments, and routes urgent ones to a human.' },
   { id: 'lead-qualifier', name: 'Lead Qualifier', use: 'Calls new leads within seconds, qualifies them, and books a demo on your calendar.' },
-  { id: 'support-line', name: 'Support Line', use: 'Handles tier-1 support 24/7 in natural conversation, escalating when needed.' },
+  // 'support-line' parked — agent errors server-side ("technical issues"); re-add once its
+  // ElevenLabs config is fixed (set NEXT_PUBLIC_EL_AGENT_SUPPORT + restore the entry).
 ];
 
 export default function PortfolioPage() {
@@ -134,7 +135,7 @@ export default function PortfolioPage() {
             </p>
           </Reveal>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {VOICE_AGENTS.map((agent, i) => (
               <Reveal key={agent.id} delay={i * 0.08}>
                 <VoiceAgentCard id={agent.id} name={agent.name} use={agent.use} />
