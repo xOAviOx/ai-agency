@@ -33,7 +33,13 @@ export function WebsitePreview({
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
-    const update = () => setScale(el.clientWidth / VIRTUAL_WIDTH);
+    // Ignore zero-width measurements — when this preview sits inside a hidden
+    // (display:none) responsive branch, clientWidth is 0, which would make the
+    // scaled iframe height Infinity. Keep the last valid scale until it shows.
+    const update = () => {
+      const w = el.clientWidth;
+      if (w > 0) setScale(w / VIRTUAL_WIDTH);
+    };
     update();
     const ro = new ResizeObserver(update);
     ro.observe(el);
