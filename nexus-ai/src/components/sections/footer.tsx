@@ -58,11 +58,14 @@ function LinkColumn({
   heading,
   links,
   actions,
+  targets,
 }: {
   heading: string;
   links: string[];
   actions?: Record<string, () => void>;
+  targets?: Record<string, string>;
 }) {
+  const pathname = usePathname();
   const itemClass =
     'group inline-flex items-center gap-1.5 text-[15px] text-white/60 transition-colors hover:text-white';
   const arrow = (
@@ -74,6 +77,8 @@ function LinkColumn({
       <ul className="flex flex-col gap-4">
         {links.map((link) => {
           const action = actions?.[link];
+          const target = targets?.[link];
+          const external = target ? /^(mailto:|tel:|https?:)/.test(target) : false;
           return (
             <li key={link}>
               {action ? (
@@ -85,11 +90,34 @@ function LinkColumn({
                   {link}
                   {arrow}
                 </button>
-              ) : (
+              ) : !target ? (
                 <a href="#" className={itemClass}>
                   {link}
                   {arrow}
                 </a>
+              ) : external ? (
+                <a href={target} className={itemClass}>
+                  {link}
+                  {arrow}
+                </a>
+              ) : (
+                <Link
+                  href={target}
+                  onClick={(e) => {
+                    // Lenis owns scroll, so same-page hashes won't scroll on their
+                    // own — handle that here; cross-page is handled by the provider.
+                    const [path, hash] = target.split('#');
+                    if (pathname === path) {
+                      e.preventDefault();
+                      if (hash) scrollToHash(`#${hash}`);
+                      else scrollToTop();
+                    }
+                  }}
+                  className={itemClass}
+                >
+                  {link}
+                  {arrow}
+                </Link>
               )}
             </li>
           );
@@ -147,11 +175,12 @@ export function Footer() {
 
         {/* ── Row 2: link columns + badges ── */}
         <div className="grid grid-cols-1 gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1fr_1fr_auto]">
-          <LinkColumn heading="Our services" links={SERVICES} />
+          <LinkColumn heading="Our services" links={SERVICES} targets={SERVICE_TARGETS} />
           <LinkColumn
             heading="Useful links"
             links={USEFUL_LINKS}
             actions={{ 'Book a call': openCalendly }}
+            targets={USEFUL_TARGETS}
           />
 
           {/* affiliation / trust badges */}
