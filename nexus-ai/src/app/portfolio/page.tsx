@@ -13,16 +13,26 @@ export const metadata: Metadata = {
   description: 'Websites we’ve shipped and AI voice agents you can try live.',
 };
 
-/* NOTE: placeholder projects — replace name/tag/blurb/url (+ live screenshot) per
-   site. Set `url` to the real live link; '#' renders as a non-clicking demo card. */
+/* Live deployed builds. `url` is the real link; each card renders a scaled-down
+   live <iframe> preview of the site (see WebsitePreview). The from/to gradient is
+   the loading placeholder + fallback if a host ever refuses embedding. */
 type Website = { name: string; tag: string; blurb: string; url: string; from: string; to: string };
 const WEBSITES: Website[] = [
-  { name: 'Aurora Analytics', tag: 'SaaS', blurb: 'Marketing site + dashboard for a B2B analytics startup.', url: '#', from: '#7C3AED', to: '#2563EB' },
-  { name: 'Bistro Nine', tag: 'Hospitality', blurb: 'Reservations-ready site for a fine-dining restaurant.', url: '#', from: '#D97706', to: '#DC2626' },
-  { name: 'Volt Commerce', tag: 'E-commerce', blurb: 'Headless storefront with AI-powered product search.', url: '#', from: '#059669', to: '#2563EB' },
-  { name: 'Lumen Health', tag: 'Healthcare', blurb: 'Patient intake + booking site with a privacy-first build.', url: '#', from: '#2563EB', to: '#7C3AED' },
-  { name: 'Forge Studio', tag: 'Agency', blurb: 'Portfolio site with scroll-driven motion and case studies.', url: '#', from: '#7C3AED', to: '#DC2626' },
-  { name: 'Nomad Travel', tag: 'Marketplace', blurb: 'Trip-planning marketplace with an AI itinerary builder.', url: '#', from: '#059669', to: '#D97706' },
+  // ── Dental ──
+  { name: 'Ramirez Dentals', tag: 'Dental', blurb: 'Modern luxury dental clinic with a sleek dark-mode interface, featuring pain-free cosmetic and general dentistry services.', url: 'https://ramirez-dentals.netlify.app', from: '#0EA5E9', to: '#2563EB' },
+  { name: 'The Dental Healthcare', tag: 'Dental', blurb: 'Premium luxury dental practice specializing in pain-free treatments, with elegant branding and comprehensive service offerings.', url: 'https://the-dental-healthcare.netlify.app', from: '#0EA5E9', to: '#2563EB' },
+  { name: 'Tooth Fairy Dental Clinic', tag: 'Dental', blurb: 'Professional family dental clinic in Pretoria run by Dr. Lekota, offering anxiety-free care from general to cosmetic dentistry.', url: 'https://tooth-fairy-dental-clinic.netlify.app', from: '#0EA5E9', to: '#2563EB' },
+  { name: 'Swarnim Dental Care', tag: 'Dental', blurb: 'Premium healthcare-focused dental practice with modern design, offering comprehensive services with patient comfort as priority.', url: 'https://swarnim-dental-clinic.netlify.app', from: '#0EA5E9', to: '#2563EB' },
+  // ── Fitness ──
+  { name: 'thejonitaj GYM', tag: 'Fitness', blurb: 'High-energy fitness hub with bold branding, featuring training programs and community-driven workout experiences.', url: 'https://thejonitaj-gym.netlify.app', from: '#F97316', to: '#DC2626' },
+  { name: 'CrossFit Nîmes', tag: 'Fitness', blurb: 'Performance-focused CrossFit facility in Nîmes with a brutalist design aesthetic and structured training programs.', url: 'https://crossfit-nimes-gym.netlify.app', from: '#F97316', to: '#DC2626' },
+  { name: 'Levo Gym & Rehabilitation', tag: 'Fitness', blurb: 'Premium fitness and specialized rehabilitation center in Kuwait City combining strength training with medical-grade recovery.', url: 'https://levo-gym.netlify.app', from: '#F97316', to: '#DC2626' },
+  { name: 'FORGEE', tag: 'Fitness', blurb: 'High-performance training facility with bold typography and motivational positioning, pushing athletic boundaries.', url: 'https://forgee-gym.netlify.app', from: '#F97316', to: '#DC2626' },
+  // ── Legal ──
+  { name: 'Caravelli', tag: 'Legal', blurb: 'Boutique international law firm established in Geneva in 1958, specializing in financial regulation, white-collar defense and sovereign matters.', url: 'https://caravelli.netlify.app', from: '#6366F1', to: '#1E3A8A' },
+  { name: 'Ashworth & Rowe', tag: 'Legal', blurb: 'Premier independent law firm since 1962, advising corporations, institutions and private clients with sophisticated counsel.', url: 'https://asworth-rowe-firm.netlify.app', from: '#6366F1', to: '#1E3A8A' },
+  { name: 'Sterling, Kato & Moreau', tag: 'Legal', blurb: 'Transatlantic litigation firm founded in Boston in 1894, practicing commercial litigation, antitrust, IP and crisis management.', url: 'https://sterling-kato-moreau-firm.netlify.app', from: '#6366F1', to: '#1E3A8A' },
+  { name: 'Nakamura Voss', tag: 'Legal', blurb: 'Technology and venture law firm in Palo Alto since 2011, advising founders on venture capital, M&A, IP strategy and AI governance.', url: 'https://nakamura-voss.netlify.app', from: '#6366F1', to: '#1E3A8A' },
 ];
 
 /* NOTE: placeholder voice agents — "Try it" is a stub until you add a platform
@@ -32,24 +42,6 @@ const VOICE_AGENTS = [
   { id: 'lead-qualifier', name: 'Lead Qualifier', use: 'Calls new leads within seconds, qualifies them, and books a demo on your calendar.' },
   { id: 'support-line', name: 'Support Line', use: 'Handles tier-1 support 24/7 in natural conversation, escalating when needed.' },
 ];
-
-function WebsiteThumb({ from, to }: { from: string; to: string }) {
-  return (
-    <div className="relative h-44 w-full overflow-hidden rounded-t-2xl border-b border-white/[0.08]">
-      {/* fake browser chrome */}
-      <div className="flex items-center gap-1.5 bg-white/[0.04] px-4 py-2.5">
-        <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
-        <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
-        <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
-      </div>
-      {/* gradient "screenshot" */}
-      <div
-        className="h-full w-full"
-        style={{ background: `linear-gradient(135deg, ${from}, ${to})`, opacity: 0.5 }}
-      />
-    </div>
-  );
-}
 
 export default function PortfolioPage() {
   return (
