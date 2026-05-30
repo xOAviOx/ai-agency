@@ -54,12 +54,13 @@ src/
       calendly-button.tsx     — primary "Book a call" button for Server Components
       partner-form.tsx        — "Partner with us" modal → Web3Forms email
       voice-agent-card.tsx    — portfolio "Try it" voice demo card (uses voice-demo.ts)
+      website-preview.tsx     — LIVE scaled-down <iframe> preview of a deployed site in browser chrome; ResizeObserver computes scale from clientWidth (guards w>0 so hidden/display:none branches don't make height Infinity); gradient `from`/`to` = loading + embed-blocked fallback. Used by /portfolio Websites + showcase website cards.
     sections/
       navigation.tsx    — Sticky nav, scroll-direction hide/show, mobile drawer (z-50)
       hero.tsx          — Scroll-linked circle scale, word-split headline, floating cursors, marquee
       services.tsx      — 2×2 quadrant grid, hover-reveal cards, mouse-driven circle rotation
       case-study.tsx    — Left headline + right testimonial + browser mockup w/ fake dashboard
-      showcase.tsx      — GSAP horizontal pin-parallax (desktop, `md:` only); MOBILE = native scroll-snap swipe carousel (no GSAP, no pin → smooth on touch). Section is `md:h-screen` (auto height on mobile); frame/label/backdrop are `hidden md:block`. 8 PROJECTS; root has data-section="showcase"
+      showcase.tsx      — GSAP horizontal pin-parallax (desktop, `md:` only); MOBILE = native scroll-snap swipe carousel (no GSAP, no pin → smooth on touch). Section is `md:h-screen` (auto height on mobile); frame/label/backdrop are `hidden md:block`. PROJECTS = all 12 REAL website cards (`type:'website'`, `url` set → renders `<WebsitePreview>` live iframe + "Visit site" link), same set as /portfolio. (Old fictional case-study cards removed; the `MockupScreen`/browser/phone/tablet branches remain as dead fallbacks for non-`website` types.) Root has data-section="showcase". Pin scroll distance + track `x` are FUNCTION-BASED (`scrollDistance()`) with `invalidateOnRefresh` + a post-layout `ScrollTrigger.refresh()` (400ms timeout + `document.fonts.ready`) so the parallax travels the FULL track (reaches the last card) before unpinning — measured travel ≈ trackScrollWidth − innerWidth (~4.5k px at 1440w). NOTE: both desktop track + mobile carousel render each card, so a `type:'website'` preview exists twice in the DOM (one branch is `display:none`; WebsitePreview guards `clientWidth>0`).
       agencies.tsx      — Image/copy split, blueprint border frame, circle behind copy; root has data-section="agencies"
       orbit.tsx         — "Why NEXUS" traveling circle. Exports <OrbitJourney/> (fixed circle) + <Orbit/> (300vh stage). Circle HANDS OFF into the CTA. Now runs on MOBILE too (compact wheel — see below).
       cta.tsx           — CTA stage: 200vh w/ sticky-centered copy that fades in INSIDE the travelling circle (no own circle anymore); data-section="cta" + data-cta-stage. Now active on mobile too (no separate static fallback) + trust marquee
@@ -151,7 +152,7 @@ with `<Reveal>` + `<AmbientCircle>` + card hover-lift, matching the home aesthet
 ### Integrations
 - **Calendly** (`lib/booking.ts`): `CALENDLY_URL = https://calendly.com/avishuklacode/new-meeting-1`. `openCalendly()` lazy-loads widget.js/css on first click → popup, falls back to new tab. Calendly auto-emails host on booking = the "notify". `CalendlyButton` for Server Components.
 - **Partner form** (`ui/partner-form.tsx`): modal from Agencies "Partner with us" (open-state in agencies.tsx). POSTs to **Web3Forms** (`WEB3FORMS_ACCESS_KEY=5f06f556-b045-4fa4-89aa-824a2e64e3a6`, or `NEXT_PUBLIC_WEB3FORMS_KEY`). Emails the address registered with that key. Honeypot + loading/success/error states.
-- **Voice agent demo** (`lib/voice-demo.ts`): `startVoiceDemo(id)` is a STUB returning false. "Try it" shows "connects once platform added". TODO: wire Vapi/ElevenLabs/Retell in ONE place here, return true when a call starts.
+- **Voice agent demo** (`lib/voice-demo.ts`): WIRED to **ElevenLabs Conversational AI** (`@elevenlabs/client` v1.9.0). `startVoiceDemo(id, handlers)` requests mic → `Conversation.startSession({ agentId, connectionType:'webrtc', ...callbacks })` → returns `{ok, session:{end()}}` (or `{ok:false, reason:'unconfigured'|'mic-denied'|'error'}`). Browser mic call (WebRTC) — **no phone number needed**. Card ids map to **PUBLIC** agent ids via env (`NEXT_PUBLIC_EL_AGENT_RECEPTION`/`_LEAD`/`_SUPPORT` in `.env.local` — empty ⇒ "unconfigured" coming-soon msg). `voice-agent-card.tsx` states: idle→connecting→live (speaking/listening indicator + **End call**) / mic-denied / error. SDK is dynamically imported on click (kept out of SSR bundle). Indian **phone numbers (+91)** for real client lines = separate later step (Exotel/Plivo/Ozonetel or Twilio regulatory bundle), NOT required for the demo.
 
 ### Lenis route-change fix (IMPORTANT gotcha)
 Lenis owns the scroll position, so Next's automatic scroll-to-top on navigation does NOT apply — you'd
@@ -164,7 +165,7 @@ hash-target sections so the fixed 80px header doesn't cover them.
 ### Pending content TODOs (placeholders in code)
 - About: real team (names/roles/photos) + real stat numbers.
 - Process: real steps + SLA numbers (uptime %, delivery days).
-- Portfolio: real website name/tag/blurb/URL + screenshots (replace gradient thumbs); real voice agents + pick voice platform.
+- Portfolio: DONE — 12 real websites (Dental/Fitness/Legal) with LIVE scaled-down `<iframe>` previews (`ui/website-preview.tsx`). Voice platform = ElevenLabs (wired); REMAINING: create the 3 public agents in the ElevenLabs dashboard + paste their ids into `.env.local`.
 - Legal: confirm legal entity name, contact email, governing law.
 
 ## Build Status
