@@ -4,6 +4,7 @@ import { Navigation } from '@/components/sections/navigation';
 import { Footer } from '@/components/sections/footer';
 import { CalendlyButton } from '@/components/ui/calendly-button';
 import { VoiceAgentCard } from '@/components/ui/voice-agent-card';
+import { WebsitePreview } from '@/components/ui/website-preview';
 import { Reveal } from '@/components/ui/reveal';
 import { AmbientCircle } from '@/components/ui/ambient-circle';
 
