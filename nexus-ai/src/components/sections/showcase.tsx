@@ -183,6 +183,14 @@ function ProjectCard({
         className="relative rounded-xl overflow-hidden border border-white/[0.08]"
         style={{ rotate: `${project.rotation}deg` }}
       >
+        {project.type === 'website' && project.url && (
+          <WebsitePreview
+            url={project.url}
+            from={project.gradientFrom}
+            to={project.gradientTo}
+            title={project.title}
+          />
+        )}
         {project.type === 'browser' && (
           <div>
             <div className="flex items-center gap-2 px-3 py-2 border-b border-white/[0.06] bg-white/[0.03]">
@@ -225,10 +233,22 @@ function ProjectCard({
         </div>
         <h3 className="text-white font-medium leading-snug mb-2 text-[15px]">{project.title}</h3>
         <p className="text-sm text-white/50 leading-relaxed mb-4">{project.summary}</p>
-        <button className="inline-flex items-center gap-1.5 text-sm text-white/60 hover:text-white transition-colors group">
-          View project
-          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-        </button>
+        {project.url ? (
+          <a
+            href={project.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-sm text-violet-300 hover:text-violet-200 transition-colors group"
+          >
+            Visit site
+            <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </a>
+        ) : (
+          <button className="inline-flex items-center gap-1.5 text-sm text-white/60 hover:text-white transition-colors group">
+            View project
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+          </button>
+        )}
       </div>
     </motion.div>
   );
