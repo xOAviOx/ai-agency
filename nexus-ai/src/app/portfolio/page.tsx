@@ -97,7 +97,7 @@ export default function PortfolioPage() {
                     {...(isLive ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                     className="group flex h-full flex-col rounded-2xl border border-white/[0.08] bg-white/[0.02] transition-all duration-300 hover:-translate-y-1 hover:border-violet-500/30"
                   >
-                    <WebsiteThumb from={site.from} to={site.to} />
+                    <WebsitePreview from={site.from} to={site.to} url={site.url} title={site.name} />
                     <div className="flex flex-1 flex-col p-6">
                       <span className="mono-caption text-violet-400 mb-3">{site.tag}</span>
                       <h3 className="text-white text-lg font-medium mb-2 font-display">{site.name}</h3>
