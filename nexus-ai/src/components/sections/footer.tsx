@@ -191,7 +191,7 @@ export function Footer() {
           animate="rest"
           whileHover="hover"
           variants={wmContainer}
-          className="flex cursor-default select-none font-bold leading-[0.8]"
+          className="flex justify-center cursor-default select-none font-bold leading-[0.8]"
           style={{
             fontFamily: 'var(--font-display)',
             fontSize: 'clamp(4.5rem, 22vw, 20rem)',
