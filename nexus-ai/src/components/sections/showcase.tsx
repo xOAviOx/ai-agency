@@ -3,14 +3,36 @@
 import { useRef, useEffect, type CSSProperties } from 'react';
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { WebsitePreview } from '@/components/ui/website-preview';
 
 gsap.registerPlugin(ScrollTrigger);
 
 /* ── Project data ───────────────────────────────────────────── */
-const PROJECTS = [
+type Project = {
+  id: number;
+  tag: string;
+  tagColor: string;
+  title: string;
+  summary: string;
+  type: 'browser' | 'phone' | 'tablet' | 'website';
+  gradientFrom: string;
+  gradientTo: string;
+  rotation: number;
+  url?: string; // when set (type 'website'), the card shows a LIVE preview + Visit-site link
+};
+
+/* Real shipped sites featured up front with live previews (full set on /portfolio).
+   For 'website' cards, gradientFrom/To double as the iframe's loading fallback. */
+const PROJECTS: Project[] = [
+  { id: 101, tag: 'Dental', tagColor: '#38BDF8', title: 'Ramirez Dentals', summary: 'A sleek dark-mode site for a luxury, pain-free dental clinic.', type: 'website', url: 'https://ramirez-dentals.netlify.app', gradientFrom: '#0EA5E9', gradientTo: '#2563EB', rotation: -3 },
+  { id: 102, tag: 'Dental', tagColor: '#38BDF8', title: 'The Dental Healthcare', summary: 'Elegant branding for a premium, pain-free dental practice.', type: 'website', url: 'https://the-dental-healthcare.netlify.app', gradientFrom: '#0EA5E9', gradientTo: '#2563EB', rotation: 2 },
+  { id: 103, tag: 'Fitness', tagColor: '#FB923C', title: 'thejonitaj GYM', summary: 'A high-energy fitness hub with bold, community-driven branding.', type: 'website', url: 'https://thejonitaj-gym.netlify.app', gradientFrom: '#F97316', gradientTo: '#DC2626', rotation: -2 },
+  { id: 104, tag: 'Fitness', tagColor: '#FB923C', title: 'Levo Gym & Rehab', summary: 'Premium fitness and medical-grade recovery in Kuwait City.', type: 'website', url: 'https://levo-gym.netlify.app', gradientFrom: '#F97316', gradientTo: '#DC2626', rotation: 3 },
+  { id: 105, tag: 'Legal', tagColor: '#818CF8', title: 'Caravelli', summary: 'A boutique international law firm with timeless, refined design.', type: 'website', url: 'https://caravelli.netlify.app', gradientFrom: '#6366F1', gradientTo: '#1E3A8A', rotation: -3 },
+  { id: 106, tag: 'Legal', tagColor: '#818CF8', title: 'Nakamura Voss', summary: 'A Palo Alto tech & venture firm advising founders on AI governance.', type: 'website', url: 'https://nakamura-voss.netlify.app', gradientFrom: '#6366F1', gradientTo: '#1E3A8A', rotation: 2 },
   {
     id: 1,
     tag: 'AI Automation',
